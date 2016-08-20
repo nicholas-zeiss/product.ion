@@ -228,15 +228,7 @@ const ExpenseNode = React.createClass({
                 value={this.state.glCode} />
             }
           </td>
-<<<<<<< 8578b72513eac3f6ccdda4956069d240f70aa184
           <td>
-=======
-          <td width="125">
-            {/* <FormControl type="date" readOnly={this.state.readOnlyStatus}
-                      name="dateSpent" onChange={this.handleChange}
-                      value={this.state.importedExpenses.dateSpent}
-                      className="expenseDate"/> */}
->>>>>>> more stuff
             {this.state.readOnlyStatus === true ?
               <StaticDate
                 name="dateSpent"
