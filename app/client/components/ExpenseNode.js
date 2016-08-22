@@ -1,10 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router';
+<<<<<<< 8f6b372fa5965750dd4761ba74325d5fe358ab41
 <<<<<<< d9c12569822c897b1186fe2b517dee09e292398f
 import { Button, InputGroup, Modal, OverlayTrigger, FormControl} from 'react-bootstrap';
 =======
 import { Button, InputGroup, Modal, OverlayTrigger} from 'react-bootstrap';
 >>>>>>> Improved expense page functionality. Minor csv drop styling
+=======
+import { Button, InputGroup, Modal, OverlayTrigger, FormControl} from 'react-bootstrap';
+>>>>>>> merge conflicts
 import codes from "../data/expenseCodes.js";
 import categories from "../data/expenseCategories.js";
 import DateFormat from './formComponents/DateFormat.js';
@@ -85,12 +89,17 @@ const ExpenseNode = React.createClass({
 
   handleEdit: function(){
     var off = false;
+<<<<<<< 8f6b372fa5965750dd4761ba74325d5fe358ab41
 <<<<<<< d9c12569822c897b1186fe2b517dee09e292398f
     console.log("Handle edit. ", this.state);
     if (this.state.importedExpenses && !this.state.editMode) {
 =======
     if (this.state.expenses && !this.state.editMode) {
 >>>>>>> Improved expense page functionality. Minor csv drop styling
+=======
+    console.log("Handle edit. ", this.state);
+    if (this.state.importedExpenses && !this.state.editMode) {
+>>>>>>> merge conflicts
       this.setState({
         editMode: true,
         tableContext: "warning",
@@ -219,7 +228,15 @@ const ExpenseNode = React.createClass({
                 value={this.state.glCode} />
             }
           </td>
+<<<<<<< 8578b72513eac3f6ccdda4956069d240f70aa184
           <td>
+=======
+          <td width="125">
+            {/* <FormControl type="date" readOnly={this.state.readOnlyStatus}
+                      name="dateSpent" onChange={this.handleChange}
+                      value={this.state.importedExpenses.dateSpent}
+                      className="expenseDate"/> */}
+>>>>>>> more stuff
             {this.state.readOnlyStatus === true ?
               <StaticDate
                 name="dateSpent"
