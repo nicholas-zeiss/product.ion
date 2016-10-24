@@ -2,21 +2,21 @@
  *   This file instantiates our sql database using mysql, knex, and bookshelf
  **/
 
-// var knex = require('knex')({
-//   client: 'mysql',
-//   connection: {
-//     host      : 'mysqlcluster11.registeredsite.com',
-//     user      : 'yakadmin',
-//     password  : '!Qaz2wsx3edc',
-//     database  : 'yakkittyaks',
-//     charset   : 'utf8'
-//   }
-// });
-
-var knex = require('knex')({         //Uncomment this to make this file work for heroku
-  client: 'postgresql',
-  connection: process.env.DATABASE_URL 
+var knex = require('knex')({
+  client: 'mysql',
+  connection: {
+    host      : 'mysqlcluster11.registeredsite.com',
+    user      : 'yakadmin',
+    password  : '!Qaz2wsx3edc',
+    database  : 'yakkittyaks',
+    charset   : 'utf8'
+  }
 });
+
+// var knex = require('knex')({         //Uncomment this to make this file work for heroku
+//   client: 'postgresql',
+//   connection: process.env.DATABASE_URL 
+// });
 
 // Here we use a Promise.all to handle table creation, doing it synchronously introduces conflicts where foreign keys
 // reference tables that have not been created
