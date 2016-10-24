@@ -31,6 +31,7 @@ gulp.task('watch', function() {
 // before calling this task.
 gulp.task('heroku', shell.task([
   'git push heroku master',
+  'node ./app/server/db.js',
   'heroku open'
 ]));
 

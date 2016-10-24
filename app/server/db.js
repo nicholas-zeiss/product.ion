@@ -18,7 +18,6 @@ var knex = require('knex')({         //Uncomment this to make this file work for
   connection: process.env.DATABASE_URL 
 });
 
-
 // Here we use a Promise.all to handle table creation, doing it synchronously introduces conflicts where foreign keys
 // reference tables that have not been created
 Promise.all([
