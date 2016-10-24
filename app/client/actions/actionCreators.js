@@ -174,14 +174,6 @@ export function updateProject(project) {
 
 //Expenses:
 
-export function getExpenses(projectId, id) {
-  return {
-    type: "GET_EXPENSES",
-    projectId,
-    id
-  };
-}
-
 export function hydrateExpenses(projectId, id, expenses) {
   return {
     type: "HYDRATE_EXPENSES",
