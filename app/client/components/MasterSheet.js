@@ -69,11 +69,11 @@ const MasterSheet = React.createClass({
       },
       yAxis: {
         title: {
-          text: "Dolla Dolla Bills Y'all"
+          text: "Dollars"
         }
       },
       title: {
-        text: 'Cream Get the Money'
+        text: 'Yearly Expenditure'
       },
       plotOptions: {
         line: {

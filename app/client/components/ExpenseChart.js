@@ -170,8 +170,6 @@ const ExpenseChart = React.createClass({
 			</div>
 		);
 	}
-
-
 });
 
 export default ExpenseChart;
