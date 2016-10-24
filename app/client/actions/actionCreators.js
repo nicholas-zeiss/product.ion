@@ -220,13 +220,6 @@ export function setCurrentExpenseProject(expenses) {
 }
 
 //Modals:
-export function changeModal(name) {
-  return {
-    type: "CHANGE_MODAL",
-    name
-  };
-}
-
 //MESSAGES:
 
 export function registrationError(target, message) {
