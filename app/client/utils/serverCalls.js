@@ -1,100 +1,86 @@
+/**
+ *
+ *  Here we set up our server calls
+ *
+**/
+
 import axios from 'axios';
 
-let registrationCheck = (orgName, username) =>
-  axios.post('/api/register/check', {orgName, username});
+const ApiCall = {};
 
-let registerOrg = (orgName) =>
-  axios.post('/api/register/org', {orgName});
 
-let registerUser = (username, password, orgs_id, perm) => {
-  var data = {username: username, password: password, orgs_id: orgs_id, perm: perm};
 
-  return axios.post('/api/register/user', {data: data});
-};
+//-------------------------------
+//        authorization
+//-------------------------------
 
-let updateUser = (user) => {
-  return axios.post('/api/update/user', {data: user});
-};
+ApiCall.checkToken = token => axios.post('/api/post/token', { token });
 
-let registerProject = (projectObj) =>
-  axios.post('/api/register/project', {data: projectObj});
+ApiCall.login = (username, password) => axios.post('/api/get/user', { username, password });
 
-let updateProject = (data, projId) =>
-  axios.post('/api/update/proj', {data, projId});
+ApiCall.logout = () => axios.post('/api/get/logout', {});
 
-let login = (username, password) =>
-  axios.post('/api/get/user', {username: username, password: password});
 
-let logout = () =>
-  axios.post('/api/get/logout', {});
 
-let changePassword = (username, password) =>
-  axios.post('/api/update/user', {username, data: {password}});
+//-------------------------------
+//        get extant data
+//-------------------------------
 
-let getProjectsByOrgName = (orgName) =>
-  axios.post('/api/get/org', {orgName: orgName});
+ApiCall.getExpenses = projIds => axios.post('/api/get/expenses', { projIds });
 
-let getProjectByProjId = (projId) =>
-  axios.post('/api/get/proj', {projId});
+ApiCall.getExpensesByProjectId = projId => axios.post('/api/get/proj', { projId });
 
-let getExpensesByProjectId = (projectId) =>
-  axios.post('/api/get/proj', {projId: projectId});
+ApiCall.getProjectByProjId = projId => axios.post('/api/get/proj', { projId });
 
-let registerExpense = (singleExpense) => {
-  console.log('in servercalls registerExpense', singleExpense);
-  return axios.post('/api/register/expenses', {data: singleExpense});
-};
+ApiCall.getProjectsByOrgName = orgName => axios.post('/api/get/org', { orgName });
 
-let removeExpense = (singleExpense) => {
-  console.log('in servercalls removeExpense ', singleExpense);
-  return axios.post('/api/remove/expense', {data: singleExpense});
-};
 
-let updateExpense = (singleExpense) => {
-  console.log('in servercalls updateExpense ', singleExpense);
-  return axios.post('/api/update/expense', {data: singleExpense});
-};
 
-let parseCSV = (data, id) =>
-  axios.post('/api/register/csv', {data: data, id: id});
+//------------------------------
+//      create new data
+//------------------------------
 
-let addBudget = (data, id) =>
-  axios.post('/api/register/budget', {data: data});
+ApiCall.addBudget = budget => axios.post('/api/register/budget', budget);
 
-let deleteBudget = (id) =>
-  axios.post('/api/remove/budget', {id: id});
+ApiCall.parseCSV = (data, id) => axios.post('/api/register/csv', { data, id });
 
-let updateProjBudgets = (list) =>
-  axios.post('/api/update/budgets', {list: list});
+ApiCall.registerExpense = exp => axios.post('/api/register/expense', exp);
 
-let getExpenses = (projIds) =>
-  axios.post('/api/get/expenses', { projIds: projIds});
+ApiCall.registerOrg = orgName => axios.post('/api/register/org', { orgName });
 
-let checkToken = (token) =>
-  axios.post('/api/post/token', {token: token});
+ApiCall.registerUser = (username, password, orgs_id, perm) => axios.post('/api/register/user', { username, password, orgs_id, perm });
 
-const ApiCall = {
-  registrationCheck,
-  registerOrg,
-  registerUser,
-  updateUser,
-  registerProject,
-  updateProject,
-  login,
-  logout,
-  changePassword,
-  getProjectsByOrgName,
-  getProjectByProjId,
-  getExpensesByProjectId,
-  registerExpense,
-  removeExpense,
-  updateExpense,
-  parseCSV,
-  addBudget,
-  getExpenses,
-  checkToken,
-  deleteBudget,
-  updateProjBudgets,
-};
+ApiCall.registerProject = proj => axios.post('/api/register/project', proj);
+
+ApiCall.registrationCheck = (orgName, username) => axios.post('/api/register/check', {orgName, username});
+
+
+
+//------------------------------
+//     update extant data
+//------------------------------
+
+ApiCall.changePassword = (username, password) => axios.post('/api/update/user', { username, password });
+
+ApiCall.updateExpense = exp => axios.post('/api/update/expense', exp);
+
+ApiCall.updateProjBudgets = list => axios.post('/api/update/budgets', list);
+
+ApiCall.updateProject = (data, projId) => axios.post('/api/update/proj', data);
+
+ApiCall.updateUser = user => axios.post('/api/update/user', user);
+
+
+
+//------------------------------
+//     delete extant data
+//------------------------------
+
+ApiCall.deleteBudget = id => axios.post('/api/remove/budget', { id });
+
+ApiCall.removeExpense = exp => axios.post('/api/remove/expense', exp);
+
+
 
 export default ApiCall;
+

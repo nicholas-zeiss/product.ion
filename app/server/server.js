@@ -10,10 +10,8 @@ let express = require('express');
 let path = require('path');
 let session = require('express-session');
 
+
 let app = express();
-
-//imports our endpoints
-
 
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../../app')));
@@ -32,6 +30,7 @@ app.post('*', (req, res, next) => {
 	next();
 });
 
+//import our endpoints
 require('./routes.js')(app);
 
 let port = process.env.PORT || 7000;

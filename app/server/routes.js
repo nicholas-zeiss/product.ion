@@ -10,465 +10,490 @@ var Budget = require('./controllers/budgetController.js');
 var Expense = require('./controllers/expenseController.js');
 var Organization = require('./controllers/organizationController.js');
 var Project = require('./controllers/projectController.js');
-var ProjUser = require('./models/projUser.js');
 var User = require('./controllers/userController.js');
 
 var jwt = require('jsonwebtoken');
 
 
+
+//-----------------------------------
+//				utility functions
+//-----------------------------------
+
+//generates a nicely formatted date string
+function generateDate() {
+	let date = new Date();
+
+	let year = date.getFullYear();
+	let month = ('0' + date.getMonth()).slice(-2);
+	let day = ('0' + date.getDate()).slice(-2);
+
+	return year + '/' + month + '/' + day;
+}
+
+
+//generates a JWT for verification
 function generateToken(user) {
-  var u = {
-   username: user.attributes.username,
-   id: user.id.toString(),
-  };
-  return token = jwt.sign(u, "SSSHHHitsaSECRET", {
-    expiresIn: 60 * 60 * 12 // expires in 12 hours; however, token expiration option is set to ignore.
-  });
-};
+	user = {
+		username: user.attributes.username,
+		id: user.id.toString(),
+	};
+  
+	return jwt.sign(user, 'SSSHHHitsaSECRET', { expiresIn: 60 * 60 * 12 });
+}
 
 
-module.exports = function routes(app) {
-//makes organization w/ name req.body.orgName and returns the organization model
-//if an org with that name already exists returns a 403
-	app.post('/api/register/org', function(req, res){
-		Organization.makeOrg({name: req.body.orgName}, function(org){
-			if(!org) {
-				res.sendStatus(404);
+//when an expense is added/removed from a project, use this to update project costToDate
+//takes a callback which is executed on the project model once updated
+function updateProjectCost(projId, cb) {
+	Project.getProjById(projId, proj => {
+		Expense.getExpensesByProj(projId, exps => {
+			let date = generateDate();
+			let cost = exps.reduce((cost, exp) => cost + exp.get('cost'), 0);
+
+			proj
+				.save({ costToDate: cost, lastEdited: date })
+				.then(cb);
+		});
+	});
+}
+
+
+//-----------------------------------
+//					API Endpoints
+//-----------------------------------
+
+module.exports = app => {
+	//welcome to callback hell, may your visit be short
+
+
+	//----------------------------------
+	//
+	//						GET DATA
+	//
+	//----------------------------------
+
+	//gets the budget for the project specified by the project ID (the projId propery of projects, not the primary index in the database)
+	app.post('/api/get/budget', (req, res) => {
+		Budget.getBudget(req.body.projId, budgetArray => {
+			if (budgetArray) {
+				res
+					.status(201)
+					.json(budgetArray);
+
 			} else {
-				res.status(201).json(org);
+				res.sendStatus(404);
 			}
 		});
 	});
 
 
-	//when a user wishes to create a new organization we must check that an organization w/ that name
-	//does not already exist. We also check if the username for the admin tied to that organization is
-	//already in use
-	//expects req.body to hold orgName and username
-	app.post('/api/register/check', function(req, res) {
-		console.log(req.body)
-		Organization.getOrg(req.body.orgName, function(org) {
-			User.getUser(req.body.username, function(user) {
-				console.log(org, user)
+	//this project accepts an array of project IDs (the projId propery of projects, not the primary index in the database)
+	//and returns all expenses attached to those projects
+	app.post('/api/get/expenses', (req, res) => {
+		var exps = [];
+
+		req.body.projIds.forEach(projId => {
+			Project.getProj(projId, proj => {
+				if (proj) {				
+					exps.push(proj.related('expenses'));
+				
+					//only sends response when all of the asynchronous bookshelf requests are completed
+					if (exps.length == req.body.projIds.length) {
+						res
+							.status(201)
+							.json(exps);
+					}
+
+				} else {
+					res.sendStatus(404);
+				}
+			});
+		});
+	});
+
+
+	//given an organization name send back the organization object with its attached users and projects
+	app.post('/api/get/org', (req, res) => {
+		Organization.getOrg(req.body.orgName, org => {
+			if (org) {
+				res
+					.status(201)
+					.json(org);
+
+			} else {
+				res.sendStatus(404);
+			}
+		});
+	});
+
+
+	//given a project ID send the project with related expenses, budgets, users and organization
+	app.post('/api/get/proj', (req, res) => {
+		Project.getProj(req.body.projId, proj => {
+			if (proj) {
+				res.status(201).json(proj);
+
+			} else {
+				res.sendStatus(404);
+			}
+		});
+	});
+
+
+	//given a username send back the user object, the organization of the user, and projects of the organization.
+	//as this is used for login, it also sends a JWT for authentication
+	app.post('/api/get/user', (req, res) => {
+		User.getUser(req.body.username, user => {
+			if(user) {
+				res
+					.status(201)
+					.json({ user, token: generateToken(user) });
+			
+			} else {
+				res.sendStatus(404);
+			}
+		});
+	});
+
+
+
+	//--------------------------------
+	//
+	//					CREATE DATA
+	//
+	//--------------------------------
+
+	// makes a budget w/ the provided data and returns it
+	//
+	// req body should hold
+	// {
+	//		cost: float,
+	//		description: string,
+	//    glCode: int,
+	//    projs_id: int,        <------- foreign key for the project the expense is attached to
+	//		quantity: int,
+	//		total: float
+	// }
+	app.post('/api/register/budget', (req, res) => {
+		Budget.makeBudget(req.body, budget => {
+			if (budget) {
+				res
+					.status(201)
+					.json(budget);
+
+			} else {
+				res.sendStatus(404);
+			}
+		});
+	});
+
+
+	//used for creating a new organization, checks whether organization name and admin username are available
+	app.post('/api/register/check', (req, res) => {
+		Organization.getOrg(req.body.orgName, org => {
+			User.getUser(req.body.username, user => {
 				if (org && user) {
 					res.sendStatus(400);
+
 				} else if (org) {
 					res.sendStatus(401);
+
 				} else if (user) {
 					res.sendStatus(403);
+
 				} else {
-					console.log('good to go')
 					res.sendStatus(200);
 				}
 			});
 		});
 	});
 
-	//makes a user with supplied criteria and returns the user model
-	//if a user with that username already exists return a 403
-	//req.body should be
-	// {
-	//   data :{
-	//       username: string,
-	//       password: string,
-	//       perm: int,
-	//       orgs_id: int
-	//   }
-	// }
-	app.post('/api/register/user', function(req, res) {
-		var body = req.body;
 
-		User.getUser(body.data.username, function(user) {
-			if (user) {
-				res.sendStatus(403);
-			} else {
-				User.makeUser(req.body.data, function(user){
-					if(!user) {
-						res.sendStatus(404);
-					} else {
-					 res.status(201).json(user);
+	//this route is used for mass importing expenses to a project via a csv file. req.body.data holds an array of expenses, each
+	//representing a row in the csv. req.body.id holds the project ID
+	app.post('/api/register/csv', function(req, res) {
+		let count = 0;
+
+		req.body.data.forEach(exp => {
+			let updatedExp = Object.assign({}, exp, { projs_id: req.body.id });
+
+			Expense.makeExpense(updatedExp, exp => {
+				if (exp) {
+					count++;
+
+					//only sends response when all of the asynchronous bookshelf requests are completed
+					if (count == req.body.datalength) {
+						res.sendStatus(201);
 					}
-				});
-			}
+
+				} else {
+					res.sendStatus(403);
+				}
+			});
 		});
 	});
 
-	//Creates a new project with the provided data and returns it
-	//req.body should hold
-	// {
-	//    data: {
-	//      name: string,
-	//      projId: string,
-	//      type: string,
-	//      reqBudget: float,
-	//      needs: string,
-	//      shootDates: string,
-	//      status: string,
-	//      costToDate: float,
-	//      estimateToComplete: float,
-	//      orgs_id: int       <------- foreign key for the organization the project is attached to
-	//    }
-	// }
-	app.post('/api/register/project', function(req, res) {
-		Project.makeProj(req.body.data, function(proj) {
-			proj ? res.status(201).json(proj) : res.sendStatus(404);
-		});
-	});
 
 	// makes an expense w/ the provided data and returns it
+	// updates total cost for the associated project
+	//
 	// req body should hold
 	// {
-	//    data: {
-	//      type: string,
-	//      vertical: string,
-	//      category: string,
-	//      glCode: string,
-	//      dateSpent: string,
-	//      dateTracked: string,
-	//      vendor: string,
-	//      method: string,
-	//      description: string,
-	//      cost: float,
-	//      projs_id: int        <------- foreign key for the project the expense is attached to
-	//    }
+	//    category: string,
+	//    cost: float,
+	//    dateSpent: string,
+	//    dateTracked: string,
+	//    description: string,
+	//    glCode: string,
+	//    method: string,
+	//    projs_id: int,        <------- foreign key for the project the expense is attached to
+	//    type: string,
+	//    vendor: string,
+	//    vertical: string
 	// }
-	app.post('/api/register/expenses', function(req, res) {
-		console.log('In /api/register/expenses ', req.body.data)
-		// req body should hold the following
-		// {
-		//  "data": { "singleExpense" : {
-		//    "type": string,
-		//    "vertical": string,
-		//    "category": string,
-		//    "glCode": string,
-		//    "dateSpent": string,
-		//    "dateTracked": string,
-		//    "vendor": string,
-		//    "method": string,
-		//    "description": string,
-		//    "cost": float,
-		//    "projs_id": int
-		//  }}
-		// }
+	app.post('/api/register/expense', (req, res) => {
+		Expense.makeExpense(req.body, exp => {
+			updateProjectCost(req.body.projs_id, () => {
+				if (exp) {
+					res
+						.status(201)
+						.json(exp);
 
-		// makes an expense w/ the provided data linked to the provided project
-		// returns it on completion, updates cost to date of related project
-		Expense.makeExpense(req.body.data.singleExpense, function(exp) {
-			Project.getProjById(req.body.data.singleExpense.projs_id, function(proj) {
-				Expense.getExpensesByProj(proj.id, function(exps) {
-					var cost = 0;
-					exps.forEach(function(ex) {
-						cost = cost + ex.get("cost");
-					});
-					var date = new Date();
-					var date = date.format('yyyy/mm/dd');
-					proj.save({costToDate: cost, lastEdited: date}).then(function(proj) {
-						exp ? res.status(201).json(exp) : res.sendStatus(404);
-					})
-				})
-			})
-		});
-	});
-
-	// app.post('/test', function(req, res) {
-	//   Project.getProjById(req.body.id, function(proj) {
-	//     Expense.getExpensesByProj()
-	//   })
-	// })
-
-	app.post('/api/register/budget', function(req, res) {
-		Budget.makeBudget(req.body.data, function(budg) {
-			budg ? res.status(201).json(budg) : res.sendStatus(404);
-		});
-	});
-
-	app.post('/api/register/budgets', function(req, res) {
-		console.log(req.body.id);
-		console.log(req.body.data);
-		var rows = req.body.data;
-		var length = rows.length;
-		var count = 0;
-		rows.forEach(function(row) {
-			Budget.makeBudget(Object.assign({}, row, {projs_id: req.body.id}), function(budg) {
-				if (!budg) {
-					res.sendStatus(403);
 				} else {
-					count++;
-					if (count === length) {
-						res.sendStatus(201);
-					}
-				}
-			});
-		});
-	});
-
-	//this route is used for mass importing expenses to a project via a csv file. req.body.data holds an array of objects, each
-	//representing a row in the csv.
-	app.post('/api/register/csv', function(req, res) {
-		var rows = req.body.data;
-		var length = rows.length;
-		var count = 0;
-
-		// Project.getProj(res.body.id)
-		//   .then(project => {
-		//     var cost = project.costToDate;
-
-		rows.forEach(function(row) {
-			Expense.makeExpense(Object.assign({}, row, {projs_id: req.body.id}), function(exp) {
-				if (!exp) {
-					res.sendStatus(403);
-				} else {
-					count++;
-					// cost+=exp.cost;
-					if (count === length) {
-						// project.save({costToDate: cost});
-						res.sendStatus(201);
-					}
-				}
-			});
-		});
-			// });
-
-	});
-
-	app.post('/api/get/budget', function(req, res) {
-		Budget.getBudget(req.body.projId, function(budgetArray) {
-			budgetArray ? res.status(201).json(budgetArray) : res.sendStatus(404);
-		});
-	});
-
-	//this project accepts an array of Project IDs (the projId propery of projects, not the primary id)
-	//held in req.body.projIds and returns all expenses attached to those projects
-	app.post('/api/get/expenses', function(req, res) {
-		var exps = [];
-		var count = 0;
-		req.body.projIds.forEach(function(projId) {
-			Project.getProj(projId, function(proj) {
-				count++;
-				if (proj) exps = exps.concat(proj.related('expenses'));
-				if (count === req.body.projIds.length) {        //only sends response when all of the asynchronous bookshelf requests are completed
-					res.status(201).json(exps);
+					res.sendStatus(404);
 				}
 			});
 		});
 	});
 
 
-	//given an organization name defined by req.body.orgName, this route sends back the organization object
-	//with its attached users and projects, or a 404 if no such organization is found
-	app.post('/api/get/org', function(req, res) {
-		Organization.getOrg(req.body.orgName, function(org) {
-			org ? res.status(201).json(org) : res.sendStatus(404);
-		});
-	});
-
-	//given a username defined by req.body.username, this route sends back the user object and the attached organization
-	//and projects, or a 404 if no such user is found. It also attaches a token to the response as this route is used
-	//for login
-	app.post('/api/get/user', function(req, res) {
-		User.getUser(req.body.username, function(user) {
-			if(!user) {
-				res.sendStatus(404);
+	//make an organization w/ name req.body.orgName and return it, WARNING doesn't check to see if that organization name is available
+	app.post('/api/register/org', (req, res) => {
+		Organization.makeOrg({ name: req.body.orgName }, org => {
+			if (org) {
+				res
+					.status(201)
+					.json(org);
+			
 			} else {
-				var token = generateToken(user);
-				res.status(201).json({user:user, token:token});
+				res.sendStatus(404);
 			}
 		});
 	});
 
-	//given a Project Id in req.body.projId, this route returns the project with related expenses, budgets, users and
-	//the organization that owns the project. Sends a 404 if no project is found
-	app.post('/api/get/proj', function(req, res) {
-		Project.getProj(req.body.projId, function(proj) {
-			proj ? res.status(201).json(proj) : res.sendStatus(404);
+
+	// Creates a new project with the provided data and returns it
+	//
+	// req.body should hold
+	// {
+	// 		costToDate: float,
+	// 		estimateToComplete: float,
+	// 		name: string,
+	// 		needs: string,
+	// 		orgs_id: int,       <------- foreign key for the organization the project is attached to
+	// 		projId: string,
+	// 		reqBudget: float,
+	// 		shootDates: string,
+	// 		status: string,
+	// 		type: string
+	// }
+	app.post('/api/register/project', (req, res) => {
+		Project.makeProj(req.body, proj => {
+			if (proj) {
+				res
+					.status(201)
+					.json(proj);
+
+			} else {
+				res.sendStatus(404);
+			}
 		});
 	});
 
-	//not used
-	app.post('/api/proj/users', function(req, res) {
-		//expects an object of {projs_id:[users_id1,users_id2]} key/value pairs in an object under req.body.data
-		var len = Object.keys(req.body.data).length;
-		var count = 0;
-		for (var key in req.body.data) {
-			req.body.data[key].forEach(function(userKey) {
-				new ProjUser({projs_id: key - 0, users_id: userKey - 0}).save().then(function(){
-					count++;
-					if (count === len - 1) {
-						res.sendStatus(201);
+
+	// makes a user with supplied criteria and returns the user model
+	// if a user with that username already exists return a 403
+	//
+	// req.body should be
+	// {
+	//    orgs_id: int
+	//    password: string,
+	//    perm: int,
+	//    username: string,
+	// }
+	app.post('/api/register/user', (req, res) => {
+		User.getUser(req.body.username, user => {
+			if (user) {
+				res.sendStatus(403);
+			
+			} else {
+				User.makeUser(req.body, user => {
+					if(user) {
+						res
+							.status(201)
+							.json(user);
+					
+					} else {
+						res.sendStatus(500);
 					}
 				});
-			});
-		}
+			}
+		});
 	});
+	
 
-	//check to see if a token exists
-	//if a token exists, redirect to dashboard
-	// - send a response object to the client that routes to login page with
-	// user login information
 
-	//given the primary id of an expense by req.body.id, and any key-value pairs to be changed in req.body.data,
-	//this route updates the referenced expense. If it is not found, this sends back a 404.
-	app.post('/api/update/expense', function(req, res) {
-		console.log('In /api/update/expense ', req.body.data);
-		Expense.getExpense(req.body.data.singleExpense.id, function(exp) {
-			exp.save(req.body.data.singleExpense).then(function(exp) {
-				Project.getProjById(req.body.data.singleExpense.projs_id, function(proj) {
-					Expense.getExpensesByProj(proj.id, function(exps) {
-						var cost = 0;
-						exps.forEach(function(ex) {
-							cost = cost + ex.get("cost");
+	//--------------------------------
+	//
+	//					UPDATE DATA
+	//
+	//--------------------------------
+
+	//Takes a list of budgets and, one by one, updates the database accordingly
+	//If every update succeeds, sends a 201 response with an array of the new budgets.
+	//req.body should be [ budget1, budget2, budget3... ]
+	app.post('/api/update/budgets', (req, res) => {
+		let newBudgets = [];
+
+		req.body.forEach(updatedBudget => {
+			Budget.getSingleBudget(updatedBudget.id, budget => {
+				if (budget) {
+					budget
+						.save(updatedBudget)
+						.then(newBudget => {
+							newBudgets.push(newBudget);
+							
+							if (newBudgets.length == req.body.length) {
+								res
+									.status(201)
+									.json(newBudgets);
+							}
 						});
-						var date = new Date();
-						var date = date.format('yyyy/mm/dd');
-						proj.save({costToDate: cost, lastEdited: date}).then(function(proj) {
-							res.status(201).json(exp);
-						});
-					});
-				});
-			});
-		});
-	});
 
-	//given the Project ID of a project by req.body.projId, and any key-value pairs to be changed in req.body.data,
-	//this route updates the referenced project. If it is not found, this sends back a 404.
-	app.post('/api/update/proj', function(req, res) {
-		Project.getProj(req.body.projId, function(proj) {
-			proj ? proj.save(req.body.data).then(function(proj) {
-				res.status(201).json(proj);
-			}) : res.sendStatus(404);
-		});
-	});
-
-	//given the username of a user by req.body.username, and any key-value pairs to be changed in req.body.data,
-	//this route updates the referenced expense. If it is not found, this sends back a 404.
-	app.post('/api/update/user', function(req, res) {
-		console.log("UPDATE REQ ", req.body);
-		var data = req.body.data;
-		User.getUser(data.username, function(user) {
-			user ? user.save(data).then(function (user) {
-				res.status(201).json(user);
-			}) : res.sendStatus(404);
-		});
-	});
-
-	//given the name of an organization by req.body.orgName, and any key-value pairs to be changed in req.body.data,
-	//this route updates the referenced organization. If it is not found, this sends back a 404.
-	app.post('/api/update/org', function(req, res) {
-		Org.getOrg(req.body.orgName, function(org) {
-			org ? org.save(req.body.data).then(function(org) {
-				res.status(201).json(org);
-			}) : res.sendStatus(404);
-		});
-	});
-
-//Takes a list of budget nodes and, one by one, updates the server accordingly
-// If every update succeeds, sends a 201 response with the new array of nodes.
-// data format is {list: [node1, node2, node3...]}
-	app.post('/api/update/budgets', function(req, res) {
-		var list  = req.body.list;
-		var length = list.length;
-		var count = 0;
-		var responseList = [];
-
-		list.forEach(function(node) {
-			Budget.getSingleBudget(node.id, budget => {
-				if (!budget) {
-					res.sendStatus(403);
 				} else {
-					budget.save(node).then(newBudgetNode => {
-						count++;
-						responseList.push(newBudgetNode);
-						if (count === length)
-							res.status(201).json(responseList);
-					});
+					res.sendStatus(404);
 				}
 			});
 		});
 	});
 
-	//given the primary id of a budget by req.body.id, this destroys that row in the table if found and sends it back. If not found,
-	//this route throws a 404
-	app.post('/api/remove/budget', function(req, res) {
-		Budget.getSingleBudget(req.body.id, function(budg) {
-			budg ? budg.destroy().then(function(budg) {
-				res.status(201).json(budg);
-			}) : res.sendStatus(404);
-		});
-	});
 
-	//given the name of an organization provided by req.body.orgName, this destroys that row in the table if found and sends it back.
-	//If not found, this route throws a 404
-	app.post('/api/remove/org', function(req, res) {
-		Org.getOrg(req.body.orgName, function(org) {
-			org ? org.destroy().then(function(org) {
-				res.status(201).json(org);
-			}) : res.sendStatus(404);
-		});
-	});
-
-	//given the username of a user provided by req.body.username, this destroys that row in the table if found and sends it back. If not found,
-	//this route throws a 404
-	app.post('/api/remove/user', function(req, res) {
-		User.getUser(req.body.username, function(user) {
-			user ? user.destroy().then(function(user) {
-				res.status(201).json(user);
-			}) : res.sendStatus(404);
-		});
-	});
-
-	//given the Project ID of a project by req.body.projID, this destroys that row in the table if found and sends it back. If not found,
-	//this route throws a 404
-	app.post('/api/remove/proj', function(req, res) {
-		Project.getProj(req.body.projId, function(proj) {
-			proj ? proj.destroy().then(function(proj) {
-				res.status(201).json(proj);
-			}) : res.sendStatus(404);
-		});
-	});
-
-	//given the primary id of an expense by req.body.id, this destroys that row in the table if found and sends it back. If not found,
-	//this route throws a 404
-	app.post('/api/remove/expense', function(req, res) {
-		console.log('In /api/remove/expense ', req.body.data)
-		Expense.getExpense(req.body.data.singleExpense.id, function(exp) {
-			exp.destroy().then(function(exp) {
-				Project.getProjById(req.body.data.singleExpense.projs_id, function(proj) {
-					Expense.getExpensesByProj(req.body.data.singleExpense.id, function(exps) {
-						var cost = 0;
-						exps.forEach(function(ex) {
-							cost = cost + ex.get("cost");
-						});
-						var date = new Date();
-						var date = date.format('yyyy/mm/dd');
-						proj.save({costToDate: cost, lastEdited: date}).then(function(proj) {
-							res.status(201).json(exp);
+	//updates the expense specified by req.body.id
+	app.post('/api/update/expense', (req, res) => {
+		Expense.getExpense(req.body.id, exp => {
+			if (exp) {
+				exp
+					.save(req.body)
+					.then(exp => {
+						updateProjectCost(exp.get('projs_id'), () => {
+							res
+								.status(201)
+								.json(exp);
 						});
 					});
-				});
-			});
+
+			} else {
+				res.sendStatus(404);
+			}
 		});
 	});
 
+
+	//update project specified by req.body.projId w/ key-value pairs in req.body.data
+	app.post('/api/update/proj', (req, res) => {
+		Project.getProj(req.body.projId, proj => {
+			if (proj) {
+				proj
+					.save(req.body)
+					.then(proj => (
+						res
+							.status(201)
+							.json(proj)
+					)); 
+
+			} else {
+				res.sendStatus(404);
+			}
+		});
+	});
+
+
+	//update a user account
+	app.post('/api/update/user', (req, res) => {
+		User.getUser(req.body.username, user => {
+			if (user) {
+				user
+					.save(req.body)
+					.then(user => (
+						res
+							.status(201)
+							.json(user)
+					));
+
+			} else {
+				res.sendStatus(404);
+			}
+		});
+	});
+
+
+
+
+	//--------------------------------
+	//
+	//					DELETE DATA
+	//
+	//--------------------------------
+
+	//delete budget specified by req.body.id (its primary index) and send it
+	app.post('/api/remove/budget', (req, res) => {
+		Budget.getSingleBudget(req.body.id, budget => {
+			if (budget) {
+				budget
+					.destroy()
+					.then(budget => (
+						res
+							.status(201)
+							.json(budget)
+					));
+
+			} else {
+				res.sendStatus(404);
+			}
+		});
+	});
+
+
+	//delete expense specified by req.body.id (its primary index) and send it
+	app.post('/api/remove/expense', (req, res) => {
+		Expense.getExpense(req.body.id, exp => {
+			if (exp) {
+				exp
+					.destroy()
+					.then(exp => (
+						updateProjectCost(exp.get('projs_id'), () => (
+							res
+								.status(201)
+								.json(exp)
+						))
+					));
+
+			} else {
+				res.sendStatus(404);
+			}
+
+
+
+		});
+	});
 
 	//used upon a page reload. If the client has a valid token then this route will send back the username and password of the user
 	//defined by the token, or a 404 if the user in the token no longer exists
-	app.post('/api/post/token', function (req, res) {
-		// check header or url parameters or post parameters for token
-		var token = req.body.token || req.query.token;
-		if (!token) {
-			return res.status(401).json({
-				message: 'Must pass token'
-			});
-		} else {
-			// Check token that was passed by decoding token using secret
-			// ignoreExpiration, otherwise, login is hampered by error.
-			jwt.verify(token, "SSSHHHitsaSECRET", {ignoreExpiration:true}, function (err, user) {
-				console.log("Verified User ", user);
-				if (err) {
-					console.log(err);
-				} else {
-					//return user using the username from w/in JWTToken.
-					// send back the username and password to log user back in.
+	app.post('/api/post/token', (req, res) => {
+		if (req.body.token) {
+			jwt.verify(req.body.token, 'SSSHHHitsaSECRET', (err, user) => {
+				if (!err) {
 					User.getUser(user.username, function (user) {
 						if (!user) {
 							res.sendStatus(404);
@@ -479,8 +504,16 @@ module.exports = function routes(app) {
 							});
 						}
 					});
+
+				} else {
+					console.log(err);
 				}
 			});
+
+		} else {
+			res
+				.status(401)
+				.json({ message: 'Must pass token' });
 		}
 	});
 };

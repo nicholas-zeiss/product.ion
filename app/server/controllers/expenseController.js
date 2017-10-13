@@ -18,7 +18,7 @@ exports.getExpense = function(id, cb) {
 }
 
 exports.getExpensesByProj = function(id, cb) {
-	new Expense().query("where","projs_id","=",id).fetchAll().then(cb);
+	new Expense().query('where', 'projs_id', '=', id).fetchAll().then(cb);
 }
 
 exports.makeExpense = function(data, cb) {
