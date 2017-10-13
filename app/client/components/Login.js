@@ -1,3 +1,10 @@
+/**
+ *
+ *  Here we set up the login page
+ *
+**/
+
+
 import React from 'react';
 import { Link, browserHistory } from 'react-router';
 import ApiCall from '../utils/serverCalls';

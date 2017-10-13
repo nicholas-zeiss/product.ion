@@ -19,6 +19,9 @@ ApiCall.checkToken = token => axios.post('/token', { token });
 
 ApiCall.login = (username, password) => axios.post('/login', { username, password });
 
+//for creating a new organization/admin
+ApiCall.registerOrg = (orgName, username, password) => axios.post('/createOrganization', { orgName, username, password });
+
 //attach our token to all axios requests
 ApiCall.setToken = () => axios.defaults.headers.Authorization = 'Bearer ' + sessionStorage.token;
 
@@ -48,13 +51,9 @@ ApiCall.parseCSV = (data, id) => axios.post('/api/register/csv', { data, id });
 
 ApiCall.registerExpense = exp => axios.post('/api/register/expense', exp);
 
-ApiCall.registerOrg = orgName => axios.post('/api/register/org', { orgName });
-
-ApiCall.registerUser = (username, password, orgs_id, perm) => axios.post('/api/register/user', { username, password, orgs_id, perm });
+ApiCall.registerUser = (username, password, orgs_id, perm) => axios.post('/signup', { username, password, orgs_id, perm });
 
 ApiCall.registerProject = proj => axios.post('/api/register/project', proj);
-
-ApiCall.registrationCheck = (orgName, username) => axios.post('/api/register/check', {orgName, username});
 
 
 

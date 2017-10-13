@@ -20,15 +20,16 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../../app')));
 app.use('/api', expressJwt({ secret: 'SSSHHHitsaSECRET' }));
 
-//import our endpoints
-require('./routes.js')(app);
-
 
 //logging
 app.post('*', (req, res, next) => {
 	console.log('INCOMING REQUEST:', '\n', '\n', '\n', req.url, req.body);
 	next();
 });
+
+
+//import our endpoints
+require('./routes.js')(app);
 
 
 //catchall for bad urls

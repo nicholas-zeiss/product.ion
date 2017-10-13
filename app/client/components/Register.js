@@ -17,30 +17,37 @@ const Register = React.createClass({
 	resetErrorMessages() {
 		this.props.resetRegistrationMessages();
 	},
+
+
 	handleChange(e) {
 		this.setState({[e.target.name]: e.target.value});
 	},
+
+
 	handlePassChange(e) {
 		if (this.validatePass() === 'warning') {
-			this.props.registrationError(4, 'Password must be longer than 6 characters');
+			this.props.registrationPasswordError('Password must be longer than 6 characters');
+		
 		} else {
 			this.props.resetRegistrationMessages();
 		}
+		
 		this.setState({[e.target.name]:e.target.value});
 	},
-	validatePass() {
-		const pass = this.state.pass;
 
+
+	validatePass() {
 		return this.state.pass.length < 6 ? 'warning' : 'success';
 	},
+
+
 	handleSubmit(event) {
 		event.preventDefault();
 		var { org, admin, pass } = this.state;
-
-		console.log(org, admin, pass)
-
-		this.props.checkRegistration(org, admin, pass);
+		this.props.registerOrg(org, admin, pass);
 	},
+
+
 	render() {
 		return (
 			<div id="loginPanel">
@@ -56,13 +63,12 @@ const Register = React.createClass({
 						 <ControlLabel id="loginLabel">Organization</ControlLabel>
 						 <FormControl type="text" value={this.state.org} placeholder="name it something catchy"
 								onChange={this.handleChange} name="org" required/>
-						 <p id="registerOrgMessage">{this.props.messages.registerOrg}</p>
 					 </FormGroup>
 					 <FormGroup controlId="userInput">
 						 <ControlLabel id="loginLabel">Admin</ControlLabel>
 						 <FormControl type="text" value={this.state.admin} placeholder="the company leader"
 								onChange={this.handleChange} name="admin" required/>
-						 <p id="registerUserMessage" className="">{this.props.messages.registerUser}</p>
+						 <p id="registerOrgMessage">{ this.props.messages.registerOrg }</p>
 					 </FormGroup>
 					 <div>
 						 <ControlLabel id="loginLabel">Password</ControlLabel>
@@ -71,7 +77,7 @@ const Register = React.createClass({
 									onChange={this.handlePassChange} required
 									name="pass"/>
 							 <FormControl.Feedback />
-							 <p id="registerPaswordMessage">{this.props.messages.registerPassword}</p>
+							 <p id="registerPasswordMessage">{this.props.messages.registerPassword}</p>
 							 <FormControl type="password" value={this.state.pass2} placeholder="Re-enter Password"
 									onChange={this.handlePassChange} name="pass2"/>
 							 <FormControl.Feedback />

@@ -6,13 +6,14 @@
 
 
 //Import Bookshelf controllers
-var Budget = require('./controllers/budgetController.js');
-var Expense = require('./controllers/expenseController.js');
-var Organization = require('./controllers/organizationController.js');
-var Project = require('./controllers/projectController.js');
-var User = require('./controllers/userController.js');
+const Budget = require('./controllers/budgetController.js');
+const Expense = require('./controllers/expenseController.js');
+const Organization = require('./controllers/organizationController.js');
+const Project = require('./controllers/projectController.js');
+const User = require('./controllers/userController.js');
 
-var jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 
 
@@ -76,7 +77,8 @@ module.exports = app => {
 	//as this is used for login, it also sends a JWT for authentication
 	app.post('/login', (req, res) => {
 		User.getUser(req.body.username, user => {
-			if (user) {
+			if (user && bcrypt.compareSync(req.body.password, user.attributes.password)) {
+
 				delete user.attributes.password;
 
 				res
@@ -119,6 +121,64 @@ module.exports = app => {
 				.status(401)
 				.json({ message: 'Must pass token' });
 		}
+	});
+
+
+
+	//----------------------------------
+	//
+	//				NEW ORGANIZATION
+	//
+	//----------------------------------
+
+	app.post('/createOrganization', (req, res) => {
+		//first check that org name and username are available
+		Organization.getOrg(req.body.orgName, org => {
+			User.getUser(req.body.username, user => {
+				if (org && user) {
+					res.sendStatus(400);
+
+				} else if (org) {
+					res.sendStatus(401);
+
+				} else if (user) {
+					res.sendStatus(403);
+
+				} else {
+					//org name and username are available
+					Organization.makeOrg({ name: req.body.orgName }, org => {
+						if (org) {
+							let user = {
+								orgs_id: org.attributes.id,
+								password: bcrypt.hashSync(req.body.password),
+								perm: 0,
+								username: req.body.username
+							};
+
+							User.makeUser(user, user => {
+								if (user) {
+									delete user.attributes.password;
+
+									res
+										.status(201)
+										.json({ 
+											org,
+											token: generateToken(user),
+											user
+										});
+								
+								} else {
+									res.sendStatus(500);
+								}
+							});
+						
+						} else {
+							res.sendStatus(500);
+						}
+					});
+				}
+			});
+		});
 	});
 
 
@@ -229,27 +289,6 @@ module.exports = app => {
 	});
 
 
-	//used for creating a new organization, checks whether organization name and admin username are available
-	app.post('/api/register/check', (req, res) => {
-		Organization.getOrg(req.body.orgName, org => {
-			User.getUser(req.body.username, user => {
-				if (org && user) {
-					res.sendStatus(400);
-
-				} else if (org) {
-					res.sendStatus(401);
-
-				} else if (user) {
-					res.sendStatus(403);
-
-				} else {
-					res.sendStatus(200);
-				}
-			});
-		});
-	});
-
-
 	//this route is used for mass importing expenses to a project via a csv file. req.body.data holds an array of expenses, each
 	//representing a row in the csv. req.body.id holds the project ID
 	app.post('/api/register/csv', function(req, res) {
@@ -308,21 +347,6 @@ module.exports = app => {
 	});
 
 
-	//make an organization w/ name req.body.orgName and return it, WARNING doesn't check to see if that organization name is available
-	app.post('/api/register/org', (req, res) => {
-		Organization.makeOrg({ name: req.body.orgName }, org => {
-			if (org) {
-				res
-					.status(201)
-					.json(org);
-			
-			} else {
-				res.sendStatus(404);
-			}
-		});
-	});
-
-
 	// Creates a new project with the provided data and returns it
 	//
 	// req.body should hold
@@ -368,8 +392,10 @@ module.exports = app => {
 				res.sendStatus(403);
 			
 			} else {
+				req.body.password = bcrypt.hashSync(req.body.password);
+
 				User.makeUser(req.body, user => {
-					if(user) {
+					if (user) {
 						res
 							.status(201)
 							.json(user);

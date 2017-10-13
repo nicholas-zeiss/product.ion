@@ -4,7 +4,8 @@ import ApiCall from '../utils/serverCalls';
 import store from '../store';
 import { browserHistory } from 'react-router';
 
-function posts(state = {}, action) {
+
+export default function posts(state = {}, action) {
 
 	switch (action.type) {
 
@@ -41,14 +42,10 @@ function posts(state = {}, action) {
 						}
 					});
 					
-					//update browser location
 					browserHistory.push(`/dashboard/${res.data.user.org.name.replace(/ /g, '')}`);
 
 				})
-				.catch(err => {
-
-					console.error(err);
-					
+				.catch(err => {					
 					store.dispatch({
 						type:'SET_LOGIN_MESSAGE',
 						message: 'Invalid username/password',
@@ -58,6 +55,12 @@ function posts(state = {}, action) {
 		
 			break;
 			
+		
+		//clears session and app state
+		case 'LOGOUT':
+			sessionStorage.clear();
+			return {};
+
 
 		//used after a page reload when a token is present
 		case 'REFRESH_LOGIN':
@@ -83,7 +86,6 @@ function posts(state = {}, action) {
 					
 				})
 				.catch(err => {
-					//invalid token
 					console.error(err);
 				});
 			
@@ -91,95 +93,71 @@ function posts(state = {}, action) {
 
 
 
-		case 'REGISTRATION_CHECK':
+		//---------------------------------------
+		//							SIGN UP
+		//---------------------------------------
+
+		//updates state with info of new organization/admin
+		case 'HYDRATE_ORG':
+			return Object.assign({}, state, action.organization);
+
+
+		//register a new organization
+		case 'REGISTER_ORG':
 			ApiCall
-				.registrationCheck(action.orgName, action.username)
+				.registerOrg(action.orgName, action.username, action.password)
 				.then(res => {
+
+					sessionStorage.token = res.data.token;
+					ApiCall.setToken();
+
+					let user = {
+						name: res.data.user.username, 
+						perm: res.data.user.perm
+					};
+
+					let organization = {
+						id: res.data.org.id,
+						orgName: res.data.org.name,
+						user: user,
+						users: [ user ]
+					};
+
 					store.dispatch({
-						type: 'ADD_NEW_ORG',
-						orgName: action.orgName,
-						username: action.username,
-						password: action.password
+						type: 'HYDRATE_ORG',
+						organization
 					});
+
+					browserHistory.push(`/dashboard/${organization.orgName.replace(/ /g, '')}`);
+
 				})
 				.catch(err => {
-					var message='', target=0;
-					switch (err.response.status) {
-					case 400:
-						target=3;
-						message = ['Sorry, that organization name is taken', 'Sorry, that username is taken'];
-						break;
-					case 401:
+										
+					let message = '';
+					
+					if (err.status == 400) {
+						message = 'Sorry, both that organization name and username are taken';
+					} else if (err.status == 401) {
 						message = 'Sorry, that organization name is taken';
-						target = 0;
-						break;
-					case 403:
+					} else if (err.status == 403) {
 						message = 'Sorry, that username is taken';
-						target = 1;
-						break;
-					default:
-						console.error(err);
 					}
-					store.dispatch({ type: 'REGISTRATION_ERROR', target: target, message: message });
+
+					store.dispatch({
+						type: 'REGISTRATION_ERROR',
+						message: message
+					});
 				});
 
 			break;
 
 
-		case 'ADD_NEW_ORG':
-			console.log('Lets get started. action is ', action);
-			ApiCall.registerOrg(action.orgName)
-				.catch(function (err) {
-					console.error(err);
-				})
-				.then(function (res) {
-						 if (res.status === 201) {
-						console.log('Step 2 complete. Organization is registered. res is ', res);
-						var orgData = res.data;
-
-						//create a new user with Admin powers (the 0)
-						ApiCall.registerUser(action.username, action.password, res.data.id, 0)
-							.catch(function (err) {
-								console.error(err);
-							})
-							.then(function (res) {
-								if (res.status === 201) {
-									console.log('Building an object with ', orgData);
-									var organization = {
-										id: orgData.id,
-										orgName: orgData.name,
-										user: {name: res.data.username, perm: res.data.perm},
-										users: [{name: res.data.username, perm: res.data.perm}]
-									};//build data object with responses from both APIcalls.
-									console.log('Successful server chain. Hydrating an organization with data. ', organization);
-									store.dispatch({
-										type: 'HYDRATE_ORG',
-										organization
-									});
-									var joinedName = organization.orgName.split(' ').join('');
-									browserHistory.push(`/dashboard/${joinedName}`);
-								} else {
-									console.log('Big error. Res is ', res);
-								}
-							});
-					}
-				});
-			break;
-
-
-		case 'HYDRATE_ORG':
-			console.log('state is, ', state, '\naction is ', action);
-			return action.organization;
 
 
 		case 'ADD_NEW_USER':
-			console.log('So you want to make a new user using ', action);
-			console.log('ORGS ID ', state.orgs_id);
 			var orgs_id = state.orgs_id;
-			console.log('registering user with data: ', action.username, action.password, orgs_id, action.perm);
 			ApiCall.registerUser(action.username, action.password, orgs_id, action.perm)
 				.then(function(res) {
-					console.log('USER RES ', res);
 					let userData = res.data;
 					if(res.status === 201) {
 						let user = {
@@ -197,7 +175,6 @@ function posts(state = {}, action) {
 			break;
 
 		case 'UPDATE_USER':
-			console.log('ding ding ding', action.user);
 			ApiCall.updateUser(action.user)
 				.then(res => {
 					console.log(res);
@@ -213,8 +190,6 @@ function posts(state = {}, action) {
 			ApiCall
 				.login(action.username, action.password)
 				.then(function(res) {
-					console.log('resword is ', res.data.user.password);
-					console.log('actionword is ', action.password);
 					if (res.data.user.password === action.password) {
 						ApiCall.changePassword(action.username, action.newPassword)
 							.then(function(res) {
@@ -230,25 +205,18 @@ function posts(state = {}, action) {
 					}
 				})
 				.catch((err) => {
-					console.log('Reducers-CHANGE_PASSWORD: res is', err);
+					console.err(err);
 				});
 
 			break;
 
 
 		case 'SET_USERS':
-			console.log('setting users', action.users);
 			return Object.assign({}, state, {users: action.users});
-
-
-		case 'LOGOUT':
-			sessionStorage.removeItem('token');
-			return {};
 
 	}
 
+	//default
 	return state;
 }
-
-export default posts;
 
