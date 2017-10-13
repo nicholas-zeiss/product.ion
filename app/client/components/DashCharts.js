@@ -122,7 +122,7 @@ const DashCharts = React.createClass({
 			      </FormControl>
 			    </FormGroup>
 				</Form>
-				<div style={{"margin-top":"10px"}} id="dashChartContainer"></div>
+				<div style={{"marginTop":"10px"}} id="dashChartContainer"></div>
 			</div>
 		)
 	}

@@ -66,3 +66,4 @@ if(module.hot) {
 
 export const history = syncHistoryWithStore(browserHistory, store);
 export default store;
+

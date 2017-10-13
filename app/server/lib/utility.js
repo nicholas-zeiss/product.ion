@@ -1,3 +1,5 @@
+
+
 var jwt = require('jsonwebtoken');
 // Generate Token using secret
 exports.generateToken = function(user) {

@@ -25,7 +25,7 @@ function posts(state=[], action) {
           default:
             console.error(err);
         }
-        store.dispatch({type: "REGISTRATION_ERROR", target:target, message: message});
+        store.dispatch({ type: "REGISTRATION_ERROR", target: target, message: message });
       })
       .then(function(res){
         if (res && res.status === 200) { //put this back when ready

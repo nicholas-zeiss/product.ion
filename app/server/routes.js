@@ -1,20 +1,35 @@
 /**
- *    In this file we create our endpoints for the server and link them to the database using our bookshelf models
- **/
+ *
+ *	Creates our API endpoints for interacting with the database
+ *
+**/
 
-//here we import our bookshelf models, controllers, and JSONWebToken
+
+//Import Bookshelf controllers
 var Budget = require('./controllers/budgetController.js');
 var Expense = require('./controllers/expenseController.js');
 var Organization = require('./controllers/organizationController.js');
 var Project = require('./controllers/projectController.js');
 var ProjUser = require('./models/projUser.js');
 var User = require('./controllers/userController.js');
-var utils = require('./lib/utility.js');
+
 var jwt = require('jsonwebtoken');
-var DateFormat = require('./lib/DateFormat.js');
+
+
+function generateToken(user) {
+  var u = {
+   username: user.attributes.username,
+   id: user.id.toString(),
+  };
+  return token = jwt.sign(u, "SSSHHHitsaSECRET", {
+    expiresIn: 60 * 60 * 12 // expires in 12 hours; however, token expiration option is set to ignore.
+  });
+};
+
+
+module.exports = function routes(app) {
 //makes organization w/ name req.body.orgName and returns the organization model
 //if an org with that name already exists returns a 403
-module.exports = function routes(app){
 	app.post('/api/register/org', function(req, res){
 		Organization.makeOrg({name: req.body.orgName}, function(org){
 			if(!org) {
@@ -25,13 +40,16 @@ module.exports = function routes(app){
 		});
 	});
 
+
 	//when a user wishes to create a new organization we must check that an organization w/ that name
 	//does not already exist. We also check if the username for the admin tied to that organization is
 	//already in use
 	//expects req.body to hold orgName and username
 	app.post('/api/register/check', function(req, res) {
+		console.log(req.body)
 		Organization.getOrg(req.body.orgName, function(org) {
 			User.getUser(req.body.username, function(user) {
+				console.log(org, user)
 				if (org && user) {
 					res.sendStatus(400);
 				} else if (org) {
@@ -39,6 +57,7 @@ module.exports = function routes(app){
 				} else if (user) {
 					res.sendStatus(403);
 				} else {
+					console.log('good to go')
 					res.sendStatus(200);
 				}
 			});
@@ -251,7 +270,7 @@ module.exports = function routes(app){
 			if(!user) {
 				res.sendStatus(404);
 			} else {
-				var token = utils.generateToken(user);
+				var token = generateToken(user);
 				res.status(201).json({user:user, token:token});
 			}
 		});
