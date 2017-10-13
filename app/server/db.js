@@ -2,15 +2,13 @@
  *   This file instantiates our sql database using mysql, knex, and bookshelf
  **/
 
-var knex = require('knex')({
-  client: 'mysql',
+const path = require('path');
+const knex = require('knex')({
+  client: 'sqlite3',
   connection: {
-    host      : 'mysqlcluster11.registeredsite.com',
-    user      : 'yakadmin',
-    password  : '!Qaz2wsx3edc',
-    database  : 'yakkittyaks',
-    charset   : 'utf8'
-  }
+    filename: path.resolve(__dirname, './data/data.sqlite')
+  },
+  useNullAsDefault: true
 });
 
 // Here we use a Promise.all to handle table creation, doing it synchronously introduces conflicts where foreign keys
