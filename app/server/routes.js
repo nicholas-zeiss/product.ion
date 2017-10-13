@@ -36,10 +36,10 @@ function generateDate() {
 function generateToken(user) {
 	user = {
 		username: user.attributes.username,
-		id: user.id.toString(),
+		id: user.id
 	};
   
-	return jwt.sign(user, 'SSSHHHitsaSECRET', { expiresIn: 60 * 60 * 12 });
+	return jwt.sign(user, 'SSSHHHitsaSECRET', { expiresIn: '12h' });
 }
 
 
@@ -65,6 +65,62 @@ function updateProjectCost(projId, cb) {
 
 module.exports = app => {
 	//welcome to callback hell, may your visit be short
+
+	//----------------------------------
+	//
+	//				AUTHORIZATION
+	//
+	//----------------------------------
+
+	//given a username send back the user object, the organization of the user, and projects of the organization.
+	//as this is used for login, it also sends a JWT for authentication
+	app.post('/login', (req, res) => {
+		User.getUser(req.body.username, user => {
+			if (user) {
+				delete user.attributes.password;
+
+				res
+					.status(201)
+					.json({ user, token: generateToken(user) });
+			
+			} else {
+				res.sendStatus(404);
+			}
+		});
+	});
+
+
+	//used upon a page reload. If the client has a valid token then this route will send back the username and password of the user
+	//defined by the token, or a 404 if the user in the token no longer exists
+	app.post('/token', (req, res) => {
+		if (req.body.token) {
+			jwt.verify(req.body.token, 'SSSHHHitsaSECRET', (err, user) => {
+				if (err) {
+					console.log(err);
+
+				} else {
+					User.getUser(user.username, function (user) {
+						if (user) {
+							delete user.attributes.password;
+
+							res
+								.status(200)
+								.json(user);
+						
+						} else {
+							res.sendStatus(404);
+						}
+					});
+				}
+			});
+
+		} else {
+			res
+				.status(401)
+				.json({ message: 'Must pass token' });
+		}
+	});
+
 
 
 	//----------------------------------
@@ -134,22 +190,6 @@ module.exports = app => {
 			if (proj) {
 				res.status(201).json(proj);
 
-			} else {
-				res.sendStatus(404);
-			}
-		});
-	});
-
-
-	//given a username send back the user object, the organization of the user, and projects of the organization.
-	//as this is used for login, it also sends a JWT for authentication
-	app.post('/api/get/user', (req, res) => {
-		User.getUser(req.body.username, user => {
-			if(user) {
-				res
-					.status(201)
-					.json({ user, token: generateToken(user) });
-			
 			} else {
 				res.sendStatus(404);
 			}
@@ -406,11 +446,11 @@ module.exports = app => {
 			if (proj) {
 				proj
 					.save(req.body)
-					.then(proj => (
+					.then(proj => {
 						res
 							.status(201)
-							.json(proj)
-					)); 
+							.json(proj);
+					}); 
 
 			} else {
 				res.sendStatus(404);
@@ -425,11 +465,11 @@ module.exports = app => {
 			if (user) {
 				user
 					.save(req.body)
-					.then(user => (
+					.then(user => {
 						res
 							.status(201)
-							.json(user)
-					));
+							.json(user);
+					});
 
 			} else {
 				res.sendStatus(404);
@@ -452,11 +492,11 @@ module.exports = app => {
 			if (budget) {
 				budget
 					.destroy()
-					.then(budget => (
+					.then(budget => {
 						res
 							.status(201)
-							.json(budget)
-					));
+							.json(budget);
+					});
 
 			} else {
 				res.sendStatus(404);
@@ -471,13 +511,13 @@ module.exports = app => {
 			if (exp) {
 				exp
 					.destroy()
-					.then(exp => (
-						updateProjectCost(exp.get('projs_id'), () => (
+					.then(exp => {
+						updateProjectCost(exp.get('projs_id'), () => {
 							res
 								.status(201)
-								.json(exp)
-						))
-					));
+								.json(exp);
+						});
+					});
 
 			} else {
 				res.sendStatus(404);
@@ -486,34 +526,5 @@ module.exports = app => {
 
 
 		});
-	});
-
-	//used upon a page reload. If the client has a valid token then this route will send back the username and password of the user
-	//defined by the token, or a 404 if the user in the token no longer exists
-	app.post('/api/post/token', (req, res) => {
-		if (req.body.token) {
-			jwt.verify(req.body.token, 'SSSHHHitsaSECRET', (err, user) => {
-				if (!err) {
-					User.getUser(user.username, function (user) {
-						if (!user) {
-							res.sendStatus(404);
-						} else {
-							res.status(201).json({
-								username: user.attributes.username,
-								password: user.attributes.password
-							});
-						}
-					});
-
-				} else {
-					console.log(err);
-				}
-			});
-
-		} else {
-			res
-				.status(401)
-				.json({ message: 'Must pass token' });
-		}
 	});
 };

@@ -18,6 +18,7 @@ const Dashboard = React.createClass({
   },
 
   componentWillMount() {
+    console.log('dashboard mounting')
     var orgName = this.props.organization.orgName;
     this.props.getOrgProjects(orgName);
   },

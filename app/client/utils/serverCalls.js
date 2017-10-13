@@ -9,16 +9,18 @@ import axios from 'axios';
 const ApiCall = {};
 
 
-
 //-------------------------------
 //        authorization
 //-------------------------------
 
-ApiCall.checkToken = token => axios.post('/api/post/token', { token });
+//when app reloads and a token is present, this is called to verify the token is valid and
+//associated with the current username
+ApiCall.checkToken = token => axios.post('/token', { token });
 
-ApiCall.login = (username, password) => axios.post('/api/get/user', { username, password });
+ApiCall.login = (username, password) => axios.post('/login', { username, password });
 
-ApiCall.logout = () => axios.post('/api/get/logout', {});
+//attach our token to all axios requests
+ApiCall.setToken = () => axios.defaults.headers.Authorization = 'Bearer ' + sessionStorage.token;
 
 
 

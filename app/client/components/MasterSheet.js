@@ -123,7 +123,7 @@ const MasterSheet = React.createClass({
 				    </FormGroup>
 					</Form>
 
-          <div style={{"margin-top":"10px"}} id="chartContainer"></div>
+          <div style={{"marginTop":"10px"}} id="chartContainer"></div>
 
           <Table striped bordered>
         		<thead>
