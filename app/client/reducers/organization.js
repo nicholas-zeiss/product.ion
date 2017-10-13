@@ -86,6 +86,7 @@ export default function posts(state = {}, action) {
 					
 				})
 				.catch(err => {
+					sessionStorage.clear();
 					console.error(err);
 				});
 			

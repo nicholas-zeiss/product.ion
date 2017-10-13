@@ -22,6 +22,7 @@ class Register extends React.Component {
 		};
 	}
 	
+	
 	resetErrorMessages() {
 		this.props.resetRegistrationMessages();
 	}
