@@ -19,7 +19,7 @@ const DashCharts = React.createClass({
 		if (!this.state.expenses) {
 			var ids = [];
 	    for (var i = 0; i < this.props.projects.length; i++) {
-	      ids.push(this.props.projects[i].projId);
+	      ids.push(this.props.projects[i].projID);
 	    }
 
 	    var temp = [Promise.resolve([this.setState.bind(this), this.sortBy]), ApiCall.getExpenses(ids)];

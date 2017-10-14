@@ -17,7 +17,7 @@ const MasterSheet = React.createClass({
 	componentDidMount() {
 		var ids = [];
     for (var i = 0; i < this.props.projects.length; i++) {
-      ids.push(this.props.projects[i].projId);
+      ids.push(this.props.projects[i].projID);
     }
 
     var temp = [Promise.resolve([this.setState.bind(this), this.parseData]), ApiCall.getExpenses(ids)];

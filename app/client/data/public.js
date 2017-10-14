@@ -68,7 +68,7 @@ export var codesToIndex = {
 
 export var judy = {
   projName: undefined,
-  projId: undefined,
+  projID: undefined,
   vertical: undefined,
   tier: undefined,
   numAssets: undefined,

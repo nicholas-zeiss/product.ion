@@ -9,16 +9,16 @@ const ProjectNode = React.createClass({
   },
 
   triggerProjectClick () {
-    this.props.getProject(this.props.project.projId);
+    this.props.getProject(this.props.project.projID);
     if (this.props.project.status === "Pitch") {
       this.props.switchModal(this.props.project);
     } else {
-      this.props.getExpenses(this.props.project.projId);
+      this.props.getExpenses(this.props.project.projID);
     }
   },
 
   render() {
-    const { name, projId, status, costToDate, estimateToComplete } = this.props.project;
+    const { name, projID, status, costToDate, estimateToComplete } = this.props.project;
     var username = '';
     var that = this;
     this.props.organization.users.forEach(function(user) {
@@ -28,7 +28,7 @@ const ProjectNode = React.createClass({
     return (
       <tr onClick={this.triggerProjectClick} id="readOnlyBody">
         <td>{name}</td>
-        <td>{projId}</td>
+        <td>{projID}</td>
         <td>{username}</td>
         <td>{status}</td>
         <td>{this.toDollar(estimateToComplete)}</td>

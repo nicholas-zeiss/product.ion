@@ -27,7 +27,7 @@ Promise.all([
 		table.float('cost');
 		table.string('description');
 		table.integer('glCode');
-		table.integer('projs_id').unsigned().references('id').inTable('projs');
+		table.integer('projID').unsigned().references('id').inTable('projects');
 		table.integer('quantity');
 		table.float('total');
 	}),
@@ -43,20 +43,20 @@ Promise.all([
 		table.string('description');
 		table.string('glCode');
 		table.string('method');
-		table.integer('projs_id').unsigned().references('id').inTable('projs');
+		table.integer('projID').unsigned().references('id').inTable('projects');
 		table.string('vendor');
 	}),
 
 
 	//holds organizations
-	knex.schema.createTableIfNotExists('orgs', table => {
+	knex.schema.createTableIfNotExists('organizations', table => {
 		table.increments('id').primary();
 		table.string('name').unique();
 	}),
 
 
 	//holds projects for organizations
-	knex.schema.createTableIfNotExists('projs', table => {
+	knex.schema.createTableIfNotExists('projects', table => {
 		table.increments('id').primary();
 		table.string('adminNotes', 1000);
 		table.string('approvals', 12).defaultTo('111111111111');
@@ -68,8 +68,8 @@ Promise.all([
 		table.date('lastEdited').defaultTo(Date.now());
 		table.string('name');
 		table.integer('numAssets').defaultTo(1);
-		table.integer('orgs_id').unsigned().references('id').inTable('orgs');
-		table.string('projId');
+		table.integer('orgID').unsigned().references('id').inTable('organizations');
+		table.string('projID');
 		table.date('releaseDate');
 		table.float('reqBudget').defaultTo(0);
 		table.date('startDate');
@@ -81,18 +81,18 @@ Promise.all([
 
 
 	//links projects to the users who created them
-	knex.schema.createTableIfNotExists('projs_users', table => {
-		table.integer('projs_id').references('id').inTable('projs');
-		table.integer('users_id').references('id').inTable('users');
+	knex.schema.createTableIfNotExists('projects_users', table => {
+		table.integer('projID').references('id').inTable('projects');
+		table.integer('userID').references('id').inTable('users');
 	}),
 
 
 	//holds user accounts w/ username, password, permission level, and the organization they belong to
 	knex.schema.createTableIfNotExists('users', table => {
 		table.increments('id').primary();
-		table.integer('orgs_id').unsigned().references('id').inTable('orgs');
+		table.integer('orgID').unsigned().references('id').inTable('organizations');
 		table.string('password');
-		table.integer('perm');
+		table.integer('permissions');
 		table.string('username').unique();
 	})
 ]);
@@ -100,9 +100,7 @@ Promise.all([
 
 const Bookshelf = require('bookshelf')(knex);
 
-
 Bookshelf.plugin('registry');
-
 
 module.exports = Bookshelf;
 

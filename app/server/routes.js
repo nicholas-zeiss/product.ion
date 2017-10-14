@@ -46,32 +46,31 @@ function generateToken(user) {
 
 //when an expense is added/removed from a project, use this to update project costToDate
 //takes a callback which is executed on the project model once updated
-function updateProjectCost(projId, cb) {
-	Project.getProjById(projId, proj => {
-		Expense.getExpensesByProj(projId, exps => {
+function updateProjectCost(projID, cb) {
+	Project.getProjectByID(projID, proj => {
+		Expense.getExpensesByProj(projID, exps => {
+			
 			let date = generateDate();
 			let cost = exps.reduce((cost, exp) => cost + exp.get('cost'), 0);
 
 			proj
 				.save({ costToDate: cost, lastEdited: date })
 				.then(cb);
+
 		});
 	});
 }
 
 
-//-----------------------------------
-//					API Endpoints
-//-----------------------------------
 
 module.exports = app => {
 	//welcome to callback hell, may your visit be short
 
-	//----------------------------------
+	//---------------------------------------
 	//
-	//				AUTHORIZATION
+	//						AUTHORIZATION
 	//
-	//----------------------------------
+	//---------------------------------------
 
 	//given a username send back the user object, the organization of the user, and projects of the organization.
 	//as this is used for login, it also sends a JWT for authentication
@@ -96,7 +95,9 @@ module.exports = app => {
 	//defined by the token, or a 404 if the user in the token no longer exists
 	app.post('/token', (req, res) => {
 		if (req.body.token) {
+			
 			jwt.verify(req.body.token, 'SSSHHHitsaSECRET', (err, user) => {
+			
 				if (err) {
 					console.log(err);
 
@@ -132,19 +133,18 @@ module.exports = app => {
 	//----------------------------------
 
 	app.post('/createOrganization', (req, res) => {
-		//first check that org name and username are available
 		Organization.getOrg(req.body.orgName, org => {
 			User.getUser(req.body.username, user => {
+				
+				//first check that org name and username are available
 				if (org && user) {
 					res.sendStatus(400);
-
 				} else if (org) {
 					res.sendStatus(401);
-
 				} else if (user) {
 					res.sendStatus(403);
-
 				} else {
+					
 					//org name and username are available
 					Organization.makeOrg({ name: req.body.orgName }, org => {
 						if (org) {
@@ -161,11 +161,7 @@ module.exports = app => {
 
 									res
 										.status(201)
-										.json({ 
-											org,
-											token: generateToken(user),
-											user
-										});
+										.json({ org, token: generateToken(user), user });
 								
 								} else {
 									res.sendStatus(500);
@@ -189,52 +185,13 @@ module.exports = app => {
 	//
 	//----------------------------------
 
-	//gets the budget for the project specified by the project ID (the projId propery of projects, not the primary index in the database)
-	app.post('/api/get/budget', (req, res) => {
-		Budget.getBudget(req.body.projId, budgetArray => {
-			if (budgetArray) {
-				res
-					.status(201)
-					.json(budgetArray);
-
-			} else {
-				res.sendStatus(404);
-			}
-		});
-	});
-
-
-	//this project accepts an array of project IDs (the projId propery of projects, not the primary index in the database)
-	//and returns all expenses attached to those projects
-	app.post('/api/get/expenses', (req, res) => {
-		var exps = [];
-
-		req.body.projIds.forEach(projId => {
-			Project.getProj(projId, proj => {
-				if (proj) {				
-					exps.push(proj.related('expenses'));
-				
-					//only sends response when all of the asynchronous bookshelf requests are completed
-					if (exps.length == req.body.projIds.length) {
-						res
-							.status(201)
-							.json(exps);
-					}
-
-				} else {
-					res.sendStatus(404);
-				}
-			});
-		});
-	});
-
 
 	//given an organization name send back the organization object with its attached users and projects
-	app.post('/api/get/org', (req, res) => {
-		Organization.getOrg(req.body.orgName, org => {
+	app.get('/api/organization/:name', (req, res) => {
+		Organization.getOrg(req.params.name, org => {
 			if (org) {
 				res
-					.status(201)
+					.status(200)
 					.json(org);
 
 			} else {
@@ -245,14 +202,39 @@ module.exports = app => {
 
 
 	//given a project ID send the project with related expenses, budgets, users and organization
-	app.post('/api/get/proj', (req, res) => {
-		Project.getProj(req.body.projId, proj => {
+	app.get('/api/project/:projID', (req, res) => {
+		Project.getProj(req.params.projID, proj => {
 			if (proj) {
-				res.status(201).json(proj);
+				res
+					.status(200)
+					.json(proj);
 
 			} else {
 				res.sendStatus(404);
 			}
+		});
+	});
+
+
+	//given a list of project IDs send an array of projects with related expenses, budgets, users and organization
+	app.post('/api/projects', (req, res) => {
+		let projects = [];
+
+		req.body.projIDs.forEach(projID => {
+			Project.getProj(projID, proj => {
+				if (proj) {
+					projects.push(proj);
+
+					if (projects.length == req.body.projIDs.length) {
+						res
+							.status(200)
+							.json(projects);
+					}
+
+				} else {
+					res.sendStatus(404);
+				}
+			});
 		});
 	});
 
@@ -275,7 +257,7 @@ module.exports = app => {
 	//		quantity: int,
 	//		total: float
 	// }
-	app.post('/api/register/budget', (req, res) => {
+	app.post('/api/budget', (req, res) => {
 		Budget.makeBudget(req.body, budget => {
 			if (budget) {
 				res
@@ -291,7 +273,7 @@ module.exports = app => {
 
 	//this route is used for mass importing expenses to a project via a csv file. req.body.data holds an array of expenses, each
 	//representing a row in the csv. req.body.id holds the project ID
-	app.post('/api/register/csv', function(req, res) {
+	app.post('/api/csv', function(req, res) {
 		let count = 0;
 
 		req.body.data.forEach(exp => {
@@ -301,7 +283,6 @@ module.exports = app => {
 				if (exp) {
 					count++;
 
-					//only sends response when all of the asynchronous bookshelf requests are completed
 					if (count == req.body.datalength) {
 						res.sendStatus(201);
 					}
@@ -331,7 +312,7 @@ module.exports = app => {
 	//    vendor: string,
 	//    vertical: string
 	// }
-	app.post('/api/register/expense', (req, res) => {
+	app.post('/api/expense', (req, res) => {
 		Expense.makeExpense(req.body, exp => {
 			updateProjectCost(req.body.projs_id, () => {
 				if (exp) {
@@ -356,13 +337,13 @@ module.exports = app => {
 	// 		name: string,
 	// 		needs: string,
 	// 		orgs_id: int,       <------- foreign key for the organization the project is attached to
-	// 		projId: string,
+	// 		projID: string,
 	// 		reqBudget: float,
 	// 		shootDates: string,
 	// 		status: string,
 	// 		type: string
 	// }
-	app.post('/api/register/project', (req, res) => {
+	app.post('/api/project', (req, res) => {
 		Project.makeProj(req.body, proj => {
 			if (proj) {
 				res
@@ -386,7 +367,7 @@ module.exports = app => {
 	//    perm: int,
 	//    username: string,
 	// }
-	app.post('/api/register/user', (req, res) => {
+	app.post('/api/user', (req, res) => {
 		User.getUser(req.body.username, user => {
 			if (user) {
 				res.sendStatus(403);
@@ -466,9 +447,9 @@ module.exports = app => {
 	});
 
 
-	//update project specified by req.body.projId w/ key-value pairs in req.body.data
+	//update project specified by req.body.projID w/ key-value pairs in req.body.data
 	app.post('/api/update/proj', (req, res) => {
-		Project.getProj(req.body.projId, proj => {
+		Project.getProj(req.body.projID, proj => {
 			if (proj) {
 				proj
 					.save(req.body)

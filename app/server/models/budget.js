@@ -1,11 +1,20 @@
-var Bookshelf = require('../db.js');
+/**
+ *
+ *  Here we set up a a Bookshelf model for budgets
+ *
+**/
+
+
+const Bookshelf = require('../db.js');
+
 require('./project.js');
 
-var Budget = Bookshelf.Model.extend({
-  tableName: 'budgets',
-	proj: function() {
-		return this.belongsTo('Project', 'projs_id');
-	}
-});
 
-module.exports = Bookshelf.model('Budget', Budget);
+module.exports = Bookshelf.model('Budget', Bookshelf.Model.extend({
+	tableName: 'budgets',
+	
+	project: function() {
+		return this.belongsTo('Project', 'projID');
+	}
+}));
+

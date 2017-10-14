@@ -1,11 +1,5 @@
-// import { LOGIN_ATTEMPT, LOGIN_FAILED, LOGIN_SUCCESSFUL, CHANGE_FORM } from '../constants/AppConstants';
-//do we need these?
 
-//remove upon functional action flow
 
-//ORGANIZATION:
-
-//create a new organization
 export function registerOrg(orgName, username, password) {
 	return {
 		type: 'REGISTER_ORG',
@@ -14,6 +8,15 @@ export function registerOrg(orgName, username, password) {
 		password
 	};
 }
+
+export function hydrateOrg(data) {
+	return {
+		type: 'HYDRATE_ORG',
+		data
+	};
+}
+
+
 export function addNewOrg(orgName, username, password) {
 	return {
 		type: 'ADD_NEW_ORG',
@@ -85,13 +88,6 @@ export function clearProj() {
 //
 // }
 
-export function hydrateOrg(data) {
-	return {
-		type: 'HYDRATE_ORG',
-		data
-	};
-}
-
 export function login(username, password) {
 	return {
 		type: 'LOGIN',
@@ -134,17 +130,17 @@ export function getOrgProjects(orgName) {
 }
 
 
-export function getProjExpenses(projIds) {
+export function getProjExpenses(projIDs) {
 	return {
 		type: 'GET_PROJ_EXPENSES',
-		projIds
+		projIDs
 	};
 }
 
-export function getProject(projId) {
+export function getProject(projID) {
 	return {
 		type: 'GET_PROJECT',
-		projId
+		projID
 	};
 }
 
@@ -191,27 +187,27 @@ export function hydrateExpenses(projectId, id, expenses) {
 	};
 }
 
-export function postNewExpense(singleExpense, projId) {
+export function postNewExpense(singleExpense, projID) {
 	return {
 		type: 'NEW_EXPENSE',
 		singleExpense,
-		projId
+		projID
 	};
 }
 
-export function removeExpense(singleExpense, projId) {
+export function removeExpense(singleExpense, projID) {
 	return {
 		type: 'REMOVE_EXPENSE',
 		singleExpense,
-		projId
+		projID
 	};
 }
 
-export function updateExpense(singleExpense, projId) {
+export function updateExpense(singleExpense, projID) {
 	return {
 		type: 'UPDATE_EXPENSE',
 		singleExpense,
-		projId
+		projID
 	};
 }
 
@@ -280,10 +276,10 @@ export function postNewBudget(budget) {
 	};
 }
 
-export function getProjBudgets(projId) {
+export function getProjBudgets(projID) {
 	return {
 		type: 'GET_PROJECT_BUDGETS',
-		projId
+		projID
 	};
 }
 

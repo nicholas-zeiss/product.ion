@@ -66,7 +66,7 @@ const Dashboard = React.createClass({
     var getProj = this.getProj;
     var ids = [];
     this.props.projects.forEach(function(proj) {
-      ids.push(proj.projId);
+      ids.push(proj.projID);
     });
     ApiCall.getExpenses(ids).then(function(res) {
       console.log(res);
@@ -79,7 +79,7 @@ const Dashboard = React.createClass({
         data.push([
           ' ',
           proj.name,
-          proj.projId,
+          proj.projID,
           proj.type,
           proj.vertical,
           proj.tier,

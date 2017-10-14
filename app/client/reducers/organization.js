@@ -1,4 +1,8 @@
-
+/**
+ *
+ *  Reducers that manipulate organizations and their users
+ *
+**/
 
 import ApiCall from '../utils/serverCalls';
 import store from '../store';
@@ -154,7 +158,9 @@ export default function posts(state = {}, action) {
 
 
 
-
+		//---------------------------------------
+		//					USER MODIFICATIONS
+		//---------------------------------------
 		case 'ADD_NEW_USER':
 			var orgs_id = state.orgs_id;
 			ApiCall.registerUser(action.username, action.password, orgs_id, action.perm)

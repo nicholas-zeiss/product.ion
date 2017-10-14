@@ -37,13 +37,13 @@ const PitchSummary = React.createClass({
               {adminControls("projName")}
             </InputGroup>
           </FormGroup>
-          <FormGroup controlId="formProjId" validationState = {judge.projId.vars.val}>
+          <FormGroup controlId="formprojID" validationState = {judge.projID.vars.val}>
             <ControlLabel>Project Id</ControlLabel>
             <InputGroup>
               <FormControl type="text" placeholder="Get this from accounting"
-                          name="projId" onChange={handleChange}
-                          value={this.props.projId} required />
-              {adminControls("projId")}
+                          name="projID" onChange={handleChange}
+                          value={this.props.projID} required />
+              {adminControls("projID")}
             </InputGroup>
           </FormGroup>
           <FormGroup controlId="formVertical" validationState = {judge.vertical.vars.val}>

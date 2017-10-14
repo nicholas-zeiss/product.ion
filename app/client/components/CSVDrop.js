@@ -14,7 +14,7 @@ const CSVDrop = React.createClass({
   // Its second argument is a customizable configuration object. Here, we set the download to true or else the blob file will not be fully downloaded.
   onDrop (file) {
     let that = this;
-    let id = this.props.expenses.projId;
+    let id = this.props.expenses.projID;
     console.log('file', file);
     Papa.parse(file[0].preview, {
       header: true,
@@ -46,7 +46,7 @@ const CSVDrop = React.createClass({
   render () {
     let projName="";
     this.props.projects.forEach((project) => {
-      if (project.projId === this.props.expenses.projId) {
+      if (project.projID === this.props.expenses.projID) {
         projName = project.name;
         return;
       }

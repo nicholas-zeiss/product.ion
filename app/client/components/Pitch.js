@@ -41,7 +41,7 @@ const Pitch = React.createClass({
       newPitch: data.id ? false : true,
       id: data.id || undefined,
       projName: data.name || "",
-      projId: data.projId || "",
+      projID: data.projID || "",
       vertical: data.vertical || "",
       tier: data.tier || "",
       numAssets: data.numAssets || "",
@@ -63,7 +63,7 @@ const Pitch = React.createClass({
       id: this.state.id,
       createdBy: this.props.organization.user.id,
       name: this.state.projName,
-      projId: this.state.projId,
+      projID: this.state.projID,
       vertical: this.state.vertical,
       tier: this.state.tier,
       numAssets: this.state.numAssets,
@@ -101,7 +101,7 @@ const Pitch = React.createClass({
   handleReject(e) {
     var data = this.buildPitch();
 
-    this.props.updateProject(data, this.props.projId);
+    this.props.updateProject(data, this.props.projID);
     this.closeModal();
   },
   handleApprove(e) {
@@ -110,7 +110,7 @@ const Pitch = React.createClass({
 
     console.log("Pitch approved. Pitch is ", data);
     this.state.newPitch ? this.props.postNewProject(data)
-        : this.props.updateProject(data, this.props.projId);
+        : this.props.updateProject(data, this.props.projID);
 
     this.closeModal();
   },
