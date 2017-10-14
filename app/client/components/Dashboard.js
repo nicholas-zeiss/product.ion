@@ -17,7 +17,6 @@ import DashCharts from './DashCharts';
 import NavBar from './NavBar';
 import Pitch from './Pitch';
 import ProjectNode from './ProjectNode';
-import Projects from './Projects';
 
 
 class Dashboard extends React.Component {
@@ -28,12 +27,6 @@ class Dashboard extends React.Component {
 			editProject: null,
 			chartsOpen: false
 		};
-	}
-
-
-	//on mounting hydrate the app state with all the needed projects
-	componentWillMount() {
-		this.props.getOrganizationProjects(this.props.organization.orgName);
 	}
 
 

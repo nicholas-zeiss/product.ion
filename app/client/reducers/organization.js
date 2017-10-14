@@ -43,6 +43,11 @@ export default function posts(state = {}, action) {
 						user: res.data.user, 
 						users: res.data.users
 					});
+
+					store.dispatch({
+						type: 'HYDRATE_PROJECTS',
+						projects: res.data.organization.projects
+					});
 					
 					browserHistory.push(`/dashboard/${res.data.organization.name.replace(/ /g, '')}`);
 
@@ -79,6 +84,11 @@ export default function posts(state = {}, action) {
 						orgName: res.data.organization.name,
 						user: res.data.user,
 						users: res.data.users
+					});
+
+					store.dispatch({
+						type: 'HYDRATE_PROJECTS',
+						projects: res.data.organization.projects
 					});
 
 					//update browser location

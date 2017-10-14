@@ -1,6 +1,44 @@
 
 
 
+export function getExpenses(projectId, id) {
+	return {
+		type: 'GET_EXPENSES',
+		projectId,
+		id
+	};
+}
+
+export function getOrganizationProjects(orgName) {
+	return {
+		type: 'GET_ORG_PROJECTS',
+		orgName
+	};
+}
+
+export function getProject(projID) {
+	return {
+		type: 'GET_PROJECT',
+		projID
+	};
+}
+
+export function getProjBudgets(projID) {
+	return {
+		type: 'GET_PROJECT_BUDGETS',
+		projID
+	};
+}
+
+export function getProjectExpenses(projIDs) {
+	return {
+		type: 'GET_PROJ_EXPENSES',
+		projIDs
+	};
+}
+
+
+
 
 
 export function addNewOrg(orgName, username, password) {
@@ -9,13 +47,6 @@ export function addNewOrg(orgName, username, password) {
 		orgName,
 		username,
 		password
-	};
-}
-
-export function changeNavKey(key) {
-	return {
-		type: 'CHANGE_NAV_KEY',
-		key
 	};
 }
 
@@ -29,16 +60,69 @@ export function addNewUser(username, password, orgs_id, perm) {
 	};
 }
 
-export function updateUser(user) {
+export function postNewBudget(budget) {
 	return {
-		type: 'UPDATE_USER',
-		user
+		type: 'POST_NEW_BUDGET',
+		budget
 	};
 }
 
-export function deleteUser(user) {
+export function postNewExpense(singleExpense, projID) {
 	return {
-		type: 'DELETE_USER',
+		type: 'NEW_EXPENSE',
+		singleExpense,
+		projID
+	};
+}
+
+export function postNewProject(pitch) {
+	return {
+		type: 'POST_NEW_PROJECT',
+		pitch
+	};
+}
+
+
+
+
+
+
+export function changeModal(name) {
+	return {
+		type: 'CHANGE_MODAL',
+		name
+	};
+}
+
+export function changeNavKey(key) {
+	return {
+		type: 'CHANGE_NAV_KEY',
+		key
+	};
+}
+
+export function updateExpense(singleExpense, projID) {
+	return {
+		type: 'UPDATE_EXPENSE',
+		singleExpense,
+		projID
+	};
+}
+
+export function updateMultipleBudgets(list) {
+	return {
+		type: 'UPDATE_MULTIPLE_BUDGETS',
+		list
+	};
+}
+
+export function updateProject(project) {
+	return {type: 'UPDATE_PROJECT', project};
+}
+
+export function updateUser(user) {
+	return {
+		type: 'UPDATE_USER',
 		user
 	};
 }
@@ -53,6 +137,9 @@ export function changePassword(username, password, newPassword) {
 }
 
 
+
+
+
 export function clearExp() {
 	return {
 		type: 'CLEAR_EXP'
@@ -65,73 +152,14 @@ export function clearProj() {
 	};
 }
 
-
-export function setUsers(users) {
-	return {
-		type: 'SET_USERS',
-		users
-	};
-}
-//PROJECTS:
-
-//get a list of an organizations Projects
-
-export function postNewProject(pitch) {
-	return {
-		type: 'POST_NEW_PROJECT',
-		pitch
-	};
+export function deleteBudgetNode(node) {
+	return {type:'DELETE_BUDGET_NODE', node};
 }
 
-export function getOrganizationProjects(orgName) {
+export function deleteUser(user) {
 	return {
-		type: 'GET_ORG_PROJECTS',
-		orgName
-	};
-}
-
-
-export function getProjExpenses(projIDs) {
-	return {
-		type: 'GET_PROJ_EXPENSES',
-		projIDs
-	};
-}
-
-export function getProject(projID) {
-	return {
-		type: 'GET_PROJECT',
-		projID
-	};
-}
-
-export function changeModal(name) {
-	return {
-		type: 'CHANGE_MODAL',
-		name
-	};
-}
-
-export function updateProject(project) {
-	return {type: 'UPDATE_PROJECT', project};
-}
-
-//Expenses:
-
-export function getExpenses(projectId, id) {
-	return {
-		type: 'GET_EXPENSES',
-		projectId,
-		id
-	};
-}
-
-
-export function postNewExpense(singleExpense, projID) {
-	return {
-		type: 'NEW_EXPENSE',
-		singleExpense,
-		projID
+		type: 'DELETE_USER',
+		user
 	};
 }
 
@@ -143,11 +171,12 @@ export function removeExpense(singleExpense, projID) {
 	};
 }
 
-export function updateExpense(singleExpense, projID) {
+
+
+export function setUsers(users) {
 	return {
-		type: 'UPDATE_EXPENSE',
-		singleExpense,
-		projID
+		type: 'SET_USERS',
+		users
 	};
 }
 
@@ -156,32 +185,8 @@ export function setCurrentExpenseProject(expenses) {
 }
 
 
-export function postNewBudget(budget) {
-	return {
-		type: 'POST_NEW_BUDGET',
-		budget
-	};
-}
-
-export function getProjBudgets(projID) {
-	return {
-		type: 'GET_PROJECT_BUDGETS',
-		projID
-	};
-}
 
 
-export function updateMultipleBudgets(list) {
-	return {
-		type: 'UPDATE_MULTIPLE_BUDGETS',
-		list
-	};
-}
-
-export function deleteBudgetNode(node) {
-	return {type:'DELETE_BUDGET_NODE', node};
-}
-// CSV PARSING:
 
 export function parseCSV(object, id) {
 	console.log('object ', object);
