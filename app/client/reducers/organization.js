@@ -18,12 +18,13 @@ export default function posts(state = {}, action) {
 		//					AUTHORIZATION
 		//---------------------------------------
 
-		//used to update the store with user/organization info
-		case 'HYDRATE_USER':
+		//updates state with info of new organization/admin
+		case 'HYDRATE_ORGANIZATION':
 			return Object.assign({}, state, {
+				orgID: action.orgID,
 				orgName: action.orgName,
-				orgs_id: action.orgId,
-				user: action.user
+				user: action.user,
+				users: action.users
 			});
 
 
@@ -36,24 +37,22 @@ export default function posts(state = {}, action) {
 					ApiCall.setToken();
 
 					store.dispatch({
-						type: 'HYDRATE_USER',
-						orgName: res.data.user.org.name,
-						orgId: res.data.user.org.id,
-						user: {
-							id: res.data.user.id,
-							perm: res.data.user.perm,
-							name: res.data.user.username
-						}
+						type: 'HYDRATE_ORGANIZATION',
+						orgID: res.data.organization.id,
+						orgName: res.data.organization.name,
+						user: res.data.user, 
+						users: res.data.users
 					});
 					
-					browserHistory.push(`/dashboard/${res.data.user.org.name.replace(/ /g, '')}`);
+					browserHistory.push(`/dashboard/${res.data.organization.name.replace(/ /g, '')}`);
 
 				})
-				.catch(err => {					
+				.catch(err => {	
+					console.error(err);
+
 					store.dispatch({
-						type:'SET_LOGIN_MESSAGE',
-						message: 'Invalid username/password',
-						className: 'errorMessage'
+						type:'SET_AUTH_MESSAGE',
+						message: 'Invalid username/password'
 					});
 				});
 		
@@ -75,23 +74,20 @@ export default function posts(state = {}, action) {
 				.then(res => {		
 
 					store.dispatch({
-						type: 'HYDRATE_USER',
-						orgName: res.data.org.name,
-						orgId: res.data.org.id,
-						user: {
-							id: res.data.id,
-							perm: res.data.perm,
-							name: res.data.username
-						}
+						type: 'HYDRATE_ORGANIZATION',
+						orgID: res.data.organization.id,
+						orgName: res.data.organization.name,
+						user: res.data.user,
+						users: res.data.users
 					});
 
 					//update browser location
-					browserHistory.push(`/dashboard/${res.data.org.name.replace(/ /g, '')}`);
+					browserHistory.push(`/dashboard/${res.data.organization.name.replace(/ /g, '')}`);
 					
 				})
 				.catch(err => {
-					sessionStorage.clear();
 					console.error(err);
+					sessionStorage.clear();
 				});
 			
 			break;
@@ -101,11 +97,6 @@ export default function posts(state = {}, action) {
 		//---------------------------------------
 		//							SIGN UP
 		//---------------------------------------
-
-		//updates state with info of new organization/admin
-		case 'HYDRATE_ORG':
-			return Object.assign({}, state, action.organization);
-
 
 		//register a new organization
 		case 'REGISTER_ORGANIZATION':
@@ -121,36 +112,32 @@ export default function posts(state = {}, action) {
 						perm: res.data.user.perm
 					};
 
-					let organization = {
-						id: res.data.org.id,
-						orgName: res.data.org.name,
+					store.dispatch({
+						type: 'HYDRATE_ORGANIZATION',
+						orgID: res.data.organization.id,
+						orgName: res.data.organization.name,
 						user: user,
 						users: [ user ]
-					};
-
-					store.dispatch({
-						type: 'HYDRATE_ORG',
-						organization
 					});
 
-					browserHistory.push(`/dashboard/${organization.orgName.replace(/ /g, '')}`);
+					browserHistory.push(`/dashboard/${res.data.organization.name.replace(/ /g, '')}`);
 
 				})
 				.catch(err => {
 										
-					let message = '';
+					let message;
 					
-					if (err.status == 400) {
+					if (err.response.status == 400) {
 						message = 'Sorry, both that organization name and username are taken';
-					} else if (err.status == 401) {
+					} else if (err.response.status == 401) {
 						message = 'Sorry, that organization name is taken';
-					} else if (err.status == 403) {
+					} else {
 						message = 'Sorry, that username is taken';
 					}
 
 					store.dispatch({
-						type: 'REGISTRATION_ERROR',
-						message: message
+						type: 'SET_AUTH_MESSAGE',
+						message
 					});
 				});
 

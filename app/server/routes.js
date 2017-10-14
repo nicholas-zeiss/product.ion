@@ -44,15 +44,26 @@ function generateToken(user) {
 }
 
 
+//given an organization model, return an array of the attached users stripped of
+//passwords
+function getUsersFromOrganization(org) {
+	return org.relations.users.map(user => ({ 
+		id: user.get('id'),
+		permissions: user.get('permissions'),
+		username: user.get('username')
+	}));
+}
+
+
 //when an expense is added/removed from a project, use this to update project costToDate
 //takes a callback which is executed on the project model once updated
 function updateProjectCost(projID, cb) {
-	Project.getProject(projID, proj => {
+	Project.getProject(projID, project => {
 		
 		let date = generateDate();
-		let cost = proj.relations.expenses.reduce((cost, exp) => cost + exp.get('cost'), 0);
+		let cost = project.relations.expenses.reduce((cost, exp) => cost + exp.get('cost'), 0);
 
-		proj
+		project
 			.save({ costToDate: cost, lastEdited: date })
 			.then(cb);
 
@@ -75,13 +86,30 @@ module.exports = app => {
 	app.post('/login', (req, res) => {
 		User.getUser(req.body.username, user => {
 			if (user && bcrypt.compareSync(req.body.password, user.attributes.password)) {
-				console.log(user.relations);
+
 				delete user.attributes.password;
 
-				res
-					.status(201)
-					.json({ user, token: generateToken(user) });
-			
+				Organization.getOrganization(user.relations.organization.get('name'), org => {
+					if (org) {
+
+						res
+							.status(200)
+							.json({ 
+								organization: org,
+								token: generateToken(user),
+								user: {
+									id: user.get('id'),
+									permissions: user.get('permissions'),
+									username: user.get('username')
+								},
+								users: getUsersFromOrganization(org)
+							});
+						
+					} else{
+						res.sendStatus(404);
+					}
+				});
+
 			} else {
 				res.sendStatus(404);
 			}
@@ -98,27 +126,43 @@ module.exports = app => {
 			
 				if (err) {
 					console.log(err);
+					res.sendStatus(401);
 
 				} else {
 					User.getUser(user.username, function (user) {
 						if (user) {
+
 							delete user.attributes.password;
 
-							res
-								.status(200)
-								.json(user);
+							Organization.getOrganization(user.relations.organization.get('name'), org => {
+								if (org) {
+
+									res
+										.status(200)
+										.json({ 
+											organization: org,
+											user: {
+												id: user.get('id'),
+												permissions: user.get('permissions'),
+												username: user.get('username')
+											},
+											users: getUsersFromOrganization(org)
+										});
+									
+								} else{
+									res.sendStatus(401);
+								}
+							});
 						
 						} else {
-							res.sendStatus(404);
+							res.sendStatus(401);
 						}
 					});
 				}
 			});
 
 		} else {
-			res
-				.status(401)
-				.json({ message: 'Must pass token' });
+			res.sendStatus(401);
 		}
 	});
 
@@ -137,15 +181,18 @@ module.exports = app => {
 				//first check that org name and username are available
 				if (org && user) {
 					res.sendStatus(400);
+				
 				} else if (org) {
 					res.sendStatus(401);
+				
 				} else if (user) {
 					res.sendStatus(403);
-				} else {
-					
+				
+				} else {	
 					//org name and username are available
 					Organization.makeOrganization({ name: req.body.orgName }, org => {
 						if (org) {
+							
 							let user = {
 								orgID: org.attributes.id,
 								password: bcrypt.hashSync(req.body.password),
@@ -155,11 +202,19 @@ module.exports = app => {
 
 							User.makeUser(user, user => {
 								if (user) {
-									delete user.attributes.password;
+									let user = {
+										id: user.get('id'),
+										permissions: user.get('permissions'),
+										username: user.get('username')
+									};
 
 									res
 										.status(201)
-										.json({ org, token: generateToken(user), user });
+										.json({ 
+											organization: org,
+											user: user,
+											users: [ user ]
+										});
 								
 								} else {
 									res.sendStatus(500);
@@ -342,7 +397,7 @@ module.exports = app => {
 	// 		type: string
 	// }
 	app.post('/api/project', (req, res) => {
-		Project.makeProj(req.body, proj => {
+		Project.makeProject(req.body, proj => {
 			if (proj) {
 				res
 					.status(201)

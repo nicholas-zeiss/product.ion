@@ -1,20 +1,6 @@
 
 
-export function registerOrganization(orgName, username, password) {
-	return {
-		type: 'REGISTER_ORGANIZATION',
-		orgName,
-		username,
-		password
-	};
-}
 
-export function hydrateOrg(data) {
-	return {
-		type: 'HYDRATE_ORG',
-		data
-	};
-}
 
 
 export function addNewOrg(orgName, username, password) {
@@ -66,11 +52,6 @@ export function changePassword(username, password, newPassword) {
 	};
 }
 
-export function logout() {
-	return {
-		type: 'LOGOUT'
-	};
-}
 
 export function clearExp() {
 	return {
@@ -83,27 +64,7 @@ export function clearProj() {
 		type: 'CLEAR_PROJ'
 	};
 }
-//gets the organization information
-// export function getOrg(orgName) {
-//
-// }
 
-export function login(username, password) {
-	return {
-		type: 'LOGIN',
-		username,
-		password
-	};
-}
-
-export function hydrateUser(user, orgName, orgId) {
-	return {
-		type: 'LOGIN',
-		orgId,
-		orgName,
-		user
-	};
-}
 
 export function setUsers(users) {
 	return {
@@ -144,19 +105,6 @@ export function getProject(projID) {
 	};
 }
 
-export function hydrateProjects(projects) {
-	return {
-		type: 'HYDRATE_PROJECTS',
-		projects
-	};
-}
-
-export function hydrateProjExpenses(expenses) {
-	return {
-		type: 'HYDRATE_PROJ_EXPENSES',
-		expenses
-	};
-}
 export function changeModal(name) {
 	return {
 		type: 'CHANGE_MODAL',
@@ -178,14 +126,6 @@ export function getExpenses(projectId, id) {
 	};
 }
 
-export function hydrateExpenses(projectId, id, expenses) {
-	return {
-		type: 'HYDRATE_EXPENSES',
-		projectId,
-		id,
-		expenses
-	};
-}
 
 export function postNewExpense(singleExpense, projID) {
 	return {
@@ -215,59 +155,6 @@ export function setCurrentExpenseProject(expenses) {
 	return {type: 'SET_CURRENT_EXPENSE_PROJECT', expenses};
 }
 
-//Modals:
-//MESSAGES:
-
-export function registrationError(message) {
-	return {
-		type: 'REGISTRATION_ERROR',
-		message
-	};
-}
-
-
-export function registrationPasswordError(message) {
-	return {
-		type: 'REGISTRATION_PASS_ERROR',
-		message
-	};
-}
-
-
-export function resetRegistrationMessages() {
-	return {
-		type: 'RESET_REGISTRATION_MESSAGES'
-	};
-}
-
-export function resetLoginMessage() {
-	return {
-		type: 'RESET_LOGIN_MESSAGE'
-	};
-}
-
-export function setLoginMessage(message, className) {
-	return {
-		type: 'SET_LOGIN_MESSAGE',
-		message,
-		className
-	};
-}
-
-export function setPasswordMessage(message) {
-	return {
-		type: 'SET_PASSWORD_MESSAGE',
-		message
-	};
-}
-
-export function resetPasswordMessage() {
-	return {
-		type: 'RESET_PASSWORD_MESSAGE'
-	};
-}
-
-//budgets:
 
 export function postNewBudget(budget) {
 	return {
@@ -283,13 +170,6 @@ export function getProjBudgets(projID) {
 	};
 }
 
-export function hydrateProjectBudgets(id, list) {
-	return {
-		type: 'HYDRATE_PROJECT_BUDGETS',
-		id,
-		list
-	};
-}
 
 export function updateMultipleBudgets(list) {
 	return {
@@ -318,11 +198,4 @@ export function badCSV(message) {
 		message
 	};
 }
-// Token
 
-export function refreshLogin(token) {
-	return {
-		type: 'REFRESH_LOGIN',
-		token
-	};
-}

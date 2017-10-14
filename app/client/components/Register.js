@@ -21,10 +21,10 @@ class Register extends React.Component {
 			pass2: ''
 		};
 	}
-	
-	
-	resetErrorMessages() {
-		this.props.resetRegistrationMessages();
+
+
+	componentWillMount() {
+		this.props.setAuthMessage('');
 	}
 
 
@@ -35,10 +35,10 @@ class Register extends React.Component {
 
 	handlePassChange(e) {
 		if (this.state.pass.length < 6) {
-			this.props.registrationPasswordError('Password must be longer than 6 characters');
+			this.props.setAuthMessage('Password must be longer than 6 characters');
 		
-		} else if (this.props.messages.registerPassword || this.props.messages.registerOrganization) {
-			this.props.resetRegistrationMessages();
+		} else if (this.props.messages.auth) {
+			this.props.setAuthMessage('');
 		}
 		
 		this.setState({ [ e.target.name ]: e.target.value });
@@ -47,7 +47,21 @@ class Register extends React.Component {
 
 	handleSubmit(e) {
 		e.preventDefault();
-		this.props.registerOrganization(this.state.organization, this.state.admin, this.state.pass);
+
+		if (this.state.pass == this.state.pass2) {
+			this.props.registerOrganization(this.state.organization, this.state.admin, this.state.pass);
+		} else {
+			this.props.setAuthMessage('Passwords do not match');
+		}
+	}
+
+
+	passValidation() {
+		if (this.state.pass.length < 6 || this.state.pass != this.state.pass2) {
+			return 'warning';
+		} else {
+			return 'success';
+		}
 	}
 
 
@@ -55,7 +69,7 @@ class Register extends React.Component {
 		return (
 			<div id='loginPanel'>
 				<Panel bsStyle='primary' header={ <h2>We're happy you want to do this</h2> }>
-					<Form onSubmit={ this.handleSubmit.bind(this) } onBlur={ this.resetErrorMessages.bind(this) }>
+					<Form onSubmit={ this.handleSubmit.bind(this) }>
 						
 						<Link to={'/login'}>
 							<Button bsSize='small' bsClass='createOrgButton'>
@@ -93,16 +107,12 @@ class Register extends React.Component {
 								name='admin'
 								required
 							/>
-							
-							<p id='registerOrgMessage'>
-								{ this.props.messages.registerOrg }
-							</p>
 						</FormGroup>
 						
 						<div>
 							<ControlLabel id='loginLabel'>Password</ControlLabel>
 							
-							<FormGroup controlId='passwordControl' validationState={ this.state.pass.length < 6 ? 'warning' : 'success' }>
+							<FormGroup controlId='passwordControl' validationState={ this.passValidation.apply(this) }>
 								<FormControl
 									type='password'
 									value={ this.state.pass }
@@ -114,19 +124,20 @@ class Register extends React.Component {
 								
 								<FormControl.Feedback />
 								
-								<p id='registerPasswordMessage'>
-									{ this.props.messages.registerPassword }
-								</p>
-								
 								<FormControl
 									type='password'
 									value={ this.state.pass2 }
 									placeholder='Re-enter Password'
-									onChange={ this.handlePassChange.bind(this) }
+									onChange={ this.handleChange.bind(this) }
 									name='pass2'
 								/>
 								
 								<FormControl.Feedback />
+								
+								<p id='registerPasswordMessage'>
+									{ this.props.messages.auth }
+								</p>
+
 							</FormGroup>
 						</div>
 						

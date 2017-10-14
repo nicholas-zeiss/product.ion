@@ -5,15 +5,17 @@
 import React from 'react';
 import { render } from 'react-dom';
 
+
 // import components
 import App from './components/App';
 import Dashboard from './components/Dashboard';
-import Login from './components/Login';
-import Register from './components/Register';
-import Settings from './components/Settings';
 import Expenses from './components/Expenses';
+import Login from './components/Login';
 import MasterSheet from './components/MasterSheet';
 import Projects from './components/Projects';
+import Register from './components/Register';
+import Settings from './components/Settings';
+
 
 // Set up routers
 import { browserHistory, IndexRoute, Route, Router } from 'react-router';

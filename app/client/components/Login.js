@@ -21,7 +21,7 @@ class Login extends React.Component {
 	}
 
 	componentWillMount() {
-		this.props.resetLoginMessage();
+		this.props.setAuthMessage('');
 		
 		if (sessionStorage.token) {
 			this.props.refreshLogin(sessionStorage.token);
@@ -29,13 +29,8 @@ class Login extends React.Component {
 	}
 
 
-	handleUserChange(e) {
-		this.setState({ username: e.target.value });
-	}
-
-
-	handlePassChange(e) {
-		this.setState({ password: e.target.value });
+	handleChange(e) {
+		this.setState({ [ e.target.name ]: e.target.value });
 	}
 
 
@@ -44,15 +39,12 @@ class Login extends React.Component {
 		this.props.login(this.state.username, this.state.password);
 	}
 
+
 	render() {
 		return (
 			<div id='loginPanel'>
 				<Panel bsStyle='primary' header={ <h2 bsClass='happy'>Happy Budgeting!</h2> }>
-					<Form
-						className=''
-						onSubmit={ this.handleSubmit.bind(this) }
-						onBlur={ this.props.resetLoginMessage }
-					>
+					<Form onSubmit={ this.handleSubmit.bind(this) }>
 
 						<Link to={ '/register' }>
 							<Button bsSize='small' bsClass='createOrgButton'>
@@ -69,7 +61,8 @@ class Login extends React.Component {
 								type='text'
 								value={ this.state.username }
 								placeholder='Enter text'
-								onChange={ this.handleUserChange.bind(this) }
+								onChange={ this.handleChange.bind(this) }
+								name='username'
 								required
 							/>
 						</FormGroup>
@@ -83,13 +76,14 @@ class Login extends React.Component {
 								type='password'
 								value={ this.state.password }
 								placeholder='•••••••••••'
-								onChange={ this.handlePassChange.bind(this) }
+								onChange={ this.handleChange.bind(this) }
+								name='password'
 								required
 							/>
 						</FormGroup>
 						
 						<div className='loginButton'>
-							<p id='loginMessage'>{ this.props.messages.login }</p>
+							<p id='loginMessage'>{ this.props.messages.auth }</p>
 						</div>
 						
 						<ButtonToolbar bsClass='loginButton'>
