@@ -4,9 +4,9 @@
 
 import React from 'react';
 import { render } from 'react-dom';
+import { browserHistory, IndexRoute, Route, Router } from 'react-router';
+import { Provider } from 'react-redux';
 
-
-// import components
 import App from './components/App';
 import Dashboard from './components/Dashboard';
 import Expenses from './components/Expenses';
@@ -16,11 +16,8 @@ import Projects from './components/Projects';
 import Register from './components/Register';
 import Settings from './components/Settings';
 
+import { history, store } from './store';
 
-// Set up routers
-import { browserHistory, IndexRoute, Route, Router } from 'react-router';
-import { Provider } from 'react-redux';
-import store, { history } from './store';
 
 // Provider tag exposes store to the entire application.
 // that is why we wrap the entire router in the Provider.

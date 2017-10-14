@@ -83,7 +83,7 @@ export function postNewProject(pitch) {
 	};
 }
 
-export function getOrgProjects(orgName) {
+export function getOrganizationProjects(orgName) {
 	return {
 		type: 'GET_ORG_PROJECTS',
 		orgName

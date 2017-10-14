@@ -1,5 +1,5 @@
 import ApiCall from "../utils/serverCalls";
-import store from "../store";
+import { store } from "../store";
 
 function projects(state = [], action) {
   switch (action.type) {

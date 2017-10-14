@@ -11,14 +11,14 @@ import Main from './Main';
 
 function mapStateToProps(state) {
 	return {
-		organization: state.organization,
-		projects: state.projects,
 		budgets: state.budgets,
+		csv: state.parseCSV,
 		expenses: state.expenses,
 		messages: state.messages,
 		modals: state.modals,
 		navBar: state.navBar,
-		csv: state.parseCSV
+		organization: state.organization,
+		projects: state.projects
 	};
 }
 

@@ -1,5 +1,5 @@
 import ApiCall from "../utils/serverCalls";
-import store from "../store";
+import { store } from "../store";
 import { browserHistory } from 'react-router';
 
 function budgets(state = {}, action) {

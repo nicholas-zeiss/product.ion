@@ -20,15 +20,20 @@ class Login extends React.Component {
 		};
 	}
 
+
+	//reset any old login/signup error message
 	componentWillMount() {
 		this.props.setAuthMessage('');
 		
+		//If client already has an authorization token, check it. If valid the client
+		//will route directly to the dashboard. If invalid the token will be destroyed.
 		if (sessionStorage.token) {
 			this.props.refreshLogin(sessionStorage.token);
 		}
 	}
 
 
+	//update state to reflect changes in username/password fields
 	handleChange(e) {
 		this.setState({ [ e.target.name ]: e.target.value });
 	}
@@ -47,7 +52,7 @@ class Login extends React.Component {
 					<Form onSubmit={ this.handleSubmit.bind(this) }>
 
 						<Link to={ '/register' }>
-							<Button bsSize='small' bsClass='createOrgButton'>
+							<Button bsClass='createOrgButton' bsSize='small'>
 								Create Organization
 							</Button>
 						</Link>
@@ -58,11 +63,11 @@ class Login extends React.Component {
 							</ControlLabel>
 							
 							<FormControl
+								name='username'
+								onChange={ this.handleChange.bind(this) }
+								placeholder='Enter text'
 								type='text'
 								value={ this.state.username }
-								placeholder='Enter text'
-								onChange={ this.handleChange.bind(this) }
-								name='username'
 								required
 							/>
 						</FormGroup>
@@ -73,11 +78,11 @@ class Login extends React.Component {
 							</ControlLabel>
 							
 							<FormControl
+								name='password'
+								onChange={ this.handleChange.bind(this) }
+								placeholder='•••••••••••'
 								type='password'
 								value={ this.state.password }
-								placeholder='•••••••••••'
-								onChange={ this.handleChange.bind(this) }
-								name='password'
 								required
 							/>
 						</FormGroup>
@@ -88,9 +93,9 @@ class Login extends React.Component {
 						
 						<ButtonToolbar bsClass='loginButton'>
 							<Button
-								type='submit'
-								bsStyle='primary'
 								bsSize='large'
+								bsStyle='primary'
+								type='submit'
 								block
 							>
 								Login

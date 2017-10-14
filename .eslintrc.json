@@ -4,7 +4,7 @@
 				"es6": true,
 				"node": true
 		},
-		"extends": "eslint:recommended",
+		"extends": [ "eslint:recommended", "plugin:react/recommended" ],
 		"parserOptions": {
 				"ecmaFeatures": {
 						"experimentalObjectRestSpread": true,
@@ -35,6 +35,16 @@
 						"error",
 						"always"
 				],
-				"no-console": "off"
+				"no-console": "off",
+				"react/prop-types": [ 0 ],
+				"react/jsx-curly-spacing": [ 2, { "when": "always", "children": true }],
+				"react/jsx-sort-props": [ 2, {
+				  "callbacksLast": false,
+				  "shorthandFirst": false,
+				  "shorthandLast": true,
+				  "ignoreCase": false,
+				  "noSortAlphabetically": false,
+				  "reservedFirst": false
+				}]
 		}
 }

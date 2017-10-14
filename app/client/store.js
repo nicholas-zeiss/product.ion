@@ -47,17 +47,9 @@ const defaultState = {
 //middleware for logging changes in state.
 // const middleware = applyMiddleware(logger());
 const middleware = applyMiddleware(routerMiddleware(browserHistory));
-
 const store = createStore(rootReducer, defaultState, middleware);
+const history = syncHistoryWithStore(browserHistory, store);
 
-//Not sure what this did, hopefully we can leave this out without any problems
-if(module.hot) {
-	module.hot.accept('./reducers/',() => {
-		const nextRootReducer = require('./reducers/index').default;
-		store.replaceReducer(nextRootReducer);
-	});
-}
 
-export const history = syncHistoryWithStore(browserHistory, store);
-export default store;
+export { history, store };
 

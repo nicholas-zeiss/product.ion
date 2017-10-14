@@ -23,20 +23,26 @@ class Register extends React.Component {
 	}
 
 
+	//clear any old warning messages about login/signup
 	componentWillMount() {
 		this.props.setAuthMessage('');
 	}
 
 
+	//update state to reflect changes to organization name/admin username fields
 	handleChange(e) {
 		this.setState({ [ e.target.name ]: e.target.value });
 	}
 
 
+	//update state and error message when first password field changes
 	handlePassChange(e) {
 		if (this.state.pass.length < 6) {
 			this.props.setAuthMessage('Password must be longer than 6 characters');
 		
+		} else if (this.state.pass != this.state.pass2) {
+			this.props.setAuthMessage('Passwords do not match');
+
 		} else if (this.props.messages.auth) {
 			this.props.setAuthMessage('');
 		}
@@ -50,15 +56,18 @@ class Register extends React.Component {
 
 		if (this.state.pass == this.state.pass2) {
 			this.props.registerOrganization(this.state.organization, this.state.admin, this.state.pass);
+		
 		} else {
 			this.props.setAuthMessage('Passwords do not match');
 		}
 	}
 
 
+	//to validate password forms
 	passValidation() {
 		if (this.state.pass.length < 6 || this.state.pass != this.state.pass2) {
 			return 'warning';
+		
 		} else {
 			return 'success';
 		}
@@ -68,11 +77,11 @@ class Register extends React.Component {
 	render() {
 		return (
 			<div id='loginPanel'>
-				<Panel bsStyle='primary' header={ <h2>We're happy you want to do this</h2> }>
+				<Panel bsStyle='primary' header={ <h2>{ 'Wer\'e happy you want to do this' }</h2> }>
 					<Form onSubmit={ this.handleSubmit.bind(this) }>
 						
-						<Link to={'/login'}>
-							<Button bsSize='small' bsClass='createOrgButton'>
+						<Link to={ '/login' }>
+							<Button bsClass='createOrgButton' bsSize='small'>
 								Login
 							</Button>
 						</Link>
@@ -85,11 +94,11 @@ class Register extends React.Component {
 							</ControlLabel>
 							
 							<FormControl 
+								name='organization'
+								onChange={ this.handleChange.bind(this) }
+								placeholder='name it something catchy'
 								type='text'
 								value={ this.state.organization }
-								placeholder='name it something catchy'
-								onChange={ this.handleChange.bind(this) }
-								name='organization'
 								required
 							/>
 						</FormGroup>
@@ -100,11 +109,11 @@ class Register extends React.Component {
 							</ControlLabel>
 							
 							<FormControl
+								name='admin'
+								onChange={ this.handleChange.bind(this) }
+								placeholder='the company leader'
 								type='text'
 								value={ this.state.admin }
-								placeholder='the company leader'
-								onChange={ this.handleChange.bind(this) }
-								name='admin'
 								required
 							/>
 						</FormGroup>
@@ -114,22 +123,22 @@ class Register extends React.Component {
 							
 							<FormGroup controlId='passwordControl' validationState={ this.passValidation.apply(this) }>
 								<FormControl
+									name='pass'
+									onChange={ this.handlePassChange.bind(this) }
+									placeholder='••••••••••'
 									type='password'
 									value={ this.state.pass }
-									placeholder='••••••••••'
-									onChange={ this.handlePassChange.bind(this) }
-									name='pass'
 									required
 								/>
 								
 								<FormControl.Feedback />
 								
 								<FormControl
+									name='pass2'
+									onChange={ this.handleChange.bind(this) }
+									placeholder='Re-enter Password'
 									type='password'
 									value={ this.state.pass2 }
-									placeholder='Re-enter Password'
-									onChange={ this.handleChange.bind(this) }
-									name='pass2'
 								/>
 								
 								<FormControl.Feedback />
@@ -143,9 +152,9 @@ class Register extends React.Component {
 						
 						<ButtonToolbar bsClass='loginButton'>
 							<Button
-								type='submit'
-								bsStyle='primary'
 								bsSize='large'
+								bsStyle='primary'
+								type='submit'
 								block
 							>
 								Create
