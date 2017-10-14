@@ -10,7 +10,7 @@ export default function messages(state = {}, action) {
 			return Object.assign({}, state, { username: action.message });
 
 		case 'BAD_CSV':
-			return Object.assign({}, state, {csv: action.message});
+			return Object.assign({}, state, { csv: action.message });
 
 		default:
 			return state;
