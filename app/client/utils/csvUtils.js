@@ -5,7 +5,7 @@
 **/
 
 
-const FIELDS = [
+const fields = [
 	'Project',
 	'Name',
 	'Project ID',
@@ -70,5 +70,5 @@ const expandExpenses = expenses => (
 );
 
 
-export { expandExpenses, FIELDS };
+export { expandExpenses, fields };
 

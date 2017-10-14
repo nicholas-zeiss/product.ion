@@ -25,15 +25,15 @@ import { history, store } from './store';
 const router = (
 	<Provider store={ store }>
 		<Router history={ history }>
-			<Route path='/' component={ App }>
+			<Route component={ App } path='/'>
 				<IndexRoute component={ Login }></IndexRoute>
-				<Route path='/register' component={ Register }></Route>
-				<Route path='/login' component={ Login }></Route>
-				<Route path='/dashboard/:orgName' component={ Dashboard }></Route>
-				<Route path='/expenses' component={ Expenses }></Route>
-				<Route path='/settings' component={ Settings }></Route>
-				<Route path='/mastersheet' component={ MasterSheet }></Route>
-				<Route path='/projects' component={ Projects }></Route>
+				<Route component={ Register } path='/register'></Route>
+				<Route component={ Login } path='/login'></Route>
+				<Route component={ Dashboard } path='/dashboard/:orgName'></Route>
+				<Route component={ Expenses } path='/expenses'></Route>
+				<Route component={ Settings } path='/settings'></Route>
+				<Route component={ MasterSheet } path='/mastersheet'></Route>
+				<Route component={ Projects } path='/projects'></Route>
 			</Route>
 		</Router>
 	</Provider>

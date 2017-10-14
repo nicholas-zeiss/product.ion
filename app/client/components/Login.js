@@ -48,7 +48,7 @@ class Login extends React.Component {
 	render() {
 		return (
 			<div id='loginPanel'>
-				<Panel bsStyle='primary' header={ <h2 bsClass='happy'>Happy Budgeting!</h2> }>
+				<Panel bsStyle='primary' header={ <h2>Happy Budgeting!</h2> }>
 					<Form onSubmit={ this.handleSubmit.bind(this) }>
 
 						<Link to={ '/register' }>

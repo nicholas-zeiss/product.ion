@@ -140,15 +140,15 @@ export function changePassword(username, password, newPassword) {
 
 
 
-export function clearExp() {
+export function clearExpenses() {
 	return {
-		type: 'CLEAR_EXP'
+		type: 'CLEAR_EXPENSES'
 	};
 }
 
-export function clearProj() {
+export function clearProjects() {
 	return {
-		type: 'CLEAR_PROJ'
+		type: 'CLEAR_PROJECTS'
 	};
 }
 

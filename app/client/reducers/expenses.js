@@ -70,10 +70,9 @@ function expenses(state = [], action) {
 			.catch(function(err) {
 				console.error(err);
 			});
-		case "CLEAR_EXP":
-			return {};
-		default:
-			return state;
+		case "CLEAR_EXPENSES":
+			return [];
+
 	}
 	return state;
 }

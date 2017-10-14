@@ -1,6 +1,6 @@
 /**
  *
- *  Component for the main view of the organization
+ *  Component for the home page of the organization
  *
 **/
 
@@ -11,7 +11,8 @@ import { Button, Modal, Panel, Table } from 'react-bootstrap';
 
 import Papa from 'papaparse';
 
-import { FIELDS, expandExpenses } from '../utils/csvUtils';
+import projectTableHeader from '../data/projectTableHeader';
+import { fields, expandExpenses } from '../utils/csvUtils';
 
 import DashCharts from './DashCharts';
 import NavBar from './NavBar';
@@ -58,7 +59,7 @@ class Dashboard extends React.Component {
 			return expenses;
 		}, []);
 
-		let csv = Papa.unparse({ FIELDS, data: expandExpenses(expenses) });
+		let csv = Papa.unparse({ fields, data: expandExpenses(expenses) });
 		
 		let hiddenElement = document.createElement('a');
 		hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
@@ -70,29 +71,18 @@ class Dashboard extends React.Component {
 
 	render() {
 		
-		//determine whether or not to show charts/which pitches are visible based off app state and
-		//the client account's permission level
-		let charts = this.state.chartsOpen ? <DashCharts { ...this.props }/> : null;
-		let pitchHeader = this.props.organization.user.permissions ? 'Your pitches awaiting approval:' : 'Pitches to be Approved';
-		
+		//only admins can view mastersheet, this changes as appropriate below
+		let mastersheet = null;
 
+		//determine which pitches are visible based off app state and the client account's permission level
+		let pitchHeader = this.props.organization.user.permissions ? 'Your pitches awaiting approval:' : 'Pitches to be Approved';
 		let pitches = this.props.projects.filter(proj => proj.status == 'Pitch');
 
-		//if not an admin account, client can only view pitches they created
 		if (this.props.organization.user.permissions != 0) {
+			//if not an admin account, client can only view pitches they created
 			pitches = pitches.filter(proj => proj.createdBy == this.props.organization.user.id);
-		}
-
-		pitches = pitches.map((pitch, idx) => (
-			<ProjectNode key={ idx } { ...this.props } project={ pitch } switchModal={ this.switchModal.bind(this) }/>
-		), this);
-
-
-		//show mastersheet if admin, determine the three most recently edited projects
-		let mastersheet = null;		
-		let mostRecentThree = null;
-
-		if (this.props.organization.user.perm == 0) {
+		
+		} else {
 			mastersheet =	(
 				<Link to='/mastersheet'>
 					<Button bsStyle='primary' style={ { 'float': 'right', 'marginRight': '5px' } }>Click for Master Sheet</Button>
@@ -100,13 +90,21 @@ class Dashboard extends React.Component {
 			);
 		}
 
-		if (this.props.projects.length > 0) {
+		pitches = pitches.map((pitch, idx) => (
+			<ProjectNode key={ idx } { ...this.props } project={ pitch } switchModal={ this.switchModal.bind(this) }/>
+		), this);
+
+
+		//determine the three most recently edited projects
+		let mostRecentThree = null;
+
+		if (this.props.projects.length) {
 			mostRecentThree = this.props.projects
 				.slice()
 				.sort((a, b) => a.lastEdited > b.lastEdited ? -1 : a.lastEdited < b.lastEdited ? 1 : 0)
 				.slice(0, 3)
-				.map((proj, idx) => (
-					<ProjectNode key={ idx } { ...this.props } project={ proj } switchModal={ this.switchModal }/>
+				.map((project, idx) => (
+					<ProjectNode key={ idx } { ...this.props } project={ project } switchModal={ this.switchModal }/>
 				), this);
 		}
 	
@@ -145,23 +143,13 @@ class Dashboard extends React.Component {
 							</Button>
 							
 							{ mastersheet }
-							{ charts }
+							{ this.state.chartsOpen ?  <DashCharts { ...this.props }/> : null }
 						</div>
 
 						<h3> Most Recently Edited Three Projects </h3>
 						
 						<Table bordered striped>
-							<thead>
-								<tr id='readOnlyHeader'>
-									<th> Name </th>
-									<th> Project ID </th>
-									<th> Created By </th>
-									<th> Project Status </th>
-									<th> Estimate to Complete </th>
-									<th> Cost to Date </th>
-								</tr>
-							</thead>
-							
+							{ projectTableHeader }
 							<tbody>{ mostRecentThree }</tbody>
 						</Table>
 
@@ -169,17 +157,7 @@ class Dashboard extends React.Component {
 							<h3>{ pitchHeader }</h3>
 							
 							<Table bordered striped>
-								<thead>
-									<tr id='readOnlyHeader'>
-										<th>Name</th>
-										<th>Project ID</th>
-										<th>Created By</th>
-										<th>Project Status</th>
-										<th>Estimate to Complete</th>
-										<th>Cost to Date</th>
-									</tr>
-								</thead>
-								
+								{ projectTableHeader }
 								<tbody>{ pitches }</tbody>
 							</Table>
 						</div>

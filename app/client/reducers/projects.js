@@ -86,7 +86,7 @@ function projects(state = [], action) {
 			console.log('hydrating ', action);
 			return Object.assign({}, state, {expenses: action.expenses});
 		
-		case "CLEAR_PROJ":
+		case "CLEAR_PROJECTS":
 			return [];
 		
 		case "GET_PROJ_EXPENSES":

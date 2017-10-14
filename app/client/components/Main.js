@@ -1,3 +1,5 @@
+
+
 import React from 'react';
 import { Link } from 'react-router';
 import { PageHeader } from 'react-bootstrap';
@@ -11,7 +13,7 @@ const Main = React.createClass({
     return (
       <div className="titleHeader">
         <Link to="/">
-          <div id="title"><a>product.ion</a></div>
+          <div id="title" style={ { 'color': 'white' } }>product.ion</div>
         </Link>
         { React.cloneElement(this.props.children, this.props) }
       </div>
