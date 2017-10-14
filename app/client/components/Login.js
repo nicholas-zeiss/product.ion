@@ -23,7 +23,8 @@ class Login extends React.Component {
 
 	//reset any old login/signup error message
 	componentWillMount() {
-		this.props.setAuthMessage('');
+		this.props.setPasswordMessage('');
+		this.props.setUserOrgMessage('');
 		
 		//If client already has an authorization token, check it. If valid the client
 		//will route directly to the dashboard. If invalid the token will be destroyed.
@@ -87,9 +88,9 @@ class Login extends React.Component {
 							/>
 						</FormGroup>
 						
-						<div className='loginButton'>
-							<p id='loginMessage'>{ this.props.messages.auth }</p>
-						</div>
+						<p id='loginMessage'>
+							{ this.props.messages.username }
+						</p>
 						
 						<ButtonToolbar bsClass='loginButton'>
 							<Button

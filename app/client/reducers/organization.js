@@ -56,7 +56,7 @@ export default function posts(state = {}, action) {
 					console.error(err);
 
 					store.dispatch({
-						type:'SET_AUTH_MESSAGE',
+						type:'SET_USER/ORG_MESSAGE',
 						message: 'Invalid username/password'
 					});
 				});
@@ -146,7 +146,7 @@ export default function posts(state = {}, action) {
 					}
 
 					store.dispatch({
-						type: 'SET_AUTH_MESSAGE',
+						type: 'SET_USER/ORG_MESSAGE',
 						message
 					});
 				});

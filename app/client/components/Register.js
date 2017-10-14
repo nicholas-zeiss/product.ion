@@ -25,28 +25,37 @@ class Register extends React.Component {
 
 	//clear any old warning messages about login/signup
 	componentWillMount() {
-		this.props.setAuthMessage('');
+		this.props.setPasswordMessage('');
+		this.props.setUserOrgMessage('');
 	}
 
 
-	//update state to reflect changes to organization name/admin username fields
-	handleChange(e) {
+	//update state to reflect changes to organization and admin name inputs to the state, 
+	//clear error message if one exists (error message is only generated on submit)
+	handleUserOrgChange(e) {
+		if (this.props.messages.username) {
+			this.props.setUserOrgMessage('');
+		}
+
 		this.setState({ [ e.target.name ]: e.target.value });
 	}
 
 
-	//update state and error message when first password field changes
+	//update state to reflect changes to password inputs, update error message
+	//as appropriate
 	handlePassChange(e) {
-		if (this.state.pass.length < 6) {
-			this.props.setAuthMessage('Password must be longer than 6 characters');
-		
-		} else if (this.state.pass != this.state.pass2) {
-			this.props.setAuthMessage('Passwords do not match');
+		let otherPass = e.target.name == 'pass' ? this.state.pass2 : this.state.pass;
 
-		} else if (this.props.messages.auth) {
-			this.props.setAuthMessage('');
+		if (e.target.value.length < 6) {
+			this.props.setPasswordMessage('Password must be longer than 6 characters');
+
+		} else if (e.target.value != otherPass) {
+			this.props.setPasswordMessage('Passwords do not match');
+
+		} else if (this.props.messages.password) {
+			this.props.setPasswordMessage('');
 		}
-		
+
 		this.setState({ [ e.target.name ]: e.target.value });
 	}
 
@@ -56,9 +65,6 @@ class Register extends React.Component {
 
 		if (this.state.pass == this.state.pass2) {
 			this.props.registerOrganization(this.state.organization, this.state.admin, this.state.pass);
-		
-		} else {
-			this.props.setAuthMessage('Passwords do not match');
 		}
 	}
 
@@ -95,7 +101,7 @@ class Register extends React.Component {
 							
 							<FormControl 
 								name='organization'
-								onChange={ this.handleChange.bind(this) }
+								onChange={ this.handleUserOrgChange.bind(this) }
 								placeholder='name it something catchy'
 								type='text'
 								value={ this.state.organization }
@@ -110,13 +116,17 @@ class Register extends React.Component {
 							
 							<FormControl
 								name='admin'
-								onChange={ this.handleChange.bind(this) }
+								onChange={ this.handleUserOrgChange.bind(this) }
 								placeholder='the company leader'
 								type='text'
 								value={ this.state.admin }
 								required
 							/>
 						</FormGroup>
+
+						<p id='registerUserOrgMessage'>
+							{ this.props.messages.username }
+						</p>
 						
 						<div>
 							<ControlLabel id='loginLabel'>Password</ControlLabel>
@@ -135,7 +145,7 @@ class Register extends React.Component {
 								
 								<FormControl
 									name='pass2'
-									onChange={ this.handleChange.bind(this) }
+									onChange={ this.handlePassChange.bind(this) }
 									placeholder='Re-enter Password'
 									type='password'
 									value={ this.state.pass2 }
@@ -144,7 +154,7 @@ class Register extends React.Component {
 								<FormControl.Feedback />
 								
 								<p id='registerPasswordMessage'>
-									{ this.props.messages.auth }
+									{ this.props.messages.password }
 								</p>
 
 							</FormGroup>

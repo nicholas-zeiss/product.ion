@@ -40,7 +40,7 @@ const Settings = React.createClass({
     this.setState({[e.target.name]: e.target.value});
   },
   switchModal () {
-    this.props.changeModal('addUser');
+    this.props.toggleModal('addUser');
   },
 
   render() {

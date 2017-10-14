@@ -11,25 +11,20 @@ import rootReducer from './reducers/index';
 // create objects for the default data
 const projects = [];
 const budgets = {};
-		//budgets{proj15: []}
 const expenses = {};
 const organization = {};
 const messages = {
 	csv: "",
-	login: "",
-	register: "",
 	pitch: "",
 	registerOrg: "",
 	registerUser: "",
-	password: ""
+	password: '',
+	username: ''
 };
 const modals = {
 	pitch: false,
 	addUser: false,
 	csv: false
-};
-const navBar = {
-	key: 1
 };
 const parseCSV = [];
 // this state shall be passed from smart to dumb components.
@@ -40,7 +35,6 @@ const defaultState = {
 	organization,
 	messages,
 	modals,
-	navBar,
 	parseCSV
 };
 

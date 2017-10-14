@@ -8,10 +8,9 @@ import budgets from './budgets';
 import organization from './organization';
 import messages from './messages';
 import modals from './modals';
-import navBar from './navBar';
 import parseCSV from './csv';
 
 
-const rootReducer = combineReducers({messages, expenses, projects, budgets, organization, modals, navBar, parseCSV, routing: routerReducer});
+const rootReducer = combineReducers({messages, expenses, projects, budgets, organization, modals, parseCSV, routing: routerReducer});
 
 export default rootReducer;

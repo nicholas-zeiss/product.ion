@@ -87,19 +87,13 @@ export function postNewProject(pitch) {
 
 
 
-export function changeModal(name) {
+export function toggleModal(name) {
 	return {
-		type: 'CHANGE_MODAL',
+		type: 'TOGGLE_MODAL',
 		name
 	};
 }
 
-export function changeNavKey(key) {
-	return {
-		type: 'CHANGE_NAV_KEY',
-		key
-	};
-}
 
 export function updateExpense(singleExpense, projID) {
 	return {

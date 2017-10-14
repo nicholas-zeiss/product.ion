@@ -39,7 +39,7 @@ ApiCall.setToken = () => axios.defaults.headers.Authorization = 'Bearer ' + sess
 
 
 //-------------------------------
-//        get extant data
+//      get extant data
 //-------------------------------
 
 ApiCall.getProject = projID => axios.get('/api/project/' + projID);

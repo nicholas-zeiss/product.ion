@@ -46,7 +46,7 @@ class Dashboard extends React.Component {
 			this.setState({ editProject: null });
 		}
 
-		this.props.changeModal('pitch');
+		this.props.toggleModal('pitch');
 	}
 
 

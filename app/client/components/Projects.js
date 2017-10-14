@@ -1,3 +1,8 @@
+/**
+ *
+ *  Component for the projects page, which lets you view all projects and edit pitches
+ *
+**/
 
 
 import React from 'react';
@@ -9,6 +14,7 @@ import NavBar from './NavBar.js';
 import Pitch from './Pitch.js';
 import ProjectNode from './ProjectNode.js';
 
+
 class Projects extends React.Component {
 	constructor(props) {
 		super(props);
@@ -17,50 +23,51 @@ class Projects extends React.Component {
 	}
 
 
-	switchModal(project) {
+	toggleModal(project) {
 		if (project != null) {
-			this.setState({editProject: project});
+			this.setState({ editProject: project });
+		
 		} else {
-			this.setState({editProject: null});
+			this.setState({ editProject: null });
 		}
-		this.props.changeModal('pitch');
+
+		this.props.toggleModal('pitch');
 	}
 
 
 	render() {
 		return (
-			<div style={ { fontSize: '14px'} }>
-				{
-					this.props.short ? <div></div> :
-						<div>
-							<NavBar { ...this.props }/>
-						</div>
-				}
+			<div style={ { fontSize: '14px' } }>
+				<NavBar { ...this.props }/>
 
 				<Panel>
-					{
-						this.props.short ? <div></div> :
-							<div>
-								<Button bsStyle="primary" style={ {'margin-bottom':'15px'} } bsSize="large" id="modalButton" onClick={ this.switchModal }>
-								Create a Pitch
-								</Button>
-								<Modal show={ this.props.modals.pitch } onHide={ this.switchModal } >
-									<Modal.Body>
-										<Pitch { ...this.props } data={ this.state.editProject }/>
-									</Modal.Body>
-									<Modal.Footer />
-								</Modal>
-							</div>
-					}
+					<div>
+						<Button
+							bsSize='large'
+							bsStyle='primary'
+							id='modalButton' 
+							onClick={ this.toggleModal.bind(this) }
+							style={ { 'marginBottom': '15px' } }
+						>
+							Create a Pitch
+						</Button>
 
-					<Table striped bordered>
+						<Modal onHide={ this.toggleModal.bind(this) } show={ this.props.modals.pitch }>
+							<Modal.Body>
+								<Pitch { ...this.props } data={ this.state.editProject }/>
+							</Modal.Body>
+							<Modal.Footer/>
+						</Modal>
+					</div>
+					
+					<Table bordered striped>
 						{ projectTableHeader }
 						<tbody>
-							{ this.props.short ? this.props.projects.slice(-3).map((project, idx) =>
-								<ProjectNode key={ idx } idx={ idx } { ...this.props } project={ project } switchModal={ this.switchModal }/>)
-								: this.props.projects.map((project, idx) =>
-									<ProjectNode key={ idx } idx={ idx } { ...this.props } project={ project } switchModal={ this.switchModal }/>
-								) }
+							{
+								this.props.projects.map((project, idx) => (
+									<ProjectNode { ...this.props } key={ idx } project={ project }/>
+								))
+							}
 						</tbody>
 					</Table>
 				</Panel>

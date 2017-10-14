@@ -116,7 +116,7 @@ const Pitch = React.createClass({
   },
   closeModal() {
     this.props.getOrgProjects(this.props.organization.orgName);
-    this.props.changeModal("pitch");
+    this.props.toggleModal("pitch");
   },
   handleSelect(key) {
     //budget set here to accomodate asynchronous budget list hydration.

@@ -37,10 +37,19 @@ export function registerOrganization(orgName, username, password) {
 }
 
 
-export function setAuthMessage(message) {
+export function setPasswordMessage(message) {
 	return {
-		type: 'SET_AUTH_MESSAGE',
+		type: 'SET_PASSWORD_MESSAGE',
 		message
 	};
 }
+
+
+export function setUserOrgMessage(message) {
+	return {
+		type: 'SET_USER/ORG_MESSAGE',
+		message
+	};
+}
+
 
