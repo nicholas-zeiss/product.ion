@@ -7,14 +7,9 @@
 
 const Bookshelf = require('../db.js');
 
-require('./expense.js');
-require('./organization.js');
-require('./project.js');
-require('./budget.js');
-
 
 module.exports = Bookshelf.model('Project', Bookshelf.Model.extend({
-	tableName: 'projs',
+	tableName: 'projects',
 	
 	budgets: function() {
 		return this.hasMany('Budget', 'projID');

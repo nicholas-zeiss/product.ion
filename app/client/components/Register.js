@@ -7,7 +7,7 @@
 
 import React from 'react';
 import { Link } from 'react-router';
-import { Button, ButtonToolbar, ControlLabel, Form, FormControl, Panel } from 'react-bootstrap';
+import { Button, ButtonToolbar, ControlLabel, Form, FormControl, FormGroup, Panel } from 'react-bootstrap';
 
 
 class Register extends React.Component {
@@ -15,7 +15,7 @@ class Register extends React.Component {
 		super(props);
 
 		this.state = {
-			org: '',
+			organization: '',
 			admin: '',
 			pass: '',
 			pass2: ''
@@ -37,7 +37,7 @@ class Register extends React.Component {
 		if (this.state.pass.length < 6) {
 			this.props.registrationPasswordError('Password must be longer than 6 characters');
 		
-		} else if (this.state.messages.registerPassword || this.state.messages.registerOrg) {
+		} else if (this.props.messages.registerPassword || this.props.messages.registerOrganization) {
 			this.props.resetRegistrationMessages();
 		}
 		
@@ -47,7 +47,7 @@ class Register extends React.Component {
 
 	handleSubmit(e) {
 		e.preventDefault();
-		this.props.registerOrg(this.state.org, this.state.admin, this.state.pass);
+		this.props.registerOrganization(this.state.organization, this.state.admin, this.state.pass);
 	}
 
 
@@ -55,7 +55,7 @@ class Register extends React.Component {
 		return (
 			<div id='loginPanel'>
 				<Panel bsStyle='primary' header={ <h2>We're happy you want to do this</h2> }>
-					<Form onSubmit={ this.handleSubmit } onBlur={ this.resetErrorMessages }>
+					<Form onSubmit={ this.handleSubmit.bind(this) } onBlur={ this.resetErrorMessages.bind(this) }>
 						
 						<Link to={'/login'}>
 							<Button bsSize='small' bsClass='createOrgButton'>
@@ -72,10 +72,10 @@ class Register extends React.Component {
 							
 							<FormControl 
 								type='text'
-								value={this.state.org}
+								value={ this.state.organization }
 								placeholder='name it something catchy'
-								onChange={this.handleChange}
-								name='org'
+								onChange={ this.handleChange.bind(this) }
+								name='organization'
 								required
 							/>
 						</FormGroup>
@@ -87,9 +87,9 @@ class Register extends React.Component {
 							
 							<FormControl
 								type='text'
-								value={this.state.admin}
+								value={ this.state.admin }
 								placeholder='the company leader'
-								onChange={this.handleChange}
+								onChange={ this.handleChange.bind(this) }
 								name='admin'
 								required
 							/>
@@ -102,12 +102,12 @@ class Register extends React.Component {
 						<div>
 							<ControlLabel id='loginLabel'>Password</ControlLabel>
 							
-							<FormGroup controlId='passwordControl' validationState = { this.validatePass() }>
+							<FormGroup controlId='passwordControl' validationState={ this.state.pass.length < 6 ? 'warning' : 'success' }>
 								<FormControl
-									type='password' 
+									type='password'
 									value={ this.state.pass }
 									placeholder='••••••••••'
-									onChange={this.handlePassChange}
+									onChange={ this.handlePassChange.bind(this) }
 									name='pass'
 									required
 								/>
@@ -115,14 +115,14 @@ class Register extends React.Component {
 								<FormControl.Feedback />
 								
 								<p id='registerPasswordMessage'>
-									{this.props.messages.registerPassword}
+									{ this.props.messages.registerPassword }
 								</p>
 								
 								<FormControl
 									type='password'
-									value={this.state.pass2}
+									value={ this.state.pass2 }
 									placeholder='Re-enter Password'
-									onChange={this.handlePassChange}
+									onChange={ this.handlePassChange.bind(this) }
 									name='pass2'
 								/>
 								

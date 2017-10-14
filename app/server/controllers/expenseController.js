@@ -11,7 +11,7 @@ const Expense = require('../models/expense.js');
 exports.getExpense = (id, cb) => {
 	new Expense({ id })
 		.fetch({
-			withRelated: [ 'proj' ]
+			withRelated: [ 'project' ]
 		})
 		.then(cb); 
 };

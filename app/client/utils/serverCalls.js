@@ -17,10 +17,21 @@ const ApiCall = {};
 //associated with the current username
 ApiCall.checkToken = token => axios.post('/token', { token });
 
-ApiCall.login = (username, password) => axios.post('/login', { username, password });
+ApiCall.login = (username, password) => (
+	axios.post('/login', { 
+		username,
+		password
+	})
+);
 
 //for creating a new organization/admin
-ApiCall.registerOrg = (orgName, username, password) => axios.post('/createOrganization', { orgName, username, password });
+ApiCall.registerOrganization = (orgName, username, password) => (
+	axios.post('/createOrganization', { 
+		orgName,
+		username,
+		password 
+	})
+);
 
 //attach our token to all axios requests
 ApiCall.setToken = () => axios.defaults.headers.Authorization = 'Bearer ' + sessionStorage.token;
@@ -31,11 +42,11 @@ ApiCall.setToken = () => axios.defaults.headers.Authorization = 'Bearer ' + sess
 //        get extant data
 //-------------------------------
 
-ApiCall.getProject = projId => axios.get('/api/proj/' + projId);
+ApiCall.getProject = projID => axios.get('/api/project/' + projID);
 
-ApiCall.getProjects = projIds => axios.post('/api/proj', { projIds });
+ApiCall.getProjects = projIDs => axios.post('/api/project', { projIDs });
 
-ApiCall.getOrg = orgName => axios.get('/api/org/' + orgName);
+ApiCall.getOrganization = orgName => axios.get('/api/organization/' + orgName);
 
 
 
@@ -43,15 +54,22 @@ ApiCall.getOrg = orgName => axios.get('/api/org/' + orgName);
 //      create new data
 //------------------------------
 
-ApiCall.addBudget = budget => axios.post('/api/register/budget', budget);
+ApiCall.addBudget = budget => axios.post('/api/budget', budget);
 
-ApiCall.addExpense = exp => axios.post('/api/register/expense', exp);
+ApiCall.addExpense = expense => axios.post('/api/expense', expense);
 
-ApiCall.addProject = proj => axios.post('/api/register/project', proj);
+ApiCall.addProject = project => axios.post('/api/project', project);
 
-ApiCall.addUser = (username, password, orgs_id, perm) => axios.post('/signup', { username, password, orgs_id, perm });
+ApiCall.addUser = (username, password, orgID, permissions) => (
+	axios.post('/api/user', { 
+		username,
+		password,
+		orgID,
+		permissions
+	})
+);
 
-ApiCall.parseCSV = (data, id) => axios.post('/api/register/csv', { data, id });
+ApiCall.parseCSV = (data, id) => axios.post('/api/csv', { data, id });
 
 
 
@@ -59,15 +77,15 @@ ApiCall.parseCSV = (data, id) => axios.post('/api/register/csv', { data, id });
 //     update extant data
 //------------------------------
 
-ApiCall.updateExpense = exp => axios.post('/api/update/expense', exp);
+ApiCall.updateExpense = exp => axios.post('/api/expense', exp);
 
-ApiCall.updatePassword = (username, password) => axios.post('/api/update/user', { username, password });
+ApiCall.updatePassword = (username, password) => axios.post('/api/user', { username, password });
 
-ApiCall.updateProject = (data, projId) => axios.post('/api/update/proj', data);
+ApiCall.updateProject = (data, projID) => axios.post('/api/project', data);
 
-ApiCall.updateProjectBudgets = list => axios.post('/api/update/budgets', list);
+ApiCall.updateProjectBudgets = budgets => axios.post('/api/budgets', budgets);
 
-ApiCall.updateUser = user => axios.post('/api/update/user', user);
+ApiCall.updateUser = user => axios.post('/api/user', user);
 
 
 
@@ -75,9 +93,9 @@ ApiCall.updateUser = user => axios.post('/api/update/user', user);
 //     delete extant data
 //------------------------------
 
-ApiCall.deleteBudget = id => axios.post('/api/remove/budget', { id });
+ApiCall.deleteBudget = id => axios.post('/api/budget', { id });
 
-ApiCall.deleteExpense = exp => axios.post('/api/remove/expense', exp);
+ApiCall.deleteExpense = exp => axios.post('/api/expense', exp);
 
 
 

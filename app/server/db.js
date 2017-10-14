@@ -100,6 +100,8 @@ Promise.all([
 
 const Bookshelf = require('bookshelf')(knex);
 
+//allows us to register models by name to avoid having to import a model
+//whenever it is used elsewhere
 Bookshelf.plugin('registry');
 
 module.exports = Bookshelf;

@@ -1,8 +1,8 @@
 
 
-export function registerOrg(orgName, username, password) {
+export function registerOrganization(orgName, username, password) {
 	return {
-		type: 'REGISTER_ORG',
+		type: 'REGISTER_ORGANIZATION',
 		orgName,
 		username,
 		password

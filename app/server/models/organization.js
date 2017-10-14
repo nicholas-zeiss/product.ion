@@ -9,7 +9,7 @@ const Bookshelf = require('../db.js');
 
 
 module.exports = Bookshelf.model('Organization', Bookshelf.Model.extend({
-	tableName: 'orgs',
+	tableName: 'organizations',
 	
 	users: function() {
 		return this.hasMany('User', 'orgID');

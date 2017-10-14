@@ -10,7 +10,9 @@ const User = require('../models/user.js');
 
 exports.getUser = (username, cb) => {
 	new User({ username })
-		.fetch({ withRelated: [ 'org', 'projects' ] })
+		.fetch({ 
+			withRelated: [ 'organization', 'projects' ] 
+		})
 		.then(cb);
 };
 

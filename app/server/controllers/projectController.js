@@ -13,8 +13,8 @@ exports.getProject = (projID, cb) => {
 		.fetch({ 
 			withRelated: [
 				'budgets',
-				'org',
 				'expenses',
+				'organization',
 				'users'
 			]
 		})

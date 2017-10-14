@@ -7,8 +7,6 @@
 
 const Bookshelf = require('../db.js');
 
-require('./project.js');
-
 
 module.exports = Bookshelf.model('Expense', Bookshelf.Model.extend({
 	tableName: 'expenses',

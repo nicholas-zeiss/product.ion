@@ -47,17 +47,15 @@ function generateToken(user) {
 //when an expense is added/removed from a project, use this to update project costToDate
 //takes a callback which is executed on the project model once updated
 function updateProjectCost(projID, cb) {
-	Project.getProjectByID(projID, proj => {
-		Expense.getExpensesByProj(projID, exps => {
-			
-			let date = generateDate();
-			let cost = exps.reduce((cost, exp) => cost + exp.get('cost'), 0);
+	Project.getProject(projID, proj => {
+		
+		let date = generateDate();
+		let cost = proj.relations.expenses.reduce((cost, exp) => cost + exp.get('cost'), 0);
 
-			proj
-				.save({ costToDate: cost, lastEdited: date })
-				.then(cb);
+		proj
+			.save({ costToDate: cost, lastEdited: date })
+			.then(cb);
 
-		});
 	});
 }
 
@@ -77,7 +75,7 @@ module.exports = app => {
 	app.post('/login', (req, res) => {
 		User.getUser(req.body.username, user => {
 			if (user && bcrypt.compareSync(req.body.password, user.attributes.password)) {
-
+				console.log(user.relations);
 				delete user.attributes.password;
 
 				res
@@ -133,7 +131,7 @@ module.exports = app => {
 	//----------------------------------
 
 	app.post('/createOrganization', (req, res) => {
-		Organization.getOrg(req.body.orgName, org => {
+		Organization.getOrganization(req.body.orgName, org => {
 			User.getUser(req.body.username, user => {
 				
 				//first check that org name and username are available
@@ -146,12 +144,12 @@ module.exports = app => {
 				} else {
 					
 					//org name and username are available
-					Organization.makeOrg({ name: req.body.orgName }, org => {
+					Organization.makeOrganization({ name: req.body.orgName }, org => {
 						if (org) {
 							let user = {
-								orgs_id: org.attributes.id,
+								orgID: org.attributes.id,
 								password: bcrypt.hashSync(req.body.password),
-								perm: 0,
+								permissions: 0,
 								username: req.body.username
 							};
 

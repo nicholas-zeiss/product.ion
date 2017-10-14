@@ -16,7 +16,7 @@ function projects(state = [], action) {
               user_id: res.data.createdBy,
               endDate: res.data.endDate,
               orgs_id: res.data.orgs_id,
-              projId: res.data.projId,
+              projID: res.data.projID,
               startDate: res.data.startDate,
               status: res.data.status,
               type: res.data.type,
@@ -32,8 +32,7 @@ function projects(state = [], action) {
         });
       break;
     case "GET_ORG_PROJECTS":
-      console.log("You want to get org projects from ", action, 'store', store);
-      ApiCall.getProjectsByOrgName(action.orgName)
+      ApiCall.getProjects(action.orgName)
         .catch((err) => {
           console.error(err);
         })
@@ -46,8 +45,8 @@ function projects(state = [], action) {
         });
       break;
     case "GET_PROJECT":
-      console.log("You want to get a single project with id", action.projId);
-      ApiCall.getProjectByProjId(action.projId)
+      console.log("You want to get a single project with id", action.projID);
+      ApiCall.getProjectByprojID(action.projID)
         .then(res => {
           console.log("Res is ", res);
           let id = res.data.id,
@@ -64,7 +63,7 @@ function projects(state = [], action) {
       return action.projects;
     case "UPDATE_PROJECT":
       console.log("You want to update project ", action.project);
-      ApiCall.updateProject(action.project, action.project.projId)
+      ApiCall.updateProject(action.project, action.project.projID)
         .then(res => {
           console.log("Successfully updated a project!");
           console.log(res);
@@ -83,13 +82,13 @@ function projects(state = [], action) {
     case "CLEAR_PROJ":
       return {};
     case "GET_PROJ_EXPENSES":
-      console.log('getting proj expenses', action.projIds);
-      var length = action.projIds.length;
+      console.log('getting proj expenses', action.projIDs);
+      var length = action.projIDs.length;
       var count = 0;
       var temp = [];
-      action.projIds.forEach(function(projId) {
+      action.projIDs.forEach(function(projID) {
         // console.log(p
-        ApiCall.getExpensesByProjectId(projId).then(function(res) {
+        ApiCall.getExpensesByProjectId(projID).then(function(res) {
           count++;
           console.log('in call');
           res.data.expenses.forEach(function(exp) {

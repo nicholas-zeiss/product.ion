@@ -50,22 +50,18 @@ class Login extends React.Component {
 				<Panel bsStyle='primary' header={ <h2 bsClass='happy'>Happy Budgeting!</h2> }>
 					<Form
 						className=''
-						onSubmit={ this.handleSubmit }
+						onSubmit={ this.handleSubmit.bind(this) }
 						onBlur={ this.props.resetLoginMessage }
 					>
 
-						<Button
-							bsStyle='default'
-							bsSize='small'
-							bsClass='createOrgButton'
-						>
-							<Link to={ '/register' }>
+						<Link to={ '/register' }>
+							<Button bsSize='small' bsClass='createOrgButton'>
 								Create Organization
-							</Link>
-						</Button>
+							</Button>
+						</Link>
 						
 						<FormGroup controlId='userInput'>
-							<ControlLabel bsClass='userLabel' htmlFor='username'>
+							<ControlLabel bsClass='userLabel'>
 								Username
 							</ControlLabel>
 							
@@ -73,13 +69,13 @@ class Login extends React.Component {
 								type='text'
 								value={ this.state.username }
 								placeholder='Enter text'
-								onChange={ this.handleUserChange }
+								onChange={ this.handleUserChange.bind(this) }
 								required
 							/>
 						</FormGroup>
 						
 						<FormGroup controlId='userInput'>
-							<ControlLabel bsClass='userLabel' htmlFor='password'>
+							<ControlLabel bsClass='userLabel'>
 								Password
 							</ControlLabel>
 							
@@ -87,7 +83,7 @@ class Login extends React.Component {
 								type='password'
 								value={ this.state.password }
 								placeholder='•••••••••••'
-								onChange={ this.handlePassChange }
+								onChange={ this.handlePassChange.bind(this) }
 								required
 							/>
 						</FormGroup>

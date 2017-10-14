@@ -7,11 +7,11 @@ function expenses(state = [], action) {
 	switch (action.type) {
 		case "GET_EXPENSES":
 			console.log(action);
-			ApiCall.getProject(action.projId)
+			ApiCall.getProject(action.projID)
 				.then(res => {
-					if (res.status == 201) {
+					if (res.status == 200) {
 						console.log('the the expense reducer ', res.data)
-						var projectId = res.data.projId,
+						var projectId = res.data.projID,
 								expenses = res.data.expenses,
 								id = res.data.id,
 								orgName = res.data.org.name;
@@ -25,8 +25,8 @@ function expenses(state = [], action) {
 				});
 			break;
 		case "HYDRATE_EXPENSES":
-			console.log('hydrating expenses w/ projId', action.projectId)
-			state.projId = action.projectId;
+			console.log('hydrating expenses w/ projID', action.projectId)
+			state.projID = action.projectId;
 			state.expenses = action.expenses;
 			state.id = action.id;
 
@@ -39,7 +39,7 @@ function expenses(state = [], action) {
 			ApiCall.registerExpense(action)
 			.then(function(res) {
 				console.log('new expense', res.data);
-				store.dispatch({type:'GET_EXPENSES', projectId: action.projId});
+				store.dispatch({type:'GET_EXPENSES', projectId: action.projID});
 			})
 			.catch(function(err) {
 				console.error(err);
@@ -48,8 +48,8 @@ function expenses(state = [], action) {
 		case "REMOVE_EXPENSE":
 			ApiCall.removeExpense(action)
 			.then(function(res) {
-				console.log('removing expense, projId:', action.projId)
-				store.dispatch({type:'GET_EXPENSES', projectId: action.projId});
+				console.log('removing expense, projID:', action.projID)
+				store.dispatch({type:'GET_EXPENSES', projectId: action.projID});
 			})
 			.catch(function(err) {
 				console.err(err);
@@ -60,12 +60,12 @@ function expenses(state = [], action) {
 			//     temp.push(state.expenses[i]);
 			//   }
 			// }
-			// return {id: state.id, projId: state.projId, expenses: temp}
+			// return {id: state.id, projID: state.projID, expenses: temp}
 		case "UPDATE_EXPENSE":
 			ApiCall.updateExpense(action)
 			.then(function(res) {
 				console.log('back at dispatch for update ', res)
-				store.dispatch({type:'GET_EXPENSES', projectId: action.projId});
+				store.dispatch({type:'GET_EXPENSES', projectId: action.projID});
 			})
 			.catch(function(err) {
 				console.error(err);

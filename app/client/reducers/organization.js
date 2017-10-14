@@ -108,9 +108,9 @@ export default function posts(state = {}, action) {
 
 
 		//register a new organization
-		case 'REGISTER_ORG':
+		case 'REGISTER_ORGANIZATION':
 			ApiCall
-				.registerOrg(action.orgName, action.username, action.password)
+				.registerOrganization(action.orgName, action.username, action.password)
 				.then(res => {
 
 					sessionStorage.token = res.data.token;
