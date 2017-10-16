@@ -1,5 +1,4 @@
 import React from 'react';
-import DayPicker, { DateUtils } from "react-day-picker";
 import { FormControl } from 'react-bootstrap';
 
 const DatePicker = React.createClass({

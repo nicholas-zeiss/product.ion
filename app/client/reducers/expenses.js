@@ -7,7 +7,7 @@ function expenses(state = [], action) {
 	switch (action.type) {
 		case "GET_EXPENSES":
 			console.log(action);
-			ApiCall.getProject(action.projID)
+			ApiCall.getProject(action.id)
 				.then(res => {
 					if (res.status == 200) {
 						console.log('the the expense reducer ', res.data)
@@ -16,7 +16,6 @@ function expenses(state = [], action) {
 								id = res.data.id,
 								orgName = res.data.org.name;
 						store.dispatch({type:'HYDRATE_EXPENSES', projectId, id, expenses});
-						store.dispatch({type: 'GET_ORG_PROJECTS', orgName})
 						browserHistory.push('/expenses');
 					}
 				})

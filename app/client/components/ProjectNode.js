@@ -8,13 +8,8 @@ const ProjectNode = React.createClass({
     return "$" + num.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
   },
 
-  triggerProjectClick () {
-    this.props.getProject(this.props.project.projID);
-    if (this.props.project.status === "Pitch") {
-      this.props.switchModal(this.props.project);
-    } else {
-      this.props.getExpenses(this.props.project.projID);
-    }
+  triggerProjectClick() {
+    this.props.editProject(this.props.project);
   },
 
   render() {
@@ -26,7 +21,7 @@ const ProjectNode = React.createClass({
     })
 
     return (
-      <tr onClick={this.triggerProjectClick} id="readOnlyBody">
+      <tr onClick={ this.props.editProject(this.props.project) } id="readOnlyBody">
         <td>{name}</td>
         <td>{projID}</td>
         <td>{username}</td>

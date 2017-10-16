@@ -25,8 +25,8 @@ class Dashboard extends React.Component {
 		super(props);
 
 		this.state = {
-			editProject: null,
-			chartsOpen: false
+			chartsOpen: false,
+			projectToEdit: null
 		};
 	}
 
@@ -37,16 +37,19 @@ class Dashboard extends React.Component {
 	}
 
 
-	//change which project to edit, activate/deactivate modal
-	switchModal(project) {
-		if (project) {
-			this.setState({ editProject: project });
-
-		} else {
-			this.setState({ editProject: null });
-		}
-
-		this.props.toggleModal('pitch');
+	//As the Pitch modal is a child of Dashboard we need to keep track of the project supplied
+	//to it in this component's state. This method is passed down to individual ProjectNode components
+	//allowing them to alter Dashboard's state and activate the modal.
+	setProjectToEdit(project) {
+		this.setState({ projectToEdit: project }, () => {
+			this.props.toggleModal('pitch');
+			
+			//project may be null if we are creating a new pitch, not editing an extant one.
+			//if it does exist we need to load its expenses.
+			if (project) {
+				this.props.getExpenses(project.id);
+			}
+		});
 	}
 
 
@@ -78,6 +81,7 @@ class Dashboard extends React.Component {
 		let pitchHeader = this.props.organization.user.permissions ? 'Your pitches awaiting approval:' : 'Pitches to be Approved';
 		let pitches = this.props.projects.filter(proj => proj.status == 'Pitch');
 
+
 		if (this.props.organization.user.permissions != 0) {
 			//if not an admin account, client can only view pitches they created
 			pitches = pitches.filter(proj => proj.createdBy == this.props.organization.user.id);
@@ -85,13 +89,21 @@ class Dashboard extends React.Component {
 		} else {
 			mastersheet =	(
 				<Link to='/mastersheet'>
-					<Button bsStyle='primary' style={ { 'float': 'right', 'marginRight': '5px' } }>Click for Master Sheet</Button>
+					<Button bsStyle='primary' style={ { 'float': 'right', 'marginRight': '5px' } }>
+						Click for Master Sheet
+					</Button>
 				</Link>
 			);
 		}
 
+
 		pitches = pitches.map((pitch, idx) => (
-			<ProjectNode key={ idx } { ...this.props } project={ pitch } switchModal={ this.switchModal.bind(this) }/>
+			<ProjectNode
+				{ ...this.props }
+				editProject={ this.setProjectToEdit.bind(this) }
+				key={ idx }
+				project={ pitch }
+			/>
 		), this);
 
 
@@ -104,7 +116,12 @@ class Dashboard extends React.Component {
 				.sort((a, b) => a.lastEdited > b.lastEdited ? -1 : a.lastEdited < b.lastEdited ? 1 : 0)
 				.slice(0, 3)
 				.map((project, idx) => (
-					<ProjectNode key={ idx } { ...this.props } project={ project } switchModal={ this.switchModal }/>
+					<ProjectNode
+						{ ...this.props }
+						editProject={ this.setProjectToEdit.bind(this) }
+						key={ idx }
+						project={ project }
+					/>
 				), this);
 		}
 	
@@ -114,9 +131,9 @@ class Dashboard extends React.Component {
 				<NavBar { ...this.props }/>
 
 				<div>
-					<Modal onHide={ this.switchModal.bind(this) } show={ this.props.modals.pitch }>
+					<Modal onHide={ this.props.toggleModal.bind(this, 'pitch') } show={ this.props.modals.pitch }>
 						<Modal.Body>
-							<Pitch { ...this.props } data={ this.state.editProject }/>
+							<Pitch { ...this.props } project={ this.state.projectToEdit }/>
 						</Modal.Body>
 						<Modal.Footer/>
 					</Modal>

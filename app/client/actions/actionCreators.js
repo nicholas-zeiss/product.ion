@@ -1,10 +1,9 @@
 
 
 
-export function getExpenses(projectId, id) {
+export function getExpenses(id) {
 	return {
 		type: 'GET_EXPENSES',
-		projectId,
 		id
 	};
 }
