@@ -26,7 +26,7 @@ ApiCall.login = (username, password) => (
 
 //for creating a new organization/admin
 ApiCall.registerOrganization = (orgName, username, password) => (
-	axios.post('/createOrganization', { 
+	axios.post('/signup', { 
 		orgName,
 		username,
 		password 

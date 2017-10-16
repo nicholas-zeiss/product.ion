@@ -174,7 +174,7 @@ module.exports = app => {
 	//
 	//----------------------------------
 
-	app.post('/createOrganization', (req, res) => {
+	app.post('/signup', (req, res) => {
 		Organization.getOrganization(req.body.orgName, org => {
 			User.getUser(req.body.username, user => {
 				

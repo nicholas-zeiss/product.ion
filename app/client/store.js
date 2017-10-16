@@ -1,46 +1,38 @@
+/**
+ *
+ *	Define our initial state for the redux store, import all our reducers, creat the store and export it
+ *
+**/
 
 
-import { createStore, applyMiddleware } from 'redux';
-import { syncHistoryWithStore, routerMiddleware} from 'react-router-redux';
 import { browserHistory } from 'react-router';
+import { syncHistoryWithStore, routerMiddleware} from 'react-router-redux';
+import { createStore, applyMiddleware } from 'redux';
+import reduxThunk from 'redux-thunk';
 
-// import the root reducer
 import rootReducer from './reducers/index';
 
 
-// create objects for the default data
-const projects = [];
-const budgets = {};
-const expenses = {};
-const organization = {};
-const messages = {
-	csv: "",
-	pitch: "",
-	registerOrg: "",
-	registerUser: "",
-	password: '',
-	username: ''
-};
-const modals = {
-	pitch: false,
-	addUser: false,
-	csv: false
-};
-const parseCSV = [];
-// this state shall be passed from smart to dumb components.
 const defaultState = {
-	projects,
-	budgets,
-	expenses,
-	organization,
-	messages,
-	modals,
-	parseCSV
+	budgets: {},
+	expenses: {},
+	projects: {},
+	organization: {},
+	UI: {
+		modals: {
+			addUser: false,
+			pitch: false,
+			pitchProject: null
+		},
+		messages: {
+			pitch: '',
+			username: ''
+		}
+	}
 };
 
-//middleware for logging changes in state.
-// const middleware = applyMiddleware(logger());
-const middleware = applyMiddleware(routerMiddleware(browserHistory));
+
+const middleware = applyMiddleware(routerMiddleware(browserHistory), reduxThunk);
 const store = createStore(rootReducer, defaultState, middleware);
 const history = syncHistoryWithStore(browserHistory, store);
 

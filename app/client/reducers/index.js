@@ -1,16 +1,28 @@
-// a larger reducer that will contain the others.
+/**
+ *
+ *	Combines the reducers specific to each section of our store
+ *
+**/
+
+
 import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
 
-import expenses from './expenses';
-import projects from './projects';
 import budgets from './budgets';
+import expenses from './expenses';
 import organization from './organization';
-import messages from './messages';
-import modals from './modals';
-import parseCSV from './csv';
+import projects from './projects';
+import UI from './UI';
 
 
-const rootReducer = combineReducers({messages, expenses, projects, budgets, organization, modals, parseCSV, routing: routerReducer});
+const rootReducer = combineReducers({
+	budgets,
+	expenses,
+	organization,
+	projects,
+	routing: routerReducer,
+	UI
+});
 
 export default rootReducer;
+
