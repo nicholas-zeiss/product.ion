@@ -16,9 +16,12 @@ import { connect } from 'react-redux';
 //-------------------------------
 //			  Action Creators
 //-------------------------------
-import * as actionCreators from '../actions/actionCreators';
-import * as authActions from '../actions/auth';
-import * as hydrateActions from '../actions/hydrate';
+import * as budgetActions from '../actions/budgetActions';
+import * as expenseActions from '../actions/expenseActions';
+import * as organizationActions from '../actions/organizationActions';
+import * as projectActions from '../actions/projectActions';
+import * as UIActions from '../actions/UIActions';
+
 
 //-------------------------------
 //			  React Components
@@ -38,7 +41,7 @@ import Settings from './components/Settings';
 import { history, store } from './store';
 
 
-const actions = Object.assign({}, actionCreators, authActions, hydrateActions);
+const actions = Object.assign({}, budgetActions, expenseActions, organizationActions, projectActions, UIActions);
 
 const mapDispachToProps = dispatch => bindActionCreators(actions, dispatch);
 

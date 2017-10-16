@@ -1,8 +1,9 @@
 /**
  *
- *  Here we set up our server calls
+ *  Here we set up our server API calls
  *
 **/
+
 
 import axios from 'axios';
 
