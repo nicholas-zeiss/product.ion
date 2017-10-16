@@ -16,8 +16,8 @@ import rootReducer from './reducers/index';
 const defaultState = {
 	budgets: {},
 	expenses: {},
-	projects: {},
 	organization: {},
+	projects: {},
 	UI: {
 		modals: {
 			addUser: false,

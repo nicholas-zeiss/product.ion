@@ -1,12 +1,28 @@
-
-
+/**
+ *
+ *	Creates the root of our react app and inserts it into the DOM. Imports the action creators
+ *  and binds them to redux, connects redux to react, and maps urls to components for react-router.
+ *
+**/
 
 
 import React from 'react';
 import { render } from 'react-dom';
-import { browserHistory, IndexRoute, Route, Router } from 'react-router';
+import { IndexRoute, Route, Router } from 'react-router';
 import { Provider } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 
+//-------------------------------
+//			  Action Creators
+//-------------------------------
+import * as actionCreators from '../actions/actionCreators';
+import * as authActions from '../actions/auth';
+import * as hydrateActions from '../actions/hydrate';
+
+//-------------------------------
+//			  React Components
+//-------------------------------
 import App from './components/App';
 import Dashboard from './components/Dashboard';
 import Expenses from './components/Expenses';
@@ -16,16 +32,32 @@ import Projects from './components/Projects';
 import Register from './components/Register';
 import Settings from './components/Settings';
 
+//-------------------------------
+//            Store
+//-------------------------------
 import { history, store } from './store';
 
 
-// Provider tag exposes store to the entire application.
-// that is why we wrap the entire router in the Provider.
-// router must know about created store.
-const router = (
+const actions = Object.assign({}, actionCreators, authActions, hydrateActions);
+
+const mapDispachToProps = dispatch => bindActionCreators(actions, dispatch);
+
+const mapStateToProps = state => ({
+	budgets: state.budgets,
+	expenses: state.expenses,
+	organization: state.organization,
+	projects: state.projects,
+	UI: state.UI
+});
+
+//takes the component App which holds all visible components and connects to store, returns wrapped component
+const reduxWrapper = connect(mapStateToProps, mapDispachToProps)(App);
+
+
+const production = (
 	<Provider store={ store }>
 		<Router history={ history }>
-			<Route component={ App } path='/'>
+			<Route component={ reduxWrapper } path='/'>
 				<IndexRoute component={ Login }></IndexRoute>
 				<Route component={ Register } path='/register'></Route>
 				<Route component={ Login } path='/login'></Route>
@@ -39,6 +71,6 @@ const router = (
 	</Provider>
 );
 
-// we can render Main because we imported it.
-render(router, document.getElementById('root'));
+
+render(production, document.getElementById('root'));
 

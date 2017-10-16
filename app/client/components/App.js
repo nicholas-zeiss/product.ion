@@ -1,33 +1,24 @@
+/**
+ *
+ *	The main container component for the app view which is connected to the redux store and is the parent of all view components
+ *
+**/
+
+import React from 'react';
+import { Link } from 'react-router';
 
 
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+const App = props => (
+	<div className='titleHeader'>
+		<Link to='/'>
+			<div id='title' style={ { 'color': 'white' } }> product.ion </div>
+		</Link>
 
-import * as actionCreators from '../actions/actionCreators';
-import * as authActions from '../actions/auth';
-import * as hydrateActions from '../actions/hydrate';
+		{ React.cloneElement(props.children, props) }
 
-import Main from './Main';
+	</div>
+);
 
-function mapStateToProps(state) {
-	return {
-		budgets: state.budgets,
-		csv: state.parseCSV,
-		expenses: state.expenses,
-		messages: state.messages,
-		modals: state.modals,
-		navBar: state.navBar,
-		organization: state.organization,
-		projects: state.projects
-	};
-}
-
-let actions = Object.assign({}, actionCreators, authActions, hydrateActions);
-
-function mapDispachToProps(dispatch) {
-	return bindActionCreators(actions, dispatch);
-}
-
-const App = connect(mapStateToProps, mapDispachToProps)(Main);
 
 export default App;
+
