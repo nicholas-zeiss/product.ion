@@ -7,98 +7,76 @@
 
 import axios from 'axios';
 
-const ApiCall = {};
+
+export default {
 
 
-//-------------------------------
-//        authorization
-//-------------------------------
+	//-------------------------------
+	//        authorization
+	//-------------------------------
 
-//when app reloads and a token is present, this is called to verify the token is valid and
-//associated with the current username
-ApiCall.checkToken = token => axios.post('/token', { token });
+	//when app reloads and a token is present, this is called to verify the token is valid 
+	//and if so we receive the data to hydrate organization section of store
+	checkToken: token => axios.post('/token', { token }),
 
-ApiCall.login = (username, password) => (
-	axios.post('/login', { 
-		username,
-		password
-	})
-);
+	//send username/password, on success receive info to hydrate organization section of store
+	login: (username, password) => axios.post('/login', { username, password}),
 
-//for creating a new organization/admin
-ApiCall.registerOrganization = (orgName, username, password) => (
-	axios.post('/signup', { 
-		orgName,
-		username,
-		password 
-	})
-);
+	//attach our token to all axios requests once we verify it
+	setToken: token => axios.defaults.headers.Authorization = 'Bearer ' + token,
 
-//attach our token to all axios requests
-ApiCall.setToken = () => axios.defaults.headers.Authorization = 'Bearer ' + sessionStorage.token;
+	//for creating a new organization/admin
+	signup: (orgName, username, password) => axios.post('/signup', { orgName, username, password }),
 
 
 
-//-------------------------------
-//      get extant data
-//-------------------------------
+	//------------------------------
+	//      create data
+	//------------------------------
 
-ApiCall.getProject = id => axios.get('/api/project/' + id);
+	createBudgets: budgets => axios.post('/api/budget', budgets),
 
-ApiCall.getProjects = ids => axios.post('/api/project', { ids });
+	createExpenses: expenses => axios.post('/api/expense', expenses),
 
-ApiCall.getOrganization = orgName => axios.get('/api/organization/' + orgName);
+	createProject: project => axios.post('/api/project', project),
 
-
-
-//------------------------------
-//      create new data
-//------------------------------
-
-ApiCall.addBudget = budget => axios.post('/api/budget', budget);
-
-ApiCall.addExpense = expense => axios.post('/api/expense', expense);
-
-ApiCall.addProject = project => axios.post('/api/project', project);
-
-ApiCall.addUser = (username, password, orgID, permissions) => (
-	axios.post('/api/user', { 
-		username,
-		password,
-		orgID,
-		permissions
-	})
-);
-
-ApiCall.parseCSV = (data, id) => axios.post('/api/csv', { data, id });
+	createUser: user => axios.post('/api/user', user),
 
 
 
-//------------------------------
-//     update extant data
-//------------------------------
+	//------------------------------
+	//     		delete data
+	//------------------------------
 
-ApiCall.updateExpense = exp => axios.post('/api/expense', exp);
+	deleteBudget: id => axios.delete('/api/budget/' + id),
 
-ApiCall.updatePassword = (username, password) => axios.post('/api/user', { username, password });
+	deleteExpense: id => axios.delete('/api/expense/' + id),
 
-ApiCall.updateProject = (data, projID) => axios.post('/api/project', data);
-
-ApiCall.updateProjectBudgets = budgets => axios.post('/api/budgets', budgets);
-
-ApiCall.updateUser = user => axios.post('/api/user', user);
+	deleteUser: id => axios.delete('/api/user/' + id),
 
 
 
-//------------------------------
-//     delete extant data
-//------------------------------
+	//-------------------------------
+	//      		get data
+	//-------------------------------
 
-ApiCall.deleteBudget = id => axios.post('/api/budget', { id });
+	getBudgets: projID => axios.get('/api/project/' + projID),
 
-ApiCall.deleteExpense = exp => axios.post('/api/expense', exp);
+	getExpenses: projID => axios.get('/api/project/' + projID),
 
 
 
-export default ApiCall;
+	//------------------------------
+	//     			update data
+	//------------------------------
+
+	updateBudget: (budget, id) => axios.patch('/api/budget/' + id, budget),
+
+	updateExpense: (expense, id) => axios.post('/api/expense/' + id, expense),
+
+	updateProject: (project, id) => axios.post('/api/project/' + id, project),
+
+	updateUser: (user, id) => axios.post('/api/user/' + id, user),
+
+};
 
