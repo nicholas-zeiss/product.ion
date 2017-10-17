@@ -13,11 +13,11 @@ export default (
 	<thead>
 		<tr id='readOnlyHeader'>
 			<th> Name </th>
-			<th> Project ID </th>
+			<th> ID </th>
 			<th> Created By </th>
-			<th> Project Status </th>
-			<th> Estimate to Complete </th>
+			<th> Status </th>
 			<th> Cost to Date </th>
+			<th> Estimate to Complete </th>
 		</tr>
 	</thead>
 );

@@ -99,7 +99,7 @@ class Dashboard extends React.Component {
 				<NavBar { ...this.props }/>
 
 				<div>
-					<Modal onHide={ this.props.toggleView.bind(null, 'pitch') } show={ this.props.UI.views.pitch }>
+					<Modal onHide={ this.props.closePitchModal } show={ this.props.UI.views.pitch }>
 						<Modal.Body>
 							<Pitch { ...this.props } />
 						</Modal.Body>
@@ -121,7 +121,7 @@ class Dashboard extends React.Component {
 							
 							<Button 
 								bsStyle='primary'
-								onClick={ this.props.toggleView.bind(null, 'charts') }
+								onClick={ this.props.toggleCharts }
 								style={ { 'float': 'right', 'marginRight': '5px' } }
 							>
 								Toggle Visuals

@@ -1,6 +1,6 @@
 /**
  *
- *  Component for the login page
+ *  Component for the login page which is the view for the root url. 
  *
 **/
 
@@ -11,25 +11,26 @@ import { Button, ButtonToolbar, ControlLabel, Form, FormControl, FormGroup, Pane
 
 
 class Login extends React.Component {
+
+	//as login is our index route, loading the page with any url path will first come here
+	//so, we check for an auth token and login in that case before proceeding with the actual
+	//login view
 	constructor(props) {
 		super(props);
 
+		//if client already has a token try logging in with that. if successful, data is
+		//loaded from server and client is pathed to the dashboard. if not, token is removed.
+		if (sessionStorage.token) {
+			this.props.refreshLogin(sessionStorage.token);
+		}
+
+		//reset any old error messages
+		this.props.clearUI();
+		
 		this.state = {
 			password: '',
 			username: ''
 		};
-	}
-
-
-	//reset any old login/signup error messages
-	componentWillMount() {
-		this.props.clearUI();
-		
-		//If client already has an authorization token, check it. If valid the client
-		//will route directly to the dashboard. If invalid the token will be destroyed.
-		if (sessionStorage.token) {
-			this.props.refreshLogin(sessionStorage.token);
-		}
 	}
 
 

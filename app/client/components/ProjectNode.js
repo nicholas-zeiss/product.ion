@@ -1,36 +1,62 @@
+/**
+ *
+ *  Dumb component that renders individual projects. When clicked, if client has ownership of 
+ *  project or is producer/admin, allows for editing.
+ *
+**/
+
+
 import React from 'react';
-import { Link, browserHistory } from 'react-router';
-import { Button, Modal, OverlayTrigger } from 'react-bootstrap';
 
 
-const ProjectNode = React.createClass({
-  toDollar(num) {
-    return "$" + num.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
-  },
+const ProjectNode = props => {
 
-  triggerProjectClick() {
-    this.props.editProject(this.props.project);
-  },
+	let numToDollar = num => '$' + num.toFixed(2);
 
-  render() {
-    const { name, projID, status, costToDate, estimateToComplete } = this.props.project;
-    var username = '';
-    var that = this;
-    this.props.organization.users.forEach(function(user) {
-      if (user.id === that.props.project.createdBy) username = user.username;
-    })
 
-    return (
-      <tr onClick={ this.props.editProject(this.props.project) } id="readOnlyBody">
-        <td>{name}</td>
-        <td>{projID}</td>
-        <td>{username}</td>
-        <td>{status}</td>
-        <td>{this.toDollar(estimateToComplete)}</td>
-        <td>{this.toDollar(costToDate)}</td>
-      </tr>
-    );
-  }
-});
+	let estimateToComplete = () => {
+		if (props.project.costToDate > props.project.reqBudget) {
+			return 'Already overbudget';
+
+		} else {
+			return numToDollar(props.project.reqBudget - props.project.costToDate);
+		}
+	};
+	
+
+	let setProject = () => {
+		let user = props.organization.user;
+
+		//only allow editing if user either created project or is admin/producer
+		if (props.project.userID == user.id || user.permissions != 'user') {
+			
+			if (props.project.status == 'Pitch') {
+				props.viewPitchModal(props.project.id);
+			} else {
+				props.viewExpenses(props.project.id);
+			}
+		
+		}
+	};
+
+
+	//find the username of the account in the organization that created this project, if it exists
+	//as users can be deleted sometimes the user will not exist
+	let createdBy = props.organization.users.find(user => user.id == props.project.userID);
+	createdBy = createdBy ? createdBy.username : '?';
+
+	return (
+		<tr id='readOnlyBody' onClick={ setProject }>
+			<td>{ props.project.name }</td>
+			<td>{ props.project.id }</td>
+			<td>{ createdBy }</td>
+			<td>{ props.project.status }</td>
+			<td>{ numToDollar(props.project.costToDate) }</td>
+			<td>{ estimateToComplete() }</td>
+		</tr>
+	);
+};
+
 
 export default ProjectNode;
+

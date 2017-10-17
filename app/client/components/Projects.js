@@ -18,24 +18,6 @@ import ProjectNode from './ProjectNode.js';
 class Projects extends React.Component {
 	constructor(props) {
 		super(props);
-
-		this.state = { projectToEdit: null };
-	}
-
-
-	//As the Pitch modal is a child of Projects we need to keep track of the project supplied
-	//to it in this component's state. This method is passed down to individual ProjectNode components
-	//allowing them to alter Projects' state and activate the modal.
-	setProjectToEdit(project) {
-		this.setState({ projectToEdit: project }, () => {
-			this.props.toggleModal('pitch');
-			
-			//project may be null if we are creating a new pitch, not editing an extant one.
-			//if it does exist we need to load its expenses.
-			if (project) {
-				this.props.getExpenses(project.id);
-			}
-		});
 	}
 
 
@@ -50,15 +32,15 @@ class Projects extends React.Component {
 							bsSize='large'
 							bsStyle='primary'
 							id='modalButton' 
-							onClick={ this.setProjectToEdit.bind(this, null) }
+							onClick={ this.props.viewPitchModal.bind(null, undefined) }
 							style={ { 'marginBottom': '15px' } }
 						>
 							Create a Pitch
 						</Button>
 
-						<Modal onHide={ this.props.toggleModal.bind(this, 'pitch') } show={ this.props.modals.pitch }>
+						<Modal onHide={ this.props.closePitchModal } show={ this.props.UI.views.pitch }>
 							<Modal.Body>
-								<Pitch { ...this.props } project={ this.state.projectToEdit }/>
+								<Pitch { ...this.props }/>
 							</Modal.Body>
 							<Modal.Footer/>
 						</Modal>
@@ -71,7 +53,6 @@ class Projects extends React.Component {
 								this.props.projects.map((project, idx) => (
 									<ProjectNode
 										{ ...this.props }
-										editProject={ this.setProjectToEdit.bind(this) }
 										key={ idx }
 										project={ project }
 									/>

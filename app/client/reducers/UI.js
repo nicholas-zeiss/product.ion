@@ -6,15 +6,15 @@
 
 
 export const defaultUIState = {
-	views: {
-		addUser: false,
-		charts: false,
-		pitch: false,
-		pitchProject: null
-	},
 	messages: {
 		password: '',
 		user: ''
+	},
+	project: null,
+	views: {
+		addUser: false,
+		charts: false,
+		pitch: false
 	}
 };
 
@@ -27,20 +27,43 @@ export default (state = defaultUIState, action) => {
 			return defaultUIState;
 		}
 
+
+		case 'CLOSE_PITCH_MODAL': {
+			return {
+				messages: defaultUIState.messages,
+				project: null,
+				views: Object.assign({}, state.views, { pitch: false })
+			};
+		}
+
+
 		case 'SET_MESSAGES': {
-			let messages = Object.assign({}, state.messages, action.messages);
-			return Object.assign({}, state, { messages });
+			return Object.assign({}, state, { messages: action.messages });
 		}
 
-		case 'TOGGLE_VIEW': {
-			let views = Object.assign({}, state.views, { [action.view]: !state[action.view] });
 
-			if (action.projID != null) {
-				views.pitchProject = action.projID;
-			}
-
-			return Object.assign({}, state, { views });
+		case 'SET_PROJECT': {
+			return {
+				messages: defaultUIState.messages,
+				project: action.projID,
+				views: Object.assign({}, state.views)
+			};
 		}
+
+
+		case 'TOGGLE_CHARTS': {
+			return Object.assign({}, defaultUIState, { views: { charts: !state.views.charts }});
+		}
+
+
+		case 'VIEW_PITCH_MODAL': {
+			return {
+				messages: defaultUIState.messages,
+				project: action.projID,
+				views: Object.assign({}, state.views, { pitch: true })
+			};
+		}
+
 
 		default: {
 			return state;
