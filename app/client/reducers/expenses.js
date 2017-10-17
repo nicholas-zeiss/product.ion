@@ -18,7 +18,7 @@ export default (state = defaultExpensesState, action) => {
 
 		case 'DEHYDRATE_EXPENSES': {
 			let expenses = Object.assign({}, state);
-			action.ids.forEach(id => delete expenses[id]);
+			action.IDs.forEach(id => delete expenses[id]);
 
 			return expenses;
 		}

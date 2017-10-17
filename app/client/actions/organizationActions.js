@@ -28,7 +28,7 @@ import ApiCall from '../utils/serverCalls';
 //							Utils
 //--------------------------------------
 
-//messages to be dispatched to UI section of redux store. key prefixes c, d, u => create, delete, update. key postfixes E, S => error, success
+//messages to be dispatched to UI section of store. key prefixes c, d, u => create, delete, update. key postfixes E, S => error, success
 const messages = {
 	400: { user: 'Sorry, both that organization name and username are taken' },
 	401: { user: 'Sorry, that organization name is taken' },
@@ -42,10 +42,12 @@ const messages = {
 	uPassS: { password: 'Password successfully changed' }
 };
 
+
 //helper function for dispatching message actions
 const sendMessage = (dispatch, messageKey) => {
 	dispatch({ type: 'SET_MESSAGES', messages: messages[messageKey] });
 };
+
 
 //helper function to hydrate store on successful login
 const loginSucceeded = (data, dispatch) => {
@@ -67,17 +69,28 @@ const loginSucceeded = (data, dispatch) => {
 //					Action Creators
 //--------------------------------------
 
-export const changePassword = (password, id) => (
+export const changePassword = (id, password) => (
 	dispatch => ApiCall
 		.updateUser({ id, password })
-		.then(res => res, err => sendMessage(dispatch, 'uPassE'))
-		.then(res => res ? sendMessage(dispatch, 'uPassS') : null)
+		.then(
+			res => res,
+			err => sendMessage(dispatch, 'uPassE')
+		)
+		.then(res => {
+			if (res) {
+				sendMessage(dispatch, 'uPassS');
+			}
+		})
 );
+
 
 export const createUser = user => (
 	dispatch => ApiCall
 		.createUser(user)
-		.then(res => res, err => sendMessage(dispatch, 'cUserE'))
+		.then(
+			res => res,
+			err => sendMessage(dispatch, 'cUserE')
+		)
 		.then(res => {
 			if (res) {
 				dispatch({ type: 'ADD_USER', user: res.data });
@@ -86,10 +99,14 @@ export const createUser = user => (
 		})
 );
 
+
 export const deleteUser = id => (
 	dispatch => ApiCall
 		.deleteUser(id)
-		.then(res => res, err => sendMessage(dispatch, 'dUserE'))
+		.then(
+			res => res,
+			err => sendMessage(dispatch, 'dUserE')
+		)
 		.then(res => {
 			if (res) {
 				dispatch({ type: 'REMOVE_USER', id });
@@ -98,14 +115,24 @@ export const deleteUser = id => (
 		})
 );
 
+
 export const hydrateOrganization = organization => ({ type: 'HYDRATE_ORGANIZATION', organization });
+
 
 export const login = (username, password) => (
 	dispatch => ApiCall
 		.login(username, password)
-		.then(res => res, err => sendMessage(dispatch, 'loginE'))
-		.then(res => res ? loginSucceeded(res.data, dispatch) : null)
+		.then(
+			res => res,
+			err => sendMessage(dispatch, 'loginE')
+		)
+		.then(res => {
+			if (res) {
+				loginSucceeded(res.data, dispatch);
+			}
+		})
 );
+
 
 export const logout = () => (
 	dispatch => {
@@ -119,17 +146,33 @@ export const logout = () => (
 	}
 );
 
+
 export const refreshLogin = token => (
 	dispatch => ApiCall
 		.checkToken(token)
-		.then(res => res, err => sessionStorage.clear())
-		.then(res => res ? loginSucceeded(res.data, dispatch) : null)
+		.then(
+			res => res,
+			err => sessionStorage.clear()
+		)
+		.then(res => {
+			if (res) {
+				loginSucceeded(res.data, dispatch);
+			}
+		})
 );
+
 
 export const signup = (orgName, username, password) => (
 	dispatch => ApiCall
 		.signup(orgName, username, password)
-		.then(res => res, err => sendMessage(dispatch, err.response.status))
-		.then(res => res ? loginSucceeded(res.data, dispatch) : null)
+		.then(
+			res => res,
+			err => sendMessage(dispatch, err.response.status)
+		)
+		.then(res => {
+			if (res) {
+				loginSucceeded(res.data, dispatch);
+			}
+		})
 );
 

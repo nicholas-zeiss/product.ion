@@ -16,12 +16,14 @@ export default (state = defaultBudgetsState, action) => {
 			return defaultBudgetsState;
 		}
 
+
 		case 'DEHYDRATE_BUDGETS': {
 			let budgets = Object.assign({}, state);
-			action.ids.forEach(id => delete budgets[id]);
+			action.IDs.forEach(id => delete budgets[id]);
 
 			return budgets;
 		}
+
 
 		case 'HYDRATE_BUDGETS': {
 			let newBudgets = Object.assign({}, state, { loaded: true });
@@ -34,6 +36,7 @@ export default (state = defaultBudgetsState, action) => {
 
 			return newBudgets;
 		}
+
 
 		default: {
 			return state;

@@ -24,21 +24,39 @@ import ApiCall from '../utils/serverCalls';
 
 export const clearProjects = () => ({ type: 'CLEAR_PROJECTS' });
 
+
 export const createProject = project => (
 	dispatch => ApiCall
 		.createProject(project)
-		.then(res => res, err => console.error(err))
-		.then(res => res ? dispatch({ type: 'HYDRATE_PROJECTS', projects: [ res.data ] }) : null)
+		.then(
+			res => res,
+			err => console.error(err)
+		)
+		.then(res => {
+			if (res) {
+				dispatch({ type: 'HYDRATE_PROJECTS', projects: [ res.data ] });
+			}
+		})
 );
+
 
 export const dehydrateProjects = ids => ({ type: 'DEHYDRATE_PROJECTS', ids });
 
+
 export const hydrateProjects = projects => ({ type: 'HYDRATE_PROJECTS', projects });
+
 
 export const updateProject = project => (
 	dispatch => ApiCall
 		.updateProject(project)
-		.then(res => res, err => console.error(err))
-		.then(res => res ? dispatch({ type: 'HYDRATE_PROJECTS', projects: [ res.data ] }) : null)
+		.then(
+			res => res,
+			err => console.error(err)
+		)
+		.then(res => {
+			if (res) {
+				dispatch({ type: 'HYDRATE_PROJECTS', projects: [ res.data ] });
+			}
+		})
 );
 

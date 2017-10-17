@@ -24,21 +24,39 @@ import ApiCall from '../utils/serverCalls';
 
 export const clearExpenses = () => ({ type: 'CLEAR_EXPENSES' });
 
-export const createExpenses = expenses => (
+
+export const createExpenses = (expenses, projID) => (
 	dispatch => ApiCall
-		.createExpenses(expenses)
-		.then(res => res, err => console.error(err))
-		.then(res => res ? dispatch({ type: 'HYDRATE_EXPENSES', expenses: res.data }) : null)
+		.createExpenses(expenses, projID)
+		.then(
+			res => res,
+			err => console.error(err)
+		)
+		.then(res => {
+			if (res) {
+				dispatch({ type: 'HYDRATE_EXPENSES', expenses: res.data });
+			}
+		})
 );
 
-export const dehydrateExpenses = ids => ({ type: 'DEHYDRATE_EXPENSES', ids });
 
-export const deleteExpense = id => (
+export const dehydrateExpenses = IDs => ({ type: 'DEHYDRATE_EXPENSES', IDs });
+
+
+export const deleteExpense = (id, projID) => (
 	dispatch => ApiCall
-		.deleteExpense(id)
-		.then(res => res, err => console.error(err))
-		.then(res => res ? dispatch({ type: 'DEHYDRATE_EXPENSES', ids: [ id ] }) : null)
+		.deleteExpense(id, projID)
+		.then(
+			res => res,
+			err => console.error(err)
+		)
+		.then(res => {
+			if (res) {
+				dispatch({ type: 'DEHYDRATE_EXPENSES', IDs: [ id ] });
+			}
+		})
 );
+
 
 export const getExpenses = projIDs => {
 	if (!projIDs.length) {
@@ -47,16 +65,32 @@ export const getExpenses = projIDs => {
 
 	return dispatch => ApiCall
 		.getExpenses(projIDs)
-		.then(res => res, err => console.error(err))
-		.then(res => res ? dispatch({ type: 'HYDRATE_EXPENSES', expenses: res.data }) : null);
+		.then(
+			res => res,
+			err => console.error(err)
+		)
+		.then(res => {
+			if (res) {
+				dispatch({ type: 'HYDRATE_EXPENSES', expenses: res.data });
+			}
+		})
 };
 
+
 export const hydrateExpenses = expenses => ({ type: 'HYDRATE_EXPENSES', expenses });
+
 
 export const updateExpense = expense => (
 	dispatch => ApiCall
 		.updateExpense(expense)
-		.then(res => res, err => console.error(err))
-		.then(res => res ? dispatch({ type: 'HYDRATE_EXPENSES', expenses: [ res.data ] }) : null)
+		.then(
+			res => res,
+			err => console.error(err)
+		)
+		.then(res => {
+			if (res) {
+				dispatch({ type: 'HYDRATE_EXPENSES', expenses: [ expense ] });
+			}
+		})
 );
 
