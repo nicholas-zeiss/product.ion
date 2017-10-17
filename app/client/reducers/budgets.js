@@ -12,7 +12,7 @@ import { store } from '../store';
 export const defaultBudgetsState = { loaded: false };
 
 
-export default (state = {}, action) => {
+export default (state = defaultBudgetsState, action) => {
 
 	switch (action.type) {
 		
@@ -22,40 +22,12 @@ export default (state = {}, action) => {
 		}
 
 
-		case 'CREATE_BUDGETS': {
-			ApiCall
-				.createBudgets(action.budgets)
-				.then(res => {
-					store.dispatch({ type: 'HYDRATE_BUDGETS', budgets: res.data });
-				})
-				.catch(err => {
-					console.error('Error posting budgets: ', err);
-				});
-			
-			return state;
-		}
-
-
 		case 'DEHYDRATE_BUDGETS': {
 			let budgets = Object.assign({}, state);
 
 			action.ids.forEach(id => delete budgets[id]);
 
 			return budgets;
-		}
-
-
-		case 'DELETE_BUDGET': {
-			ApiCall
-				.deleteBudget(action.id)
-				.then(() => {
-					store.dispatch({type: 'DEHYDRATE_BUDGETS', ids: [ action.id ] });
-				})
-				.catch(err => {
-					console.error(err);
-				});
-
-			return state;
 		}
 
 
@@ -83,20 +55,6 @@ export default (state = {}, action) => {
 			});
 
 			return newBudgets;
-		}
-
-
-		case 'UPDATE_BUDGETS': {
-			ApiCall
-				.updateBudgets(action.budgets)
-				.then(res => {
-					store.dispatch({ type: 'HYDRATE_BUDGETS', budgets: res.data });
-				})
-				.catch(err => {
-					console.err(err);
-				});
-
-			return state;
 		}
 
 
