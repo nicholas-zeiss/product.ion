@@ -60,9 +60,9 @@ export default {
 	//      		get data
 	//-------------------------------
 
-	getBudgets: projID => axios.get('/api/project/' + projID),
+	getBudgets: projIDs => axios.get('/api/project/' + projIDs),
 
-	getExpenses: projID => axios.get('/api/project/' + projID),
+	getExpenses: projIDs => axios.get('/api/project/' + projIDs),
 
 
 
@@ -70,13 +70,13 @@ export default {
 	//     			update data
 	//------------------------------
 
-	updateBudget: (budget, id) => axios.patch('/api/budget/' + id, budget),
+	updateBudgets: budgets => axios.patch('/api/budget', budgets),
 
-	updateExpense: (expense, id) => axios.post('/api/expense/' + id, expense),
+	updateExpense: expense => axios.patch('/api/expense', expense),
 
-	updateProject: (project, id) => axios.post('/api/project/' + id, project),
+	updateProject: project => axios.patch('/api/project', project),
 
-	updateUser: (user, id) => axios.post('/api/user/' + id, user),
+	updateUser: user => axios.patch('/api/user', user),
 
 };
 

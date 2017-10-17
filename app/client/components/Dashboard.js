@@ -23,13 +23,13 @@ import ProjectNode from './ProjectNode';
 class Dashboard extends React.Component {
 	constructor(props) {
 		super(props);
-	}
+	
+		if (this.props.budgets.loaded == false || this.props.expenses.loaded == false) {
+			const projIDs = this.props.projects.map(project => project.id);
 
-
-	componentWillMount() {
-		//get project expenses
-		//get project budgets
-		console.log('Dashboard is mounting');
+			this.props.getBudgets(projIDs);
+			this.props.getExpenses(projIDs);
+		}
 	}
 
 

@@ -116,7 +116,6 @@ export default (state = {}, action) => {
 
 
 		case 'HYDRATE_ORGANIZATION': {
-			
 			let orgData = {};
 			
 			for (let key in action) {
@@ -176,7 +175,6 @@ export default (state = {}, action) => {
 
 
 		case 'REFRESH_LOGIN': {
-			
 			ApiCall
 				.checkToken(sessionStorage.token)
 				.then(res => {
@@ -201,7 +199,6 @@ export default (state = {}, action) => {
 
 
 		case 'SIGNUP': {
-
 			ApiCall
 				.signup(action.orgName, action.username, action.password)
 				.then(res => {

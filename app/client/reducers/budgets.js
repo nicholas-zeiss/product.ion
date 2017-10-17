@@ -9,13 +9,16 @@ import ApiCall from '../utils/serverCalls';
 import { store } from '../store';
 
 
+export const defaultBudgetsState = { loaded: false };
+
+
 export default (state = {}, action) => {
 
 	switch (action.type) {
 		
 
 		case 'CLEAR_BUDGETS': {
-			return {};
+			return defaultBudgetsState;
 		}
 
 
@@ -71,7 +74,7 @@ export default (state = {}, action) => {
 
 
 		case 'HYDRATE_BUDGETS': {
-			let newBudgets = Object.assign({}, state);
+			let newBudgets = Object.assign({}, state, { loaded: true });
 
 			action.budgets.forEach(budget => {
 				let id = budget.id;
