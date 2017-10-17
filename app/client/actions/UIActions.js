@@ -5,33 +5,18 @@
 **/
 
 
+export const clearUI = () => ({ type: 'CLEAR_UI' });
 
 
-export function setPasswordMessage(message) {
-	return {
-		type: 'SET_PASSWORD_MESSAGE',
-		message
-	};
-}
+export const setMessages = messages => ({
+	type: 'SET_MESSAGES',
+	messages
+});
 
 
-export function setUserOrgMessage(message) {
-	return {
-		type: 'SET_USER/ORG_MESSAGE',
-		message
-	};
-}
-
-
-export function setCurrentExpenseProject(expenses) {
-	return {type: 'SET_CURRENT_EXPENSE_PROJECT', expenses};
-}
-
-
-export function toggleModal(name) {
-	return {
-		type: 'TOGGLE_MODAL',
-		name
-	};
-}
+export const toggleModal = (name, projID = null) => ({
+	type: 'TOGGLE_MODAL',
+	name,
+	projID
+});
 

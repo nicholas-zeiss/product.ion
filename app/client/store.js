@@ -18,18 +18,18 @@ import { routerMiddleware, routerReducer, syncHistoryWithStore } from 'react-rou
 import { applyMiddleware, combineReducers, createStore } from 'redux';
 import reduxThunk from 'redux-thunk';
 
-import budgetReducer, { defaultBudgetsState } from './reducers/budgets';
-import expenseReducer, { defaultExpensesState } from './reducers/expenses';
+import budgetReducer from './reducers/budgets';
+import expenseReducer from './reducers/expenses';
 import organizationReducer, { defaultOrganizationState } from './reducers/organization';
-import projectReducer, { defaultProjectsState } from './reducers/projects';
+import projectReducer from './reducers/projects';
 import UIReducer, { defaultUIState } from './reducers/UI';
 
 
 const defaultState = {
-	budgets: defaultBudgetsState,
-	expenses: defaultExpensesState,
+	budgets: [],
+	expenses: [],
 	organization: defaultOrganizationState,
-	projects: defaultProjectsState,
+	projects: [],
 	UI: defaultUIState
 };
 

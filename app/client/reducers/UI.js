@@ -1,22 +1,54 @@
+/**
+ *
+ *	Reducers for the UI section of our store
+ *
+**/
 
 
-export default function UI(state = {}, action) {
-	
-	switch (action.type) {
-		case 'SET_PASSWORD_MESSAGE':
-			return Object.assign({}, state, { password: action.message });
-
-		case 'SET_USER/ORG_MESSAGE':
-			return Object.assign({}, state, { username: action.message });
-
-		case 'BAD_CSV':
-			return Object.assign({}, state, { csv: action.message });
-
-		case 'TOGGLE_MODAL':
-			return Object.assign({}, state, { [action.name]: !state[action.name] });
-
-		default:
-			return state;
+export const defaultUIState = {
+	modals: {
+		addUser: false,
+		pitch: false,
+		pitchProject: null
+	},
+	messages: {
+		password: '',
+		user: ''
 	}
-}
+};
+
+
+export default (state = defaultUIState, action) => {
+
+	switch (action.type) {
+
+
+		case 'CLEAR_UI': {
+			return defaultUIState;
+		}
+
+
+		case 'SET_MESSAGES': {
+			let messages = Object.assign({}, state.messages, action.messages);
+			
+			return Object.assign({}, state, { messages });
+		}
+
+
+		case 'TOGGLE_MODAL': {
+			let modals = Object.assign({}, state.modals, { [action.name]: !state[action.name] });
+
+			if (action.projID != null) {
+				modals.pitchProject = action.projID;
+			}
+
+			return Object.assign({}, state, { modals });
+		}
+
+
+		default: {
+			return state;
+		}
+	}
+};
 
