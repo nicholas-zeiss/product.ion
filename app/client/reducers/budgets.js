@@ -23,12 +23,7 @@ export default (state = {}, action) => {
 			ApiCall
 				.createBudgets(action.budgets)
 				.then(res => {
-
-					store.dispatch({
-						type: 'HYDRATE_BUDGETS',
-						budgets: res.data
-					});
-
+					store.dispatch({ type: 'HYDRATE_BUDGETS', budgets: res.data });
 				})
 				.catch(err => {
 					console.error('Error posting budgets: ', err);
@@ -51,7 +46,7 @@ export default (state = {}, action) => {
 			ApiCall
 				.deleteBudget(action.id)
 				.then(() => {
-					store.dispatch({type: 'DEHYDRATE_BUDGETS', ids: action.id });
+					store.dispatch({type: 'DEHYDRATE_BUDGETS', ids: [ action.id ] });
 				})
 				.catch(err => {
 					console.error(err);

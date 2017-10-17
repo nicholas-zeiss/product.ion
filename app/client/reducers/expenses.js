@@ -8,79 +8,98 @@
 import ApiCall from '../utils/serverCalls';
 import { store } from '../store';
 
-import { browserHistory } from 'react-router';
 
-function expenses(state = [], action) {
+export default (state = {}, action) => {
+	
 	switch (action.type) {
-		case 'GET_EXPENSES':
-			console.log(action);
-			ApiCall.getProject(action.id)
+	
+
+		case 'CLEAR_EXPENSES': {
+			return {};
+		}
+
+
+		case 'CREATE_EXPENSES': {
+			ApiCall
+				.createExpenses(action.expenses)
 				.then(res => {
-					if (res.status == 200) {
-						console.log('the the expense reducer ', res.data);
-						var projectId = res.data.projID,
-							expenses = res.data.expenses,
-							id = res.data.id,
-							orgName = res.data.org.name;
-						store.dispatch({type:'HYDRATE_EXPENSES', projectId, id, expenses});
-						browserHistory.push('/expenses');
-					}
+					store.dispatch({ type: 'HYDRATE_EXPENSES', expenses: res.data });
 				})
 				.catch(err => {
 					console.error(err);
 				});
-			break;
-		case 'HYDRATE_EXPENSES':
-			console.log('hydrating expenses w/ projID', action.projectId);
-			state.projID = action.projectId;
-			state.expenses = action.expenses;
-			state.id = action.id;
+		
+			return state;
+		}
 
-			return state;
-		case 'SET_CURRENT_EXPENSE_PROJECT':
-			state.current = action.expenses;
-			return state;
-		case 'NEW_EXPENSE':
-			console.log('in new expense', action);
-			ApiCall.registerExpense(action)
-				.then(function(res) {
-					console.log('new expense', res.data);
-					store.dispatch({type:'GET_EXPENSES', projectId: action.projID});
+
+		case 'DEHYDRATE_EXPENSES': {
+			let expenses = Object.assign({}, state);
+
+			action.ids.forEach(id => delete expenses[id]);
+
+			return expenses;
+		}
+
+
+		case 'DELETE_EXPENSE': {
+			ApiCall
+				.deleteExpense(action.id)
+				.then(() => {
+					store.dispatch({ type: 'DEHYDRATE_EXPENSES', ids: [ action.id ] });
 				})
-				.catch(function(err) {
-					console.error(err);
-				});
-			break;
-		case 'REMOVE_EXPENSE':
-			ApiCall.removeExpense(action)
-				.then(function(res) {
-					console.log('removing expense, projID:', action.projID);
-					store.dispatch({type:'GET_EXPENSES', projectId: action.projID});
-				})
-				.catch(function(err) {
+				.catch(err => {
 					console.err(err);
 				});
-			// var temp = [];
-			// for (var i = 0; i < state.expenses.length; i++) {
-			//   if (state.expenses[i].id !== action.id) {
-			//     temp.push(state.expenses[i]);
-			//   }
-			// }
-			// return {id: state.id, projID: state.projID, expenses: temp}
-		case 'UPDATE_EXPENSE':
-			ApiCall.updateExpense(action)
-				.then(function(res) {
-					console.log('back at dispatch for update ', res);
-					store.dispatch({type:'GET_EXPENSES', projectId: action.projID});
+
+			return state;
+		}
+
+
+		case 'GET_EXPENSES': {
+			ApiCall
+				.getExpenses(action.projIDs)
+				.then(res => {
+					store.dispatch({ type: 'HYDRATE_EXPENSES', expenses: res.data });
 				})
-				.catch(function(err) {
+				.catch(err => {
 					console.error(err);
 				});
-		case 'CLEAR_EXPENSES':
-			return [];
+		
+			return state;
+		}
 
+
+		case 'HYDRATE_EXPENSES': {
+			let newBudgets = Object.assign({}, state);
+
+			action.budgets.forEach(budget => {
+				let id = budget.id;
+				delete budget.id;
+				newBudgets[id] = budget;
+			});
+
+			return newBudgets;
+		}
+
+
+		case 'UPDATE_EXPENSE': {
+			ApiCall
+				.updateExpense(action.expense)
+				.then(res => {
+					store.dispatch({ type: 'HYDRATE_EXPENSES', expenses: [ res.data ] });
+				})
+				.catch(err => {
+					console.error(err);
+				});
+		
+			return state;
+		}
+
+
+		default: {
+			return state;
+		}
 	}
-	return state;
-}
+};
 
-export default expenses;

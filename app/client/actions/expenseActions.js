@@ -14,7 +14,6 @@ export const createExpenses = expenses => ({ type: 'CREATE_EXPENSES', expenses }
 export const dehydrateExpenses = ids => ({ type: 'DEHYDRATE_EXPENSES', ids });
 
 
-
 export const deleteExpense = id => ({ type: 'DELETE_EXPENSE', id });
 
 
