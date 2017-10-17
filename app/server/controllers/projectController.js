@@ -10,7 +10,7 @@ const Project = require('../models/project.js');
 
 exports.getProject = (id, success, error) => {
 	new Project({ id })
-		.fetch({ withRelated: [ 'expenses' ] })
+		.fetch({ withRelated: [ 'budgets', 'expenses' ] })
 		.then(success)
 		.catch(error);
 };
@@ -32,9 +32,9 @@ exports.makeProject = (data, cb) => {
 };
 
 
-exports.updateProject = (id, data, success, error) => {
-	new Project({ id })
-		.save(data, { patch: true })
+exports.updateProject = (project, success, error) => {
+	new Project({ id: project.id })
+		.save(project, { patch: true })
 		.then(success)
 		.catch(error);
 };

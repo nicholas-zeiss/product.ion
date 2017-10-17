@@ -30,17 +30,17 @@ exports.getExpenses = (projIDs, success, error) => {
 };
 
 
-exports.makeExpenses = (expenseArray, success, error) => {
-	new Expenses(expenseArray)
+exports.makeExpenses = (expenses, success, error) => {
+	new Expenses(expenses)
 		.invokeThen('save')
 		.then(success)
 		.catch(error);
 };
 
 
-exports.updateExpenses = (id, data, success, error) => {
-	new Expense({ id })
-		.save(data, { patch: true })
+exports.updateExpense = (expense, success, error) => {
+	new Expense({ id: expense.id })
+		.save(expense, { patch: true })
 		.then(success)
 		.catch(error);
 };

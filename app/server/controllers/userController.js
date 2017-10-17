@@ -30,9 +30,9 @@ exports.makeUser = (data, cb) => {
 };
 
 
-exports.updateUser = (id, data, success, error) => {
-	new User({ id })
-		.save(data, { patch: true })
+exports.updateUser = (user, success, error) => {
+	new User({ id: user.id })
+		.save(user, { patch: true })
 		.then(success)
 		.catch(error);
 };

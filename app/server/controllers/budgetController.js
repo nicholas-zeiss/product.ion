@@ -13,10 +13,10 @@ const Budgets = Bookshelf.Collection.extend({
 });
 
 
-exports.deleteBudgets = (IDs, success, error) => {
-	Budget
-		.where('id', 'in', IDs)
-		.invokeThen('destory')
+exports.deleteBudget = (id, success, error) => {
+	new Budget({ id })
+		.fetch()
+		.destroy()
 		.then(success)
 		.catch(error);
 };
@@ -39,9 +39,9 @@ exports.makeBudgets = (budgetArray, success, error) => {
 };
 
 
-exports.updateBudget = (id, data, success, error) => {
-	new Budget({ id })
-		.save(data, { patch: true })
+exports.updateBudget = (budget, success, error) => {
+	new Budget({ id: budget.id })
+		.save(budget, { patch: true })
 		.then(success)
 		.catch(error);
 };
