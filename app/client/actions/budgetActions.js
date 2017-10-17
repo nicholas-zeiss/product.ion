@@ -40,12 +40,16 @@ export const deleteBudget = id => (
 		.then(res => res ? dispatch({type: 'DEHYDRATE_BUDGETS', ids: [ id ] }) : null)
 );
 
-export const getBudgets = projIDs => (
-	dispatch => ApiCall
+export const getBudgets = projIDs => {
+	if (!projIDs.length) {
+		return dispatch => dispatch({ type: 'HYDRATE_BUDGETS', budgets: [] });
+	}
+
+	return dispatch => ApiCall
 		.getBudgets(projIDs)
 		.then(res => res, err => console.error(err))
-		.then(res => res ? dispatch({ type: 'HYDRATE_BUDGETS', budgets: res.data }) : null)
-);
+		.then(res => res ? dispatch({ type: 'HYDRATE_BUDGETS', budgets: res.data }) : null);
+};
 
 export const hydrateBudgets = budgets => ({ type: 'HYDRATE_BUDGETS', budgets });
 

@@ -12,18 +12,15 @@ import { Glyphicon, Nav, Navbar, NavItem } from 'react-bootstrap';
 
 const NavBar = props => {
 	
-	let selectLink = (path, e) => {
+	const selectLink = (path, e) => {
 		e.preventDefault();
 		browserHistory.push(path);
 	};
 
-	let logout = e => {
+
+	const logout = e => {
 		e.preventDefault();
-
 		props.logout();
-		props.clearExpenses();
-		props.clearProjects();
-
 		browserHistory.push('/');
 	};
 
@@ -32,17 +29,17 @@ const NavBar = props => {
 		<div>
 			<Navbar bsStyle='inverse'>
 				<Nav>
-					<NavItem onClick={ selectLink.bind(this, '/') } style={ { 'fontSize': '20px', 'fontWeight': 'bold', 'color': 'white' } }>
+					<NavItem onClick={ selectLink.bind(null, '/dashboard') } style={ { 'fontSize': '20px', 'fontWeight': 'bold', 'color': 'white' } }>
 						Dashboard
 					</NavItem>
 					
-					<NavItem onClick={ selectLink.bind(this, '/projects') } style={ { 'fontSize': '15px', 'color': 'white' } }>
+					<NavItem onClick={ selectLink.bind(null, '/projects') } style={ { 'fontSize': '15px', 'color': 'white' } }>
 						Projects
 					</NavItem>
 				</Nav>
 
 				<Nav pullRight>
-					<NavItem onClick={ selectLink.bind(this, '/settings') } style={ { 'fontSize': '15px', 'color': 'white' } }>
+					<NavItem onClick={ selectLink.bind(null, '/settings') } style={ { 'fontSize': '15px', 'color': 'white' } }>
 						<Glyphicon glyph='cog'/>
 					</NavItem>
 					

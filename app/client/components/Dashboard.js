@@ -27,12 +27,10 @@ class Dashboard extends React.Component {
 		props.setMessages({ password: '', user: '' });
 	
 		if (props.budgets.loaded == false || props.expenses.loaded == false) {
-			if (props.projects.length) {
-				const projIDs = props.projects.map(project => project.id);
+			const projIDs = props.projects.map(project => project.id);
 
-				props.getBudgets(projIDs);
-				props.getExpenses(projIDs);
-			}
+			props.getBudgets(projIDs);
+			props.getExpenses(projIDs);
 		}
 	}
 
@@ -67,9 +65,7 @@ class Dashboard extends React.Component {
 
 
 		if (this.props.organization.user.permissions != 'admin') {
-			//if not an admin account, client can only view pitches they created
-			pitches = pitches.filter(proj => proj.userID == this.props.organization.user.id);
-		
+			pitches = pitches.filter(proj => proj.userID == this.props.organization.user.id);		
 		} else {
 			mastersheet =	(
 				<Link to='/mastersheet'>
@@ -81,13 +77,7 @@ class Dashboard extends React.Component {
 		}
 
 
-		pitches = pitches.map((pitch, idx) => (
-			<ProjectNode
-				{ ...this.props }
-				key={ idx }
-				project={ pitch }
-			/>
-		), this);
+		pitches = pitches.map((pitch, idx) => <ProjectNode { ...this.props } key={ idx } project={ pitch }/>, this);
 
 
 		//determine the three most recently edited projects
@@ -98,7 +88,6 @@ class Dashboard extends React.Component {
 			.map((project, idx) => (
 				<ProjectNode
 					{ ...this.props }
-					editProject={ this.setProjectToEdit.bind(this) }
 					key={ idx }
 					project={ project }
 				/>
@@ -110,7 +99,7 @@ class Dashboard extends React.Component {
 				<NavBar { ...this.props }/>
 
 				<div>
-					<Modal onHide={ this.props.toggleView.bind(this, 'pitch') } show={ this.props.UI.views.pitch }>
+					<Modal onHide={ this.props.toggleView.bind(null, 'pitch') } show={ this.props.UI.views.pitch }>
 						<Modal.Body>
 							<Pitch { ...this.props } />
 						</Modal.Body>
