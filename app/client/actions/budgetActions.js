@@ -8,43 +8,20 @@
 export const clearBudgets = () => ({ type: 'CLEAR_BUDGETS' });
 
 
-export function deleteBudget(budgetID) {
-	return {
-		type:'DELETE_BUDGET',
-		budgetID
-	};
-}
+export const createBudgets = budgets => ({ type: 'CREATE_BUDGETS', budgets });
 
 
-export function getProjectBudgets(projID) {
-	return {
-		type: 'GET_PROJECT_BUDGETS',
-		projID
-	};
-}
+export const dehydrateBudgets = ids => ({ type: 'DEHYDRATE_BUDGETS', ids });
 
 
-export function hydrateProjectBudgets(projID, budgets) {
-	return {
-		type: 'HYDRATE_PROJECT_BUDGETS',
-		budgets,
-		projID
-	};
-}
+export const deleteBudget = id => ({ type:'DELETE_BUDGET', id });
 
 
-export function postNewBudget(budget) {
-	return {
-		type: 'POST_NEW_BUDGET',
-		budget
-	};
-}
+export const getBudgets = projIDs => ({ type: 'GET_BUDGETS', projIDs });
 
 
-export function updateMultipleBudgets(budgets) {
-	return {
-		type: 'UPDATE_MULTIPLE_BUDGETS',
-		budgets
-	};
-}
+export const hydrateBudgets = budgets => ({ type: 'HYDRATE_BUDGETS', budgets });
+
+
+export const updateBudgets = budgets => ({ type: 'UPDATE_BUDGETS', budgets });
 

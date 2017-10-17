@@ -26,8 +26,8 @@ import UIReducer, { defaultUIState } from './reducers/UI';
 
 
 const defaultState = {
-	budgets: [],
-	expenses: [],
+	budgets: {},
+	expenses: {},
 	organization: defaultOrganizationState,
 	projects: [],
 	UI: defaultUIState

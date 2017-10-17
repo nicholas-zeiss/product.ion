@@ -8,32 +8,12 @@
 export const clearProjects = () => ({ type: 'CLEAR_PROJECTS' });
 
 
-export function hydrateProjects(projects) {
-	return {
-		type: 'HYDRATE_PROJECTS',
-		projects
-	};
-}
+export const createProject = project => ({ type: 'POST_NEW_PROJECT', project });
 
 
-export function getProject(projID) {
-	return {
-		type: 'GET_PROJECT',
-		projID
-	};
-}
+export const hydrateProjects = projects => ({ type: 'HYDRATE_PROJECTS', projects });
 
 
-export function postNewProject(pitch) {
-	return {
-		type: 'POST_NEW_PROJECT',
-		pitch
-	};
-}
-
-
-export function updateProject(project) {
-	return {type: 'UPDATE_PROJECT', project};
-}
+export const updateProject = project => ({ type: 'UPDATE_PROJECT', project });
 
 
