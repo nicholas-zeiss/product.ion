@@ -34,7 +34,7 @@ export default {
 	//      create data
 	//------------------------------
 
-	createBudgets: budgets => axios.post('/api/budgets', budgets),
+	createBudgets: (budgets, projID) => axios.post('/api/budgets/' + projID, budgets),
 
 	createExpenses: (expenses, projID) => axios.post('/api/expenses/' + projID, expenses),
 
@@ -48,9 +48,11 @@ export default {
 	//     		delete data
 	//------------------------------
 
-	deleteBudgets: IDs => axios.delete('/api/budgets/' + IDs.join('-')),
+	deleteBudget: (id, projID) => axios.delete(`/api/budgets/${id}/${projID}`),
 
-	deleteExpense: id => axios.delete('/api/expenses/' + id),
+	deleteExpense: (id, projID) => axios.delete(`/api/expenses/${id}/${projID}`),
+
+	deleteUser: id => axios.delete('/api/users/' + id),
 
 
 
@@ -68,13 +70,13 @@ export default {
 	//     			update data
 	//------------------------------
 
-	updateBudget: (budget, id) => axios.patch('/api/budgets/' + id, budget),
+	updateBudget: budget => axios.patch('/api/budgets', budget),
 
-	updateExpense: (expense, id) => axios.patch('/api/expenses/' + id, expense),
+	updateExpense: expense => axios.patch('/api/expenses', expense),
 
-	updateProject: (project, id) => axios.patch('/api/projects/' + id, project),
+	updateProject: project => axios.patch('/api/projects', project),
 
-	updateUser: (user, id) => axios.patch('/api/users/' + id, user),
+	updateUser: user => axios.patch('/api/users', user),
 
 };
 
