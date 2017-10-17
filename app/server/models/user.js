@@ -15,7 +15,7 @@ module.exports = Bookshelf.model('User', Bookshelf.Model.extend({
 	},
 	
 	projects: function() {
-		return this.hasMany('Project', 'projects_users', 'userID', 'projID');
+		return this.hasMany('Project', 'userID');
 	}
 
 }));

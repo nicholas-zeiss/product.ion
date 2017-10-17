@@ -37,10 +37,10 @@ Promise.all([
 	knex.schema.createTableIfNotExists('expenses', table => {
 		table.increments('id').primary();
 		table.float('cost');
-		table.date('dateSpent');
-		table.date('dateTracked');
+		table.string('dateSpent');
+		table.string('dateTracked');
 		table.string('description');
-		table.string('glCode');
+		table.integer('glCode');
 		table.string('method');
 		table.integer('projID').unsigned().references('id').inTable('projects');
 		table.string('vendor');
@@ -57,18 +57,17 @@ Promise.all([
 	//holds projects for organizations
 	knex.schema.createTableIfNotExists('projects', table => {
 		table.increments('id').primary();
-		table.string('adminNotes', 1000).defaultTo('');
-		table.string('approvals', 12).defaultTo('111111111111');
+		table.string('adminNotes', 1000);
+		table.string('approvals', 12);
 		table.float('costToDate').defaultTo(0);
-		table.date('endDate');
-		table.float('estimateToComplete').defaultTo(0);
-		table.date('lastEdited').defaultTo(Date.now());
+		table.string('endDate');
+		table.string('lastEdited');
 		table.string('name').unique();
 		table.integer('numAssets').defaultTo(1);
 		table.integer('orgID').unsigned().references('id').inTable('organizations');
-		table.date('releaseDate');
+		table.string('releaseDate');
 		table.float('reqBudget').defaultTo(0);
-		table.date('startDate');
+		table.string('startDate');
 		table.string('status');
 		table.string('tier', 20);
 		table.string('type');

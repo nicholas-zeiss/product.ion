@@ -18,6 +18,17 @@ const Project = require('./controllers/projectController.js');
 const User = require('./controllers/userController.js');
 
 
+//returns a string of the current date in YYYY-MM-DD format
+//for the lastEdited property of projects
+const dateString = () => {
+	let now = new Date();
+	
+	let mm = ('0' + now.getMonth()).slice(-2);
+	let dd = ('0' + now.getDate()).slice(-2);
+
+	return [ now.getFullYear(), mm, dd ].join('-');
+};
+
 
 
 //------------------------------------------------------------------------------
@@ -198,6 +209,42 @@ const authAPI = app => {
 
 const budgetAPI = app => {
 
+	//when budgets are created/deleted/updated, we update the reqBudget property of the associated project
+	//using this function, which then completes the http response optionally sending the budgets now
+	//attached to the project
+	const updateProject = (projID, res, sendBudgets) => {
+		Project.getProject(
+			projID,
+			project => {
+
+				let projectUpdate = {
+					id: project.get('id'),
+					lastEdited: dateString(),
+					reqBudget: project
+						.related('budgets')
+						.reduce((cost, budget) => cost + budget.cost, 0)
+				};
+
+				Project.updateProject(
+					projectUpdate,
+					project => {
+
+						if (sendBudgets) {
+							res.status(200).json(project.related('budgets'));
+						} else {
+							res.sendStatus(200);
+						}
+					
+					},
+					error => res.sendStatus(500)
+				);
+			
+			},
+			error => res.sendStatus(500)
+		);
+	};
+
+
 	app.get('/api/budgets/:projIDs', (req, res) => {
 		let projIDs = req.param.projIDs.split('-');
 
@@ -209,28 +256,27 @@ const budgetAPI = app => {
 	});
 
 
-	app.delete('/api/budgets/:IDs', (req, res) => {
+	app.delete('/api/budgets/:id/:projID', (req, res) => {
 		Budget.deleteBudget(
-			req.params.id.split('-'),
-			success => res.sendStatus(200),
-			error => res.sendStatus(500)
-		);
-	});
-
-
-	app.patch('/api/budgets/:id', (req, res) => {
-		Budget.updateBudget(
 			req.params.id,
-			req.body,
-			success => res.sendStatus(200),
+			success => updateProject(req.params.projID, res, false),
 			error => res.sendStatus(500)
 		);
 	});
 
 
-	// makes budgets w/ the provided data and returns them
+	app.patch('/api/budgets', (req, res) => {
+		Budget.updateBudget(
+			req.body,
+			budget => updateProject(budget.get('projID'), res, false),
+			error => res.sendStatus(500)
+		);
+	});
+
+
+	// makes budgets of the provided array of budget objects and returns them
 	//
-	// req body should hold an array of objects w/ structure
+	// req body must hold an array of objects w/ structure
 	//
 	// {
 	//		cost: float,
@@ -241,10 +287,10 @@ const budgetAPI = app => {
 	//		total: float
 	// }
 	//
-	app.post('/api/budgets', (req, res) => {
+	app.post('/api/budgets/:projID', (req, res) => {
 		Budget.makeBudgets(
 			req.body,
-			budgets => res.status(201).json(budgets),
+			budgets => updateProject(req.params.projID, res, true),
 			error => res.sendStatus(500)
 		);
 	});
@@ -265,31 +311,66 @@ const budgetAPI = app => {
 
 const expenseAPI = app => {
 
+	//when expenses are created/deleted/updated, we update the costToDate property of the associated project
+	//using this function, which then completes the http response optionally sending the expenses now
+	//attached to the project
+	const updateProject = (projID, res, sendExpenses) => {
+		Project.getProject(
+			projID,
+			project => {
+
+				let projectUpdate = {
+					costToDate: project
+						.related('expenses')
+						.reduce((cost, expense) => cost + expense.cost, 0),
+					id: project.get('id'),
+					lastEdited: dateString()
+				};
+
+				Project.updateProject(
+					projectUpdate,
+					project => {
+
+						if (sendExpenses) {
+							res.status(200).json(project.related('expenses'));
+						} else {
+							res.sendStatus(200);
+						}
+					
+					},
+					error => res.sendStatus(500)
+				);
+			
+			},
+			error => res.sendStatus(500)
+		);
+	};
+
+
 	app.get('/api/expenses/:projIDs', (req, res) => {
 		let projIDs = req.param.projIDs.split('-');
 
 		Expense.getExpenses(
 			projIDs,
 			expenses => res.status(200).json(expenses),
-			error => res.sendStatus(500)
+			error => res.sendStatus(404)
 		);
 	});
 
 
-	app.delete('/api/expenses/:id', (req, res) => {
+	app.delete('/api/expenses/:id/:projID', (req, res) => {
 		Expense.deleteExpense(
 			req.params.id,
-			success => res.sendStatus(200),
+			success => updateProject(req.params.projID, res, false),
 			error => res.sendStatus(500)
 		);
 	});
 
 
-	app.patch('/api/expenses/:id', (req, res) => {
+	app.patch('/api/expenses', (req, res) => {
 		Expense.updateExpense(
-			req.params.id,
 			req.body,
-			success => res.sendStatus(200),
+			expense => updateProject(expense.get('projID'), res, false),
 			error => res.sendStatus(500)
 		);
 	});
@@ -298,46 +379,23 @@ const expenseAPI = app => {
 	// makes expenses w/ the provided data and returns them to client
 	// updates total cost for the associated (singular) project
 	//
-	// req body should hold an array of objects w/ structure
+	// req body must hold an array of objects w/ structure
 	//
 	// {
-	//    category: string,
 	//    cost: float,
 	//    dateSpent: string,
 	//    dateTracked: string,
 	//    description: string,
-	//    glCode: string,
+	//    integer: string,
 	//    method: string,
 	//    projID: int,        <------- foreign key for the project the expense is attached to
-	//    type: string,
 	//    vendor: string,
-	//    vertical: string
 	// }
 	//
 	app.post('/api/expenses/:projID', (req, res) => {
 		Expense.makeExpenses(
 			req.body,
-			expenses => {
-				Project.getProject(
-					req.params.projID,
-					project => {
-						
-						let cost = project
-							.related('expenses')
-							.reduce((cost, expense) => cost + expense.get('cost'), 0);
-					
-						Project.updateProject(
-							project.get('id'),
-							{ costToDate: cost },
-							success => res.status(200).json(expenses),
-							error => res.sendStatus(500)
-						);
-
-					},
-					error => res.sendStatus(500)
-				);
-
-			},
+			expenses => updateProject(req.params.projID, res, true),
 			error => res.sendStatus(500)
 		);
 	});
@@ -358,9 +416,8 @@ const expenseAPI = app => {
 
 const projectAPI = app => {
 
-	app.patch('/api/projects/:id', (req, res) => {
+	app.patch('/api/projects', (req, res) => {
 		Project.updateProject(
-			req.params.id,
 			req.body,
 			success => res.sendStatus(200),
 			error => res.sendStatus(500)
@@ -370,25 +427,29 @@ const projectAPI = app => {
 
 	// Creates a new project with the provided data and returns it
 	//
-	// req.body should hold
+	// req.body must hold
 	// {
-	// 		costToDate: float,
-	// 		estimateToComplete: float,
+	//		adminNotes: string,		
+	//		approvals: string,
+	// 		endDate: string,
 	// 		name: string,
-	// 		needs: string,
-	// 		orgs_id: int,       <------- foreign key for the organization the project is attached to
-	// 		projID: string,
-	// 		reqBudget: float,
-	// 		shootDates: string,
-	// 		status: string,
-	// 		type: string
+	//		numAssets: int,
+	// 		orgID: int,       <------- foreign key for the organization the project is attached to
+	//		releaseDate: string,
+	//		startDate: string,
+	//		status: string,
+	//		tier: string,
+	// 		type: string,
+	//		userID: int,			<------- foreign key for the user who created it
+	//		vertical: string
 	// }
+	//
 	app.post('/api/projects', (req, res) => {
+		req.body.lastEdited = dateString();
+
 		Project.makeProject(req.body, proj => {
 			if (proj) {
-				res
-					.status(201)
-					.json(proj);
+				res.status(201).json(proj);
 
 			} else {
 				res.sendStatus(404);
@@ -423,7 +484,6 @@ const userAPI = app => {
 
 	app.patch('/api/users', (req, res) => {
 		User.updateUser(
-			req.params.id,
 			req.body,
 			success => res.sendStatus(200),
 			error => res.sendStatus(500)
@@ -436,9 +496,9 @@ const userAPI = app => {
 	//
 	// req.body should be
 	// {
-	//    orgs_id: int
+	//    orgID: int
 	//    password: string,
-	//    perm: int,
+	//    permissions: string,
 	//    username: string,
 	// }
 	app.post('/api/users', (req, res) => {
@@ -451,7 +511,14 @@ const userAPI = app => {
 				User.makeUser(req.body, user => {
 					
 					if (user) {
-						res.status(201).json(user);
+						res
+							.status(201)
+							.json({ 
+								id: user.get('id'),
+								permissions: user.get('permissions'),
+								username: user.get('username')
+							});
+
 					} else {
 						res.sendStatus(500);
 					}
