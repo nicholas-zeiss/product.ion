@@ -205,7 +205,8 @@ module.exports = app => {
 
 							User.makeUser(user, user => {
 								if (user) {
-									let user = {
+									console.log(user.attributes);
+									user = {
 										id: user.get('id'),
 										permissions: user.get('permissions'),
 										projects: [],
