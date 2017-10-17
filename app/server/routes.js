@@ -56,7 +56,7 @@ const getUsersFromOrganization = org => (
 );
 
 
-//used when someone logs in or reloads the page and has a valid auth token,
+//used when someone logs in, signs up, or reloads the page and has a valid auth token,
 //this sends the base data needed by the app's homepage
 const sendOrganizationInfo = (user, org, res, token = generateToken(user)) => {
 	res
@@ -193,41 +193,15 @@ module.exports = app => {
 					//org name and username are available
 					Organization.makeOrganization({ name: req.body.orgName }, org => {
 						if (org) {
-							
-							let user = {
-								orgID: org.attributes.id,
-								password: bcrypt.hashSync(req.body.password),
-								permissions: 'admin',
-								username: req.body.username
-							};
-
-							User.makeUser(user, user => {
-								if (user) {
-									console.log(user.attributes);
-									user = {
-										id: user.get('id'),
-										permissions: user.get('permissions'),
-										projects: [],
-										username: user.get('username')
-									};
-
-									res
-										.status(201)
-										.json({ 
-											id: org.get('id'),
-											name: org.get('name'),
-											user: user,
-											users: [{
-												id: user.id,
-												permissions: user.permissions,
-												username: user.username
-											}]
-										});
-								
-								} else {
-									res.sendStatus(500);
-								}
-							});
+							User.makeUser(
+								{
+									orgID: org.attributes.id,
+									password: bcrypt.hashSync(req.body.password),
+									permissions: 'admin',
+									username: req.body.username
+								},
+								user => user ? sendOrganizationInfo(user, org, res) : res.sendStatus(500)
+							);
 						
 						} else {
 							res.sendStatus(500);
