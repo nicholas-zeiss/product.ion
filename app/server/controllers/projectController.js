@@ -10,16 +10,10 @@ const Project = require('../models/project.js');
 
 exports.getProject = (projID, cb) => {
 	new Project({ projID })
-		.fetch({ 
-			withRelated: [
-				'budgets',
-				'expenses',
-				'organization',
-				'users'
-			]
-		})
+		.fetch({ withRelated: [ 'budgets', 'expenses' ] })
 		.then(cb);
 };
+
 
 exports.makeProject = (data, cb) => {
 	new Project(data)

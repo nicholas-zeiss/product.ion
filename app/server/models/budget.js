@@ -11,8 +11,7 @@ const Bookshelf = require('../db.js');
 module.exports = Bookshelf.model('Budget', Bookshelf.Model.extend({
 	tableName: 'budgets',
 	
-	project: function() {
-		return this.belongsTo('Project', 'projID');
-	}
+	project: () => this.belongsTo('Project', 'projID')
+	
 }));
 

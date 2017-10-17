@@ -10,12 +10,11 @@ const Bookshelf = require('../db.js');
 module.exports = Bookshelf.model('User', Bookshelf.Model.extend({
 	tableName: 'users',
 	
-	organization: function() {
-		return this.belongsTo('Organization', 'orgID');
-	},
+	organization: () => this.belongsTo('Organization', 'orgID'),
 	
-	projects: function() {
-		return this.belongsToMany('Project', 'projects_users', 'userID', 'projID');
-	}
+	projects: () => this.belongsToMany('Project', 'projects_users', 'userID', 'projID'),
+
+	user: () => this.hasMany('Projects', 'userID')
+
 }));
 

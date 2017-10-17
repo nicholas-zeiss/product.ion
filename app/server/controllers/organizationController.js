@@ -8,13 +8,12 @@
 const Organization = require('../models/organization.js');
 
 
-exports.getOrganization = (name, cb) => {
-	new Organization({ name })
-		.fetch({
-			withRelated: [ 'users', 'projects' ] 
-		})
+exports.getOrganization = (id, cb) => {
+	new Organization({ id })
+		.fetch({ withRelated: [ 'users', 'projects' ] })
 		.then(cb);
 };
+
 
 exports.makeOrganization = (data, cb) => {
 	new Organization(data)

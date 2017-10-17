@@ -13,14 +13,15 @@ import { Provider } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
+
 //-------------------------------
 //			  Action Creators
 //-------------------------------
-import * as budgetActions from '../actions/budgetActions';
-import * as expenseActions from '../actions/expenseActions';
-import * as organizationActions from '../actions/organizationActions';
-import * as projectActions from '../actions/projectActions';
-import * as UIActions from '../actions/UIActions';
+import * as budgetActions from './actions/budgetActions';
+import * as expenseActions from './actions/expenseActions';
+import * as organizationActions from './actions/organizationActions';
+import * as projectActions from './actions/projectActions';
+import * as UIActions from './actions/UIActions';
 
 
 //-------------------------------
@@ -34,6 +35,7 @@ import MasterSheet from './components/MasterSheet';
 import Projects from './components/Projects';
 import Register from './components/Register';
 import Settings from './components/Settings';
+
 
 //-------------------------------
 //            Store

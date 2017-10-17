@@ -14,6 +14,7 @@ exports.getBudget = (id, cb) => {
 		.then(cb);
 };
 
+
 exports.makeBudget = (data, cb) => {
 	new Budget(data)
 		.save()

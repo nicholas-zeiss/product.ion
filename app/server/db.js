@@ -36,7 +36,6 @@ Promise.all([
 	//holds expenses for projects
 	knex.schema.createTableIfNotExists('expenses', table => {
 		table.increments('id').primary();
-		table.string('category');
 		table.float('cost');
 		table.date('dateSpent');
 		table.date('dateTracked');
@@ -61,29 +60,20 @@ Promise.all([
 		table.string('adminNotes', 1000).defaultTo('');
 		table.string('approvals', 12).defaultTo('111111111111');
 		table.float('costToDate').defaultTo(0);
-		table.integer('createdBy');
-		table.date('editDate');
 		table.date('endDate');
 		table.float('estimateToComplete').defaultTo(0);
 		table.date('lastEdited').defaultTo(Date.now());
-		table.string('name');
+		table.string('name').unique();
 		table.integer('numAssets').defaultTo(1);
 		table.integer('orgID').unsigned().references('id').inTable('organizations');
-		table.string('projID');
 		table.date('releaseDate');
 		table.float('reqBudget').defaultTo(0);
 		table.date('startDate');
 		table.string('status');
 		table.string('tier', 20);
 		table.string('type');
+		table.integer('userID').unsigned().references('id').inTable('users');
 		table.string('vertical', 20);
-	}),
-
-
-	//links projects to the users who created them
-	knex.schema.createTableIfNotExists('projects_users', table => {
-		table.integer('projID').references('id').inTable('projects');
-		table.integer('userID').references('id').inTable('users');
 	}),
 
 
@@ -92,7 +82,7 @@ Promise.all([
 		table.increments('id').primary();
 		table.integer('orgID').unsigned().references('id').inTable('organizations');
 		table.string('password');
-		table.integer('permissions');
+		table.string('permissions');
 		table.string('username').unique();
 	})
 ]);

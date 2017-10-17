@@ -22,7 +22,7 @@ const jwt = require('jsonwebtoken');
 //-----------------------------------
 
 //generates a nicely formatted date string
-function generateDate() {
+const generateDate = () => {
 	let date = new Date();
 
 	let year = date.getFullYear();
@@ -30,45 +30,71 @@ function generateDate() {
 	let day = ('0' + date.getDate()).slice(-2);
 
 	return year + '/' + month + '/' + day;
-}
+};
 
 
 //generates a JWT for verification
-function generateToken(user) {
+const generateToken = user => {
 	user = {
-		username: user.attributes.username,
-		id: user.id
+		username: user.get('username'),
+		id: user.get('id')
 	};
   
 	return jwt.sign(user, 'SSSHHHitsaSECRET', { expiresIn: '12h' });
-}
+};
 
 
-//given an organization model, return an array of the attached users stripped of
-//passwords
-function getUsersFromOrganization(org) {
-	return org.relations.users.map(user => ({ 
-		id: user.get('id'),
-		permissions: user.get('permissions'),
-		username: user.get('username')
-	}));
-}
+//given an organization model, return an array of the attached users stripped of passwords
+const getUsersFromOrganization = org => (
+	org
+		.related('users')
+		.map(user => ({ 
+			id: user.get('id'),
+			permissions: user.get('permissions'),
+			username: user.get('username')
+		}))
+);
+
+
+//used when someone logs in or reloads the page and has a valid auth token,
+//this sends the base data needed by the app's homepage
+const sendOrganizationInfo = (user, org, res, token = generateToken(user)) => {
+	res
+		.status(200)
+		.json({ 
+			organization: {
+				id: org.get('id'),
+				name: org.get('name')
+			},
+			projects: org.related('projects'),
+			token: token,
+			user: {
+				id: user.get('id'),
+				permissions: user.get('permissions'),
+				projects: user
+					.related('projects')
+					.map(project => project.get('id')),
+				username: user.get('username')
+			},
+			users: getUsersFromOrganization(org)
+		});
+};
 
 
 //when an expense is added/removed from a project, use this to update project costToDate
 //takes a callback which is executed on the project model once updated
-function updateProjectCost(projID, cb) {
+const updateProjectCost = (projID, cb) => {
 	Project.getProject(projID, project => {
 		
 		let date = generateDate();
-		let cost = project.relations.expenses.reduce((cost, exp) => cost + exp.get('cost'), 0);
+		let cost = project.related('expenses').reduce((cost, exp) => cost + exp.get('cost'), 0);
 
 		project
 			.save({ costToDate: cost, lastEdited: date })
 			.then(cb);
 
 	});
-}
+};
 
 
 
@@ -89,21 +115,9 @@ module.exports = app => {
 
 				delete user.attributes.password;
 
-				Organization.getOrganization(user.relations.organization.get('name'), org => {
+				Organization.getOrganization(user.get('orgID'), org => {
 					if (org) {
-
-						res
-							.status(200)
-							.json({ 
-								organization: org,
-								token: generateToken(user),
-								user: {
-									id: user.get('id'),
-									permissions: user.get('permissions'),
-									username: user.get('username')
-								},
-								users: getUsersFromOrganization(org)
-							});
+						sendOrganizationInfo(user, org, res);
 						
 					} else{
 						res.sendStatus(404);
@@ -129,25 +143,14 @@ module.exports = app => {
 					res.sendStatus(401);
 
 				} else {
-					User.getUser(user.username, function (user) {
+					User.getUser(user.username, user => {
 						if (user) {
 
 							delete user.attributes.password;
 
 							Organization.getOrganization(user.relations.organization.get('name'), org => {
 								if (org) {
-
-									res
-										.status(200)
-										.json({ 
-											organization: org,
-											user: {
-												id: user.get('id'),
-												permissions: user.get('permissions'),
-												username: user.get('username')
-											},
-											users: getUsersFromOrganization(org)
-										});
+									sendOrganizationInfo(user, org, res, req.body.token);
 									
 								} else{
 									res.sendStatus(401);
@@ -196,7 +199,7 @@ module.exports = app => {
 							let user = {
 								orgID: org.attributes.id,
 								password: bcrypt.hashSync(req.body.password),
-								permissions: 0,
+								permissions: 'admin',
 								username: req.body.username
 							};
 
@@ -205,15 +208,23 @@ module.exports = app => {
 									let user = {
 										id: user.get('id'),
 										permissions: user.get('permissions'),
+										projects: [],
 										username: user.get('username')
 									};
 
 									res
 										.status(201)
 										.json({ 
-											organization: org,
+											organization: {
+												id: org.get('id'),
+												name: org.get('name')
+											},
 											user: user,
-											users: [ user ]
+											users: [{
+												id: user.id,
+												permissions: user.permissions,
+												username: user.username
+											}]
 										});
 								
 								} else {

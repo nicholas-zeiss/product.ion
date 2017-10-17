@@ -14,35 +14,34 @@
 
 
 import { browserHistory } from 'react-router';
-import { syncHistoryWithStore, routerMiddleware} from 'react-router-redux';
-import { createStore, applyMiddleware } from 'redux';
+import { routerMiddleware, routerReducer, syncHistoryWithStore } from 'react-router-redux';
+import { applyMiddleware, combineReducers, createStore } from 'redux';
 import reduxThunk from 'redux-thunk';
 
-import rootReducer from './reducers/index';
+import budgetReducer, { defaultBudgetsState } from './reducers/budgets';
+import expenseReducer, { defaultExpensesState } from './reducers/expenses';
+import organizationReducer, { defaultOrganizationState } from './reducers/organization';
+import projectReducer, { defaultProjectsState } from './reducers/projects';
+import UIReducer, { defaultUIState } from './reducers/UI';
 
 
 const defaultState = {
-	budgets: {},
-	expenses: {},
-	organization: {
-		orgID: null,
-		orgName: null,
-		user: null,
-		users: []
-	},
-	projects: {},
-	UI: {
-		modals: {
-			addUser: false,
-			pitch: false,
-			pitchProject: null
-		},
-		messages: {
-			pitch: '',
-			username: ''
-		}
-	}
+	budgets: defaultBudgetsState,
+	expenses: defaultExpensesState,
+	organization: defaultOrganizationState,
+	projects: defaultProjectsState,
+	UI: defaultUIState
 };
+
+
+const rootReducer = combineReducers({
+	budgets: budgetReducer,
+	expenses: expenseReducer,
+	organization: organizationReducer,
+	projects: projectReducer,
+	routing: routerReducer,
+	UI: UIReducer
+});
 
 
 const middleware = applyMiddleware(routerMiddleware(browserHistory), reduxThunk);
