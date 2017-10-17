@@ -25,19 +25,18 @@ class Register extends React.Component {
 
 	//clear any old warning messages about login/signup
 	componentWillMount() {
-		this.props.setPasswordMessage('');
-		this.props.setUserOrgMessage('');
+		this.props.clearUI();
 	}
 
 
-	//update state to reflect changes to organization and admin name inputs to the state, 
+	//update state to reflect changes to organization and admin name, 
 	//clear error message if one exists (error message is only generated on submit)
 	handleUserOrgChange(e) {
-		if (this.props.messages.username) {
-			this.props.setUserOrgMessage('');
+		if (this.props.UI.messages.name) {
+			this.props.setMessages({ name: '' });
 		}
 
-		this.setState({ [ e.target.name ]: e.target.value });
+		this.setState({ [e.target.name]: e.target.value });
 	}
 
 
@@ -47,16 +46,16 @@ class Register extends React.Component {
 		let otherPass = e.target.name == 'pass' ? this.state.pass2 : this.state.pass;
 
 		if (e.target.value.length < 6) {
-			this.props.setPasswordMessage('Password must be longer than 6 characters');
+			this.props.setMessages({ password: 'Password must be longer than 6 characters' });
 
 		} else if (e.target.value != otherPass) {
-			this.props.setPasswordMessage('Passwords do not match');
+			this.props.setMessages({ password: 'Passwords do not match' });
 
-		} else if (this.props.messages.password) {
-			this.props.setPasswordMessage('');
+		} else if (this.props.UI.messages.password) {
+			this.props.setMessages({ password: '' });
 		}
 
-		this.setState({ [ e.target.name ]: e.target.value });
+		this.setState({ [e.target.name]: e.target.value });
 	}
 
 
@@ -64,7 +63,7 @@ class Register extends React.Component {
 		e.preventDefault();
 
 		if (this.state.pass == this.state.pass2) {
-			this.props.registerOrganization(this.state.organization, this.state.admin, this.state.pass);
+			this.props.signup(this.state.organization, this.state.admin, this.state.pass);
 		}
 	}
 
@@ -125,7 +124,7 @@ class Register extends React.Component {
 						</FormGroup>
 
 						<p id='registerUserOrgMessage'>
-							{ this.props.messages.username }
+							{ this.props.UI.messages.user }
 						</p>
 						
 						<div>
@@ -154,7 +153,7 @@ class Register extends React.Component {
 								<FormControl.Feedback />
 								
 								<p id='registerPasswordMessage'>
-									{ this.props.messages.password }
+									{ this.props.UI.messages.password }
 								</p>
 
 							</FormGroup>

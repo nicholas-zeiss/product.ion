@@ -15,6 +15,13 @@ exports.getOrganization = (id, cb) => {
 };
 
 
+exports.getOrganizationByName = (name, cb) => {
+	new Organization({ name })
+		.fetch({ withRelated: [ 'users', 'projects' ] })
+		.then(cb);
+};
+
+
 exports.makeOrganization = (data, cb) => {
 	new Organization(data)
 		.save()

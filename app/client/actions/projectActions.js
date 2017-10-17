@@ -5,6 +5,9 @@
 **/
 
 
+export const clearProjects = () => ({ type: 'CLEAR_PROJECTS' });
+
+
 export function hydrateProjects(projects) {
 	return {
 		type: 'HYDRATE_PROJECTS',
@@ -31,13 +34,6 @@ export function postNewProject(pitch) {
 
 export function updateProject(project) {
 	return {type: 'UPDATE_PROJECT', project};
-}
-
-
-export function clearProjects() {
-	return {
-		type: 'CLEAR_PROJECTS'
-	};
 }
 
 

@@ -1,20 +1,27 @@
-import ApiCall from "../utils/serverCalls";
-import { store } from "../store";
+/**
+ *
+ *	Reducers for the expenses section of our store
+ *
+**/
+
+
+import ApiCall from '../utils/serverCalls';
+import { store } from '../store';
 
 import { browserHistory } from 'react-router';
 
 function expenses(state = [], action) {
 	switch (action.type) {
-		case "GET_EXPENSES":
+		case 'GET_EXPENSES':
 			console.log(action);
 			ApiCall.getProject(action.id)
 				.then(res => {
 					if (res.status == 200) {
-						console.log('the the expense reducer ', res.data)
+						console.log('the the expense reducer ', res.data);
 						var projectId = res.data.projID,
-								expenses = res.data.expenses,
-								id = res.data.id,
-								orgName = res.data.org.name;
+							expenses = res.data.expenses,
+							id = res.data.id,
+							orgName = res.data.org.name;
 						store.dispatch({type:'HYDRATE_EXPENSES', projectId, id, expenses});
 						browserHistory.push('/expenses');
 					}
@@ -23,36 +30,36 @@ function expenses(state = [], action) {
 					console.error(err);
 				});
 			break;
-		case "HYDRATE_EXPENSES":
-			console.log('hydrating expenses w/ projID', action.projectId)
+		case 'HYDRATE_EXPENSES':
+			console.log('hydrating expenses w/ projID', action.projectId);
 			state.projID = action.projectId;
 			state.expenses = action.expenses;
 			state.id = action.id;
 
 			return state;
-		case "SET_CURRENT_EXPENSE_PROJECT":
+		case 'SET_CURRENT_EXPENSE_PROJECT':
 			state.current = action.expenses;
 			return state;
-		case "NEW_EXPENSE":
-			console.log('in new expense', action)
+		case 'NEW_EXPENSE':
+			console.log('in new expense', action);
 			ApiCall.registerExpense(action)
-			.then(function(res) {
-				console.log('new expense', res.data);
-				store.dispatch({type:'GET_EXPENSES', projectId: action.projID});
-			})
-			.catch(function(err) {
-				console.error(err);
-			})
+				.then(function(res) {
+					console.log('new expense', res.data);
+					store.dispatch({type:'GET_EXPENSES', projectId: action.projID});
+				})
+				.catch(function(err) {
+					console.error(err);
+				});
 			break;
-		case "REMOVE_EXPENSE":
+		case 'REMOVE_EXPENSE':
 			ApiCall.removeExpense(action)
-			.then(function(res) {
-				console.log('removing expense, projID:', action.projID)
-				store.dispatch({type:'GET_EXPENSES', projectId: action.projID});
-			})
-			.catch(function(err) {
-				console.err(err);
-			});
+				.then(function(res) {
+					console.log('removing expense, projID:', action.projID);
+					store.dispatch({type:'GET_EXPENSES', projectId: action.projID});
+				})
+				.catch(function(err) {
+					console.err(err);
+				});
 			// var temp = [];
 			// for (var i = 0; i < state.expenses.length; i++) {
 			//   if (state.expenses[i].id !== action.id) {
@@ -60,16 +67,16 @@ function expenses(state = [], action) {
 			//   }
 			// }
 			// return {id: state.id, projID: state.projID, expenses: temp}
-		case "UPDATE_EXPENSE":
+		case 'UPDATE_EXPENSE':
 			ApiCall.updateExpense(action)
-			.then(function(res) {
-				console.log('back at dispatch for update ', res)
-				store.dispatch({type:'GET_EXPENSES', projectId: action.projID});
-			})
-			.catch(function(err) {
-				console.error(err);
-			});
-		case "CLEAR_EXPENSES":
+				.then(function(res) {
+					console.log('back at dispatch for update ', res);
+					store.dispatch({type:'GET_EXPENSES', projectId: action.projID});
+				})
+				.catch(function(err) {
+					console.error(err);
+				});
+		case 'CLEAR_EXPENSES':
 			return [];
 
 	}

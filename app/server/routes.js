@@ -62,10 +62,8 @@ const sendOrganizationInfo = (user, org, res, token = generateToken(user)) => {
 	res
 		.status(200)
 		.json({ 
-			organization: {
-				id: org.get('id'),
-				name: org.get('name')
-			},
+			id: org.get('id'),
+			name: org.get('name'),
 			projects: org.related('projects'),
 			token: token,
 			user: {
@@ -111,7 +109,7 @@ module.exports = app => {
 	//as this is used for login, it also sends a JWT for authentication
 	app.post('/login', (req, res) => {
 		User.getUser(req.body.username, user => {
-			if (user && bcrypt.compareSync(req.body.password, user.attributes.password)) {
+			if (user && bcrypt.compareSync(req.body.password, user.get('password'))) {
 
 				delete user.attributes.password;
 
@@ -148,7 +146,7 @@ module.exports = app => {
 
 							delete user.attributes.password;
 
-							Organization.getOrganization(user.relations.organization.get('name'), org => {
+							Organization.getOrganization(user.get('orgID'), org => {
 								if (org) {
 									sendOrganizationInfo(user, org, res, req.body.token);
 									
@@ -178,7 +176,7 @@ module.exports = app => {
 	//----------------------------------
 
 	app.post('/signup', (req, res) => {
-		Organization.getOrganization(req.body.orgName, org => {
+		Organization.getOrganizationByName(req.body.orgName, org => {
 			User.getUser(req.body.username, user => {
 				
 				//first check that org name and username are available
@@ -216,10 +214,8 @@ module.exports = app => {
 									res
 										.status(201)
 										.json({ 
-											organization: {
-												id: org.get('id'),
-												name: org.get('name')
-											},
+											id: org.get('id'),
+											name: org.get('name'),
 											user: user,
 											users: [{
 												id: user.id,

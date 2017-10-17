@@ -6,8 +6,9 @@
 
 
 export const defaultUIState = {
-	modals: {
+	views: {
 		addUser: false,
+		charts: false,
 		pitch: false,
 		pitchProject: null
 	},
@@ -30,19 +31,18 @@ export default (state = defaultUIState, action) => {
 
 		case 'SET_MESSAGES': {
 			let messages = Object.assign({}, state.messages, action.messages);
-			
 			return Object.assign({}, state, { messages });
 		}
 
 
-		case 'TOGGLE_MODAL': {
-			let modals = Object.assign({}, state.modals, { [action.name]: !state[action.name] });
+		case 'TOGGLE_VIEW': {
+			let views = Object.assign({}, state.views, { [action.view]: !state[action.view] });
 
 			if (action.projID != null) {
-				modals.pitchProject = action.projID;
+				views.pitchProject = action.projID;
 			}
 
-			return Object.assign({}, state, { modals });
+			return Object.assign({}, state, { views });
 		}
 
 

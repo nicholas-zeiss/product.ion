@@ -14,9 +14,9 @@ export const setMessages = messages => ({
 });
 
 
-export const toggleModal = (name, projID = null) => ({
-	type: 'TOGGLE_MODAL',
-	name,
+export const toggleView = (view, projID = null) => ({
+	type: 'TOGGLE_VIEW',
+	view,
 	projID
 });
 

@@ -21,10 +21,9 @@ class Login extends React.Component {
 	}
 
 
-	//reset any old login/signup error message
+	//reset any old login/signup error messages
 	componentWillMount() {
-		this.props.setPasswordMessage('');
-		this.props.setUserOrgMessage('');
+		this.props.clearUI();
 		
 		//If client already has an authorization token, check it. If valid the client
 		//will route directly to the dashboard. If invalid the token will be destroyed.
@@ -36,13 +35,12 @@ class Login extends React.Component {
 
 	//update state to reflect changes in username/password fields
 	handleChange(e) {
-		this.setState({ [ e.target.name ]: e.target.value });
+		this.setState({ [e.target.name]: e.target.value });
 	}
 
 
 	handleSubmit(e) {
 		e.preventDefault();
-		
 		this.props.login(this.state.username, this.state.password);
 	}
 
@@ -90,7 +88,7 @@ class Login extends React.Component {
 						</FormGroup>
 						
 						<p id='loginMessage'>
-							{ this.props.messages.username }
+							{ this.props.UI.messages.user }
 						</p>
 						
 						<ButtonToolbar bsClass='loginButton'>

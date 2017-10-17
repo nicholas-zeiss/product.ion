@@ -5,6 +5,9 @@
 **/
 
 
+export const clearExpenses = () => ({ type: 'CLEAR_EXPENSES' });
+
+
 export function hydrateProjectExpenses(expenses) {
 	return {
 		type: 'HYDRATE_PROJECT_EXPENSES',
@@ -67,13 +70,6 @@ export function updateExpense(singleExpense, projID) {
 
 export function updateProject(project) {
 	return {type: 'UPDATE_PROJECT', project};
-}
-
-
-export function clearExpenses() {
-	return {
-		type: 'CLEAR_EXPENSES'
-	};
 }
 
 

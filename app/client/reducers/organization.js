@@ -47,7 +47,7 @@ export default (state = {}, action) => {
 
 				});
 
-			break;
+			return state;
 		}
 
 
@@ -83,7 +83,7 @@ export default (state = {}, action) => {
 				
 				});
 		
-			break;
+			return state;
 		}
 
 
@@ -111,7 +111,7 @@ export default (state = {}, action) => {
 
 				});
 
-			break;
+			return state;
 		}
 
 
@@ -133,18 +133,18 @@ export default (state = {}, action) => {
 			ApiCall
 				.login(action.username, action.password)
 				.then(res => {
-					
+
 					sessionStorage.setItem('token', res.data.token);
 					ApiCall.setToken(res.data.token);
 
-					store.dispatch({ type: 'HYDRATE_PROJECTS', projects: res.data.projects });
+					store.dispatch({ type: 'HYDRATE_PROJECTS', projects: res.data.projects.slice() });
 
 					let orgData = Object.assign(res.data, { type: 'HYDRATE_ORGANIZATION' });
 					delete orgData.projects;
 					delete orgData.token;
 
 					store.dispatch(orgData);
-					
+
 					browserHistory.push('/dashboard');
 
 				})
@@ -153,13 +153,13 @@ export default (state = {}, action) => {
 					store.dispatch({
 						type:'SET_MESSAGES',
 						messages: {
-							password: 'Invalid username/password'
+							user: 'Invalid username/password'
 						}
 					});
 
 				});
 		
-			break;
+			return state;
 		}
 			
 		
@@ -183,7 +183,7 @@ export default (state = {}, action) => {
 
 					ApiCall.setToken(res.data.token);
 
-					store.dispatch({ type: 'HYDRATE_PROJECTS', projects: res.data.projects });
+					store.dispatch({ type: 'HYDRATE_PROJECTS', projects: res.data.projects.slice() });
 
 					let orgData = Object.assign(res.data, { type: 'HYDRATE_ORGANIZATION' });
 					delete orgData.projects;
@@ -194,12 +194,9 @@ export default (state = {}, action) => {
 					browserHistory.push('/dashboard');
 					
 				})
-				.catch(err => {		
-					console.error(err);
-					sessionStorage.clear();
-				});
+				.catch(() => sessionStorage.clear());
 			
-			break;
+			return state;
 		}
 
 
@@ -212,10 +209,7 @@ export default (state = {}, action) => {
 					sessionStorage.token = res.data.token;
 					ApiCall.setToken(res.data.token);
 
-					store.dispatch({ type: 'HYDRATE_PROJECTS', projects: res.data.projects });					
-
 					let orgData = Object.assign(res.data, { type: 'HYDRATE_ORGANIZATION' });
-					delete orgData.projects;
 					delete orgData.token;
 
 					store.dispatch(orgData);
@@ -240,7 +234,7 @@ export default (state = {}, action) => {
 
 				});
 
-			break;
+			return state;
 		}
 
 
