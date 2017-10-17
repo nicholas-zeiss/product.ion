@@ -8,10 +8,20 @@
 const Project = require('../models/project.js');
 
 
-exports.getProject = (projID, cb) => {
-	new Project({ projID })
-		.fetch({ withRelated: [ 'budgets', 'expenses' ] })
-		.then(cb);
+exports.getProject = (id, success, error) => {
+	new Project({ id })
+		.fetch({ withRelated: [ 'expenses' ] })
+		.then(success)
+		.catch(error);
+};
+
+
+exports.getProjects = (IDs, success, error) => {
+	Project
+		.where('id', 'in', IDs)
+		.fetchAll({ withRelated: [ 'budgets', 'expenses' ] })
+		.then(success)
+		.catch(error);
 };
 
 
@@ -19,5 +29,13 @@ exports.makeProject = (data, cb) => {
 	new Project(data)
 		.save()
 		.then(cb);
+};
+
+
+exports.updateProject = (id, data, success, error) => {
+	new Project({ id })
+		.save(data, { patch: true })
+		.then(success)
+		.catch(error);
 };
 

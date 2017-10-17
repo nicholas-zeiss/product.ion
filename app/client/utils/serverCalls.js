@@ -34,13 +34,13 @@ export default {
 	//      create data
 	//------------------------------
 
-	createBudgets: budgets => axios.post('/api/budget', budgets),
+	createBudgets: budgets => axios.post('/api/budgets', budgets),
 
-	createExpenses: expenses => axios.post('/api/expense', expenses),
+	createExpenses: (expenses, projID) => axios.post('/api/expenses/' + projID, expenses),
 
-	createProject: project => axios.post('/api/project', project),
+	createProject: project => axios.post('/api/projects', project),
 
-	createUser: user => axios.post('/api/user', user),
+	createUser: user => axios.post('/api/users', user),
 
 
 
@@ -48,11 +48,9 @@ export default {
 	//     		delete data
 	//------------------------------
 
-	deleteBudget: id => axios.delete('/api/budget/' + id),
+	deleteBudgets: IDs => axios.delete('/api/budgets/' + IDs.join('-')),
 
-	deleteExpense: id => axios.delete('/api/expense/' + id),
-
-	deleteUser: id => axios.delete('/api/user/' + id),
+	deleteExpense: id => axios.delete('/api/expenses/' + id),
 
 
 
@@ -60,9 +58,9 @@ export default {
 	//      		get data
 	//-------------------------------
 
-	getBudgets: projIDs => axios.get('/api/project/' + projIDs),
+	getBudgets: projIDs => axios.get('/api/budgets/' + projIDs.join('-')),
 
-	getExpenses: projIDs => axios.get('/api/project/' + projIDs),
+	getExpenses: projIDs => axios.get('/api/expenses/' + projIDs.join('-')),
 
 
 
@@ -70,13 +68,13 @@ export default {
 	//     			update data
 	//------------------------------
 
-	updateBudgets: budgets => axios.patch('/api/budget', budgets),
+	updateBudget: (budget, id) => axios.patch('/api/budgets/' + id, budget),
 
-	updateExpense: expense => axios.patch('/api/expense', expense),
+	updateExpense: (expense, id) => axios.patch('/api/expenses/' + id, expense),
 
-	updateProject: project => axios.patch('/api/project', project),
+	updateProject: (project, id) => axios.patch('/api/projects/' + id, project),
 
-	updateUser: user => axios.patch('/api/user', user),
+	updateUser: (user, id) => axios.patch('/api/users/' + id, user),
 
 };
 
