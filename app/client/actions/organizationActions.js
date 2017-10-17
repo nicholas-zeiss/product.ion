@@ -5,108 +5,57 @@
 **/
 
 
-export function hydrateOrganization(orgID, orgName, user, users) {
-	return {
-		type: 'HYDRATE_ORGANIZATION',
-		orgName,
-		orgID,
-		user,
-		users
-	};
-}
+export const changePassword = (newPassword, userID) => ({
+	type: 'CHANGE_PASSWORD',
+	newPassword,
+	userID
+});
 
 
-export function login(username, password) {
-	return {
-		type: 'LOGIN',
-		username,
-		password
-	};
-}
+export const createUser = (orgID, password, permissions, username) => ({
+	type: 'CREATE_USER',
+	orgID,
+	password,
+	permissions,
+	username,
+});
 
 
-export function logout() {
-	return { type: 'LOGOUT' };
-}
+export const deleteUser = userID => ({
+	type: 'DELETE_USER',
+	userID
+});
 
 
-export function refreshLogin(token) {
-	return {
-		type: 'REFRESH_LOGIN',
-		token
-	};
-}
+export const hydrateOrganization = (id = null, name = null, user = null, users = null) => ({
+	type: 'HYDRATE_ORGANIZATION',
+	id,
+	name,
+	user,
+	users
+});
 
 
-export function registerOrganization(orgName, username, password) {
-	return {
-		type: 'REGISTER_ORGANIZATION',
-		orgName,
-		username,
-		password
-	};
-}
+export const login = (username, password) => ({
+	type: 'LOGIN',
+	username,
+	password
+});
 
 
-export function getOrganizationProjects(orgName) {
-	return {
-		type: 'GET_ORG_PROJECTS',
-		orgName
-	};
-}
+export const logout = () => ({ type: 'LOGOUT' });
 
 
-export function addNewOrg(orgName, username, password) {
-	return {
-		type: 'ADD_NEW_ORG',
-		orgName,
-		username,
-		password
-	};
-}
+export const refreshLogin = token => ({
+	type: 'REFRESH_LOGIN',
+	token
+});
 
 
-export function addNewUser(username, password, orgs_id, perm) {
-	return {
-		type: 'ADD_NEW_USER',
-		username,
-		password,
-		orgs_id,
-		perm
-	};
-}
-
-
-export function updateUser(user) {
-	return {
-		type: 'UPDATE_USER',
-		user
-	};
-}
-
-
-export function changePassword(username, password, newPassword) {
-	return {
-		type: 'CHANGE_PASSWORD',
-		username,
-		password,
-		newPassword
-	};
-}
-
-
-export function deleteUser(user) {
-	return {
-		type: 'DELETE_USER',
-		user
-	};
-}
-
-
-export function setUsers(users) {
-	return {
-		type: 'SET_USERS',
-		users
-	};
-}
+export const signup = (orgName, username, password) => ({
+	type: 'SIGNUP',
+	orgName,
+	username,
+	password
+});
 

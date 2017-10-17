@@ -1,226 +1,252 @@
 /**
  *
- *  Reducers that manipulate organizations and their users
+ *	Reducers for the organization section of our store
  *
 **/
+
 
 import ApiCall from '../utils/serverCalls';
 import { store } from '../store';
 import { browserHistory } from 'react-router';
 
 
-export default function posts(state = {}, action) {
+export const defaultOrganizationState = {
+	id: null,
+	name: null,
+	user: null,
+	users: []
+};
+
+	
+export default (state = {}, action) => {
 
 	switch (action.type) {
 
 
-		//---------------------------------------
-		//					AUTHORIZATION
-		//---------------------------------------
+		case 'CHANGE_PASSWORD': {
+			ApiCall
+				.changePassword(action.userID, action.newPassword)
+				.then(() => {
 
-		//updates state with info of new organization/admin
-		case 'HYDRATE_ORGANIZATION':
-			return Object.assign({}, state, {
-				orgID: action.orgID,
-				orgName: action.orgName,
-				user: action.user,
-				users: action.users
-			});
+					store.dispatch({
+						type: 'SET_MESSAGES',
+						messages: {
+							password: 'Password successfully changed'
+						}
+					});
+
+				})
+				.catch(() => {
+
+					store.dispatch({
+						type: 'SET_MESSAGES',
+						messages: {
+							password: 'Unable to change password'
+						}
+					});
+
+				});
+
+			break;
+		}
 
 
-		//used to login the normal way
-		case 'LOGIN':
-			ApiCall.login(action.username, action.password)
+		case 'CREATE_USER': {
+			let user = Object.assign({}, action);
+			delete user.type;
+
+			ApiCall
+				.createUser(user)
 				.then(res => {
-					
-					sessionStorage.setItem('token', res.data.token);
-					ApiCall.setToken();
 
 					store.dispatch({
 						type: 'HYDRATE_ORGANIZATION',
-						orgID: res.data.organization.id,
-						orgName: res.data.organization.name,
-						user: res.data.user, 
-						users: res.data.users
+						users: state.users.concat(res.data)
 					});
 
 					store.dispatch({
-						type: 'HYDRATE_PROJECTS',
-						projects: res.data.organization.projects
+						type: 'SET_MESSAGES',
+						messages: {
+							user: 'User successfully created'
+						}
 					});
-					
-					browserHistory.push(`/dashboard/${res.data.organization.name.replace(/ /g, '')}`);
 
 				})
-				.catch(err => {	
-					console.error(err);
+				.catch(() => {
 
 					store.dispatch({
-						type:'SET_USER/ORG_MESSAGE',
-						message: 'Invalid username/password'
+						type: 'SET_MESSAGES',
+						messages: {
+							user: 'Unable to create user'
+						}
 					});
+				
 				});
 		
 			break;
+		}
+
+
+		case 'DELETE_USER': {
+			ApiCall
+				.deleteUser(action.userID)
+				.then(() => {
+
+					store.dispatch({
+						type: 'SET_MESSAGES',
+						messages: {
+							user: 'User deleted'
+						}
+					});
+
+				})
+				.catch(() => {
+
+					store.dispatch({
+						type: 'SET_MESSAGES',
+						messages: {
+							user: 'Unable to delete user'
+						}
+					});
+
+				});
+
+			break;
+		}
+
+
+		case 'HYDRATE_ORGANIZATION': {
+			
+			let orgData = {};
+			
+			for (let key in action) {
+				if (key != 'type' && action[key] != null) {
+					orgData[key] = action[key];
+				}
+			}
+
+			return Object.assign({}, state, orgData);
+		}
+
+
+		case 'LOGIN': {
+			ApiCall
+				.login(action.username, action.password)
+				.then(res => {
+					
+					sessionStorage.setItem('token', res.data.token);
+					ApiCall.setToken(res.data.token);
+
+					store.dispatch({ type: 'HYDRATE_PROJECTS', projects: res.data.projects });
+
+					let orgData = Object.assign(res.data, { type: 'HYDRATE_ORGANIZATION' });
+					delete orgData.projects;
+					delete orgData.token;
+
+					store.dispatch(orgData);
+					
+					browserHistory.push('/dashboard');
+
+				})
+				.catch(() => {	
+
+					store.dispatch({
+						type:'SET_MESSAGES',
+						messages: {
+							password: 'Invalid username/password'
+						}
+					});
+
+				});
+		
+			break;
+		}
 			
 		
-		//clears session and app state
-		case 'LOGOUT':
+		case 'LOGOUT': {
 			sessionStorage.clear();
+
+			store.dispatch({ type: 'CLEAR_BUDGETS' });
+			store.dispatch({ type: 'CLEAR_EXPENSES' });
+			store.dispatch({ type: 'CLEAR_PROJECTS' });
+			store.dispatch({ type: 'CLEAR_UI' });
+
 			return {};
+		}
 
 
-		//used after a page reload when a token is present
-		case 'REFRESH_LOGIN':
-			ApiCall.setToken();
+		case 'REFRESH_LOGIN': {
 			
 			ApiCall
 				.checkToken(sessionStorage.token)
-				.then(res => {		
+				.then(res => {
 
-					store.dispatch({
-						type: 'HYDRATE_ORGANIZATION',
-						orgID: res.data.organization.id,
-						orgName: res.data.organization.name,
-						user: res.data.user,
-						users: res.data.users
-					});
+					ApiCall.setToken(res.data.token);
 
-					store.dispatch({
-						type: 'HYDRATE_PROJECTS',
-						projects: res.data.organization.projects
-					});
+					store.dispatch({ type: 'HYDRATE_PROJECTS', projects: res.data.projects });
 
-					//update browser location
-					browserHistory.push(`/dashboard/${res.data.organization.name.replace(/ /g, '')}`);
+					let orgData = Object.assign(res.data, { type: 'HYDRATE_ORGANIZATION' });
+					delete orgData.projects;
+					delete orgData.token;
+
+					store.dispatch(orgData);
+
+					browserHistory.push('/dashboard');
 					
 				})
-				.catch(err => {
+				.catch(err => {		
 					console.error(err);
 					sessionStorage.clear();
 				});
 			
 			break;
+		}
 
 
+		case 'SIGNUP': {
 
-		//---------------------------------------
-		//							SIGN UP
-		//---------------------------------------
-
-		//register a new organization
-		case 'REGISTER_ORGANIZATION':
 			ApiCall
-				.registerOrganization(action.orgName, action.username, action.password)
+				.signup(action.orgName, action.username, action.password)
 				.then(res => {
 
 					sessionStorage.token = res.data.token;
-					ApiCall.setToken();
+					ApiCall.setToken(res.data.token);
 
-					let user = {
-						name: res.data.user.username, 
-						perm: res.data.user.perm
-					};
+					store.dispatch({ type: 'HYDRATE_PROJECTS', projects: res.data.projects });					
 
-					store.dispatch({
-						type: 'HYDRATE_ORGANIZATION',
-						orgID: res.data.organization.id,
-						orgName: res.data.organization.name,
-						user: user,
-						users: [ user ]
-					});
+					let orgData = Object.assign(res.data, { type: 'HYDRATE_ORGANIZATION' });
+					delete orgData.projects;
+					delete orgData.token;
 
-					browserHistory.push(`/dashboard/${res.data.organization.name.replace(/ /g, '')}`);
+					store.dispatch(orgData);
+
+					browserHistory.push('/dashboard');
 
 				})
 				.catch(err => {
 										
-					let message;
-					
-					if (err.response.status == 400) {
-						message = 'Sorry, both that organization name and username are taken';
-					} else if (err.response.status == 401) {
-						message = 'Sorry, that organization name is taken';
-					} else {
-						message = 'Sorry, that username is taken';
-					}
+					let errorMessages = {
+						400: 'Sorry, both that organization name and username are taken',
+						401: 'Sorry, that organization name is taken',
+						403: 'Sorry, that username is taken'
+					};
 
 					store.dispatch({
-						type: 'SET_USER/ORG_MESSAGE',
-						message
+						type: 'SET_MESSAGES',
+						messages: {
+							user: errorMessages[err.response.status]
+						}
 					});
+
 				});
 
 			break;
+		}
 
 
-
-		//---------------------------------------
-		//					USER MODIFICATIONS
-		//---------------------------------------
-		case 'ADD_NEW_USER':
-			var orgs_id = state.orgs_id;
-			ApiCall.registerUser(action.username, action.password, orgs_id, action.perm)
-				.then(function(res) {
-					let userData = res.data;
-					if(res.status === 201) {
-						let user = {
-							id: userData.id,
-							user: userData.username,
-							password: userData.password,
-							orgs_id: userData.orgs_id,
-							perm: userData.perm
-						};
-					}
-				})
-				.catch(function(err) {
-					console.error(err);
-				});
-			break;
-
-		case 'UPDATE_USER':
-			ApiCall.updateUser(action.user)
-				.then(res => {
-					console.log(res);
-				})
-				.catch(err => {
-					console.error(err);
-				});
-			break;
-
-		
-
-		case 'CHANGE_PASSWORD':
-			ApiCall
-				.login(action.username, action.password)
-				.then(function(res) {
-					if (res.data.user.password === action.password) {
-						ApiCall.changePassword(action.username, action.newPassword)
-							.then(function(res) {
-								store.dispatch({type: 'SET_PASSWORD_MESSAGE',
-									message:'Success! You changed your password!'});
-							})
-							.catch(function(err) {
-								console.error(err);
-							});
-					} else {
-						store.dispatch({type: 'SET_PASSWORD_MESSAGE',
-							message:'Error. Please re-enter user password'});
-					}
-				})
-				.catch((err) => {
-					console.err(err);
-				});
-
-			break;
-
-
-		case 'SET_USERS':
-			return Object.assign({}, state, {users: action.users});
-
+		default: {
+			return state;
+		}
 	}
-
-	//default
-	return state;
-}
+};
 
