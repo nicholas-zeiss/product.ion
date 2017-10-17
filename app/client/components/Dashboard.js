@@ -23,33 +23,13 @@ import ProjectNode from './ProjectNode';
 class Dashboard extends React.Component {
 	constructor(props) {
 		super(props);
-
-		this.state = {
-			chartsOpen: false,
-			projectToEdit: null
-		};
 	}
 
 
-	//toggle visibility of charts
-	switchChart() {
-		this.setState({ chartsOpen: !this.state.chartsOpen });
-	}
-
-
-	//As the Pitch modal is a child of Dashboard we need to keep track of the project supplied
-	//to it in this component's state. This method is passed down to individual ProjectNode components
-	//allowing them to alter Dashboard's state and activate the modal.
-	setProjectToEdit(project) {
-		this.setState({ projectToEdit: project }, () => {
-			this.props.toggleModal('pitch');
-			
-			//project may be null if we are creating a new pitch, not editing an extant one.
-			//if it does exist we need to load its expenses.
-			if (project) {
-				this.props.getExpenses(project.id);
-			}
-		});
+	componentWillMount() {
+		//get project expenses
+		//get project budgets
+		console.log('Dashboard is mounting');
 	}
 
 
@@ -78,13 +58,13 @@ class Dashboard extends React.Component {
 		let mastersheet = null;
 
 		//determine which pitches are visible based off app state and the client account's permission level
-		let pitchHeader = this.props.organization.user.permissions ? 'Your pitches awaiting approval:' : 'Pitches to be Approved';
 		let pitches = this.props.projects.filter(proj => proj.status == 'Pitch');
+		let pitchHeader = this.props.organization.user.permissions == 'user' ? 'Your pitches awaiting approval:' : 'Pitches to be Approved:';
 
 
-		if (this.props.organization.user.permissions != 0) {
+		if (this.props.organization.user.permissions != 'admin') {
 			//if not an admin account, client can only view pitches they created
-			pitches = pitches.filter(proj => proj.createdBy == this.props.organization.user.id);
+			pitches = pitches.filter(proj => proj.userID == this.props.organization.user.id);
 		
 		} else {
 			mastersheet =	(
@@ -100,7 +80,6 @@ class Dashboard extends React.Component {
 		pitches = pitches.map((pitch, idx) => (
 			<ProjectNode
 				{ ...this.props }
-				editProject={ this.setProjectToEdit.bind(this) }
 				key={ idx }
 				project={ pitch }
 			/>
@@ -108,22 +87,18 @@ class Dashboard extends React.Component {
 
 
 		//determine the three most recently edited projects
-		let mostRecentThree = null;
-
-		if (this.props.projects.length) {
-			mostRecentThree = this.props.projects
-				.slice()
-				.sort((a, b) => a.lastEdited > b.lastEdited ? -1 : a.lastEdited < b.lastEdited ? 1 : 0)
-				.slice(0, 3)
-				.map((project, idx) => (
-					<ProjectNode
-						{ ...this.props }
-						editProject={ this.setProjectToEdit.bind(this) }
-						key={ idx }
-						project={ project }
-					/>
-				), this);
-		}
+		let mostRecentThree = this.props.projects
+			.slice()
+			.sort((a, b) => a.lastEdited > b.lastEdited ? -1 : a.lastEdited < b.lastEdited ? 1 : 0)
+			.slice(0, 3)
+			.map((project, idx) => (
+				<ProjectNode
+					{ ...this.props }
+					editProject={ this.setProjectToEdit.bind(this) }
+					key={ idx }
+					project={ project }
+				/>
+			), this);
 	
 
 		return (
@@ -131,16 +106,16 @@ class Dashboard extends React.Component {
 				<NavBar { ...this.props }/>
 
 				<div>
-					<Modal onHide={ this.props.toggleModal.bind(this, 'pitch') } show={ this.props.modals.pitch }>
+					<Modal onHide={ this.props.toggleView.bind(this, 'pitch') } show={ this.props.UI.views.pitch }>
 						<Modal.Body>
-							<Pitch { ...this.props } project={ this.state.projectToEdit }/>
+							<Pitch { ...this.props } />
 						</Modal.Body>
 						<Modal.Footer/>
 					</Modal>
 
 					<Panel>
 						<div>
-							<b style={ { 'fontSize': '30px' } }>{ `Welcome to ${this.props.organization.orgName}'s dashboard` }</b>
+							<b style={ { 'fontSize': '30px' } }>{ `Welcome to ${this.props.organization.name}'s dashboard` }</b>
 							
 							<Button
 								bsStyle='primary'
@@ -153,14 +128,14 @@ class Dashboard extends React.Component {
 							
 							<Button 
 								bsStyle='primary'
-								onClick={ this.switchChart.bind(this) }
+								onClick={ this.props.toggleView.bind(null, 'charts') }
 								style={ { 'float': 'right', 'marginRight': '5px' } }
 							>
 								Toggle Visuals
 							</Button>
 							
 							{ mastersheet }
-							{ this.state.chartsOpen ?  <DashCharts { ...this.props }/> : null }
+							{ this.props.UI.views.charts ?  <DashCharts { ...this.props }/> : null }
 						</div>
 
 						<h3> Most Recently Edited Three Projects </h3>
