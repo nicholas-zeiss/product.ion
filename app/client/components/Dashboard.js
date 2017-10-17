@@ -23,12 +23,16 @@ import ProjectNode from './ProjectNode';
 class Dashboard extends React.Component {
 	constructor(props) {
 		super(props);
-	
-		if (this.props.budgets.loaded == false || this.props.expenses.loaded == false) {
-			const projIDs = this.props.projects.map(project => project.id);
 
-			this.props.getBudgets(projIDs);
-			this.props.getExpenses(projIDs);
+		props.setMessages({ password: '', user: '' });
+	
+		if (props.budgets.loaded == false || props.expenses.loaded == false) {
+			if (props.projects.length) {
+				const projIDs = props.projects.map(project => project.id);
+
+				props.getBudgets(projIDs);
+				props.getExpenses(projIDs);
+			}
 		}
 	}
 
