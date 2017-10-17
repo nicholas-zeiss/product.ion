@@ -8,12 +8,14 @@
 export const clearProjects = () => ({ type: 'CLEAR_PROJECTS' });
 
 
-export const createProject = project => ({ type: 'POST_NEW_PROJECT', project });
+export const createProject = project => ({ type: 'CREATE_PROJECT', project });
+
+
+export const dehydrateProjects = ids => ({ type: 'DEHYDRATE_PROJECTS', ids });
 
 
 export const hydrateProjects = projects => ({ type: 'HYDRATE_PROJECTS', projects });
 
 
 export const updateProject = project => ({ type: 'UPDATE_PROJECT', project });
-
 
