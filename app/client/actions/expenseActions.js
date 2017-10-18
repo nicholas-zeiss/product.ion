@@ -40,7 +40,7 @@ export const createExpenses = (expenses, projID) => (
 );
 
 
-export const dehydrateExpenses = IDs => ({ type: 'DEHYDRATE_EXPENSES', IDs });
+export const dehydrateExpense = (id, projID) => ({ type: 'DEHYDRATE_EXPENSES', id, projID });
 
 
 export const deleteExpense = (id, projID) => (
@@ -52,13 +52,16 @@ export const deleteExpense = (id, projID) => (
 		)
 		.then(res => {
 			if (res) {
-				dispatch({ type: 'DEHYDRATE_EXPENSES', IDs: [ id ] });
+				dispatch({ type: 'DEHYDRATE_EXPENSE', id, projID });
 			}
 		})
 );
 
 
 export const getExpenses = projIDs => {
+
+	//while seemingly pointless this makes the expenses section of the store
+	//indicate it is loaded and that this action does not need to run again
 	if (!projIDs.length) {
 		return dispatch => dispatch({ type: 'HYDRATE_BUDGETS', budgets: [] });
 	}
@@ -73,7 +76,7 @@ export const getExpenses = projIDs => {
 			if (res) {
 				dispatch({ type: 'HYDRATE_EXPENSES', expenses: res.data });
 			}
-		})
+		});
 };
 
 

@@ -5,7 +5,10 @@
 **/
 
 
-export const defaultBudgetsState = { loaded: false };
+import deepCopyState from '../utils/deepCopyState';
+
+
+export const defaultBudgetsState = Object.freeze({ loaded: false });
 
 
 export default (state = defaultBudgetsState, action) => {
@@ -17,21 +20,25 @@ export default (state = defaultBudgetsState, action) => {
 		}
 
 
-		case 'DEHYDRATE_BUDGETS': {
-			let budgets = Object.assign({}, state);
-			action.IDs.forEach(id => delete budgets[id]);
+		case 'DEHYDRATE_BUDGET': {
+			let newBudgets = deepCopyState(state);
+			
+			newBudgets[action.projID] = newBudgets[action.projID]
+				.filter(budget => budget.id != action.id);
 
-			return budgets;
+			return newBudgets;
 		}
 
 
 		case 'HYDRATE_BUDGETS': {
-			let newBudgets = Object.assign({}, state, { loaded: true });
+			let newBudgets = deepCopyState;
 
 			action.budgets.forEach(budget => {
-				let id = budget.id;
-				delete budget.id;
-				newBudgets[id] = budget;
+				let projID = budget.projID;
+
+				newBudgets[projID] = newBudgets[projID] || [];
+
+				newBudgets[projID].push(budget);
 			});
 
 			return newBudgets;

@@ -40,7 +40,7 @@ export const createBudgets = (budgets, projID) => (
 );
 
 
-export const dehydrateBudgets = IDs => ({ type: 'DEHYDRATE_BUDGETS', IDs });
+export const dehydrateBudget = (id, projID) => ({ type: 'DEHYDRATE_BUDGET', id, projID });
 
 
 export const deleteBudget = (id, projID) => (
@@ -52,16 +52,17 @@ export const deleteBudget = (id, projID) => (
 		)
 		.then(res => {
 			if (res) {
-				dispatch({type: 'DEHYDRATE_BUDGETS', ids: [ id ] });
+				dispatch({type: 'DEHYDRATE_BUDGET', id, projID });
 			}
 		})
 );
 
 
 export const getBudgets = projIDs => {
+	
+	//while seemingly pointless this makes the budgets section of the store
+	//indicate it is loaded and that this action does not need to run again
 	if (!projIDs.length) {
-		//while seemingly pointless this sets the budget section of the store
-		//to indicate it is loaded and that this action does not need to run again
 		return dispatch => dispatch({ type: 'HYDRATE_BUDGETS', budgets: [] });
 	}
 

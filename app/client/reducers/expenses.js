@@ -5,7 +5,10 @@
 **/
 
 
-export const defaultExpensesState = { loaded: false };
+import deepCopyState from '../utils/deepCopyState';
+
+
+export const defaultExpensesState = Object.freeze({ loaded: false });
 
 
 export default (state = defaultExpensesState, action) => {
@@ -16,24 +19,31 @@ export default (state = defaultExpensesState, action) => {
 			return defaultExpensesState;
 		}
 
-		case 'DEHYDRATE_EXPENSES': {
-			let expenses = Object.assign({}, state);
-			action.IDs.forEach(id => delete expenses[id]);
 
-			return expenses;
+		case 'DEHYDRATE_EXPENSE': {
+			let newExpenses = deepCopyState(state);
+
+			newExpenses[action.projID] = newExpenses[action.projID]
+				.filter(expense => expense.id != action.id);
+
+			return newExpenses;
 		}
 
+
 		case 'HYDRATE_EXPENSES': {
-			let newExpenses = Object.assign({}, state, { loaded: true });
+			let newExpenses = deepCopyState(state);
 
 			action.expenses.forEach(expense => {
-				let id = expense.id;
-				delete expense.id;
-				newExpenses[id] = expense;
+				let projID = expense.projID;
+
+				newExpenses[projID] = newExpenses[projID] || [];
+
+				newExpenses[projID].push(expense);
 			});
 
 			return newExpenses;
 		}
+
 
 		default: {
 			return state;
