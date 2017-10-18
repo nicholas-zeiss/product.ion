@@ -60,6 +60,7 @@ Promise.all([
 		table.string('adminNotes', 1000);
 		table.string('approvals', 12);
 		table.float('costToDate').defaultTo(0);
+		table.string('editDate');
 		table.string('endDate');
 		table.string('lastEdited');
 		table.string('name').unique();
