@@ -5,12 +5,12 @@
 **/
 
 
-export const defaultOrganizationState = {
+export const defaultOrganizationState = Object.freeze({
 	id: null,
 	name: null,
 	user: null,
 	users: []
-};
+});
 
 	
 export default (state = defaultOrganizationState, action) => {

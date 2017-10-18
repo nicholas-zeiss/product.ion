@@ -5,18 +5,17 @@
 **/
 
 
-export const defaultUIState = {
+export const defaultUIState = Object.freeze({
 	messages: {
 		password: '',
 		user: ''
 	},
-	project: null,
 	views: {
 		addUser: false,
 		charts: false,
 		pitch: false
 	}
-};
+});
 
 
 export default (state = defaultUIState, action) => {
@@ -31,7 +30,6 @@ export default (state = defaultUIState, action) => {
 		case 'CLOSE_PITCH_MODAL': {
 			return {
 				messages: defaultUIState.messages,
-				project: null,
 				views: Object.assign({}, state.views, { pitch: false })
 			};
 		}
@@ -59,7 +57,6 @@ export default (state = defaultUIState, action) => {
 		case 'VIEW_PITCH_MODAL': {
 			return {
 				messages: defaultUIState.messages,
-				project: action.projID,
 				views: Object.assign({}, state.views, { pitch: true })
 			};
 		}

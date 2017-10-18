@@ -19,6 +19,7 @@ import { applyMiddleware, combineReducers, createStore } from 'redux';
 import reduxThunk from 'redux-thunk';
 
 import budgetsReducer, { defaultBudgetsState } from './reducers/budgets';
+import editProjectReducer, { defaultEditProjectState } from './reducer/editProject';
 import expensesReducer, { defaultExpensesState } from './reducers/expenses';
 import organizationReducer, { defaultOrganizationState } from './reducers/organization';
 import projectsReducer from './reducers/projects';
@@ -27,6 +28,7 @@ import UIReducer, { defaultUIState } from './reducers/UI';
 
 const defaultState = {
 	budgets: defaultBudgetsState,
+	editProject: defaultEditProjectState,
 	expenses: defaultExpensesState,
 	organization: defaultOrganizationState,
 	projects: [],
@@ -36,6 +38,7 @@ const defaultState = {
 
 const rootReducer = combineReducers({
 	budgets: budgetsReducer,
+	editProject: editProjectReducer,
 	expenses: expensesReducer,
 	organization: organizationReducer,
 	projects: projectsReducer,
