@@ -1,6 +1,8 @@
 /**
  *
- *  Component for the pitch modal, which allows you to create a new pitch
+ *  Component for the pitch modal, which allows you to create a new pitch or edit an existing one.
+ *	The vast majority of the actual view for the modal is rendered in component PitchSummary,
+ *	this component acts more as a controller.
  *
 **/
 
@@ -11,86 +13,33 @@ import { Tab, Tabs } from 'react-bootstrap';
 import Budget from './Budget';
 import PitchSummary from './PitchSummary';
 
-import { projectDefaults } from '../data/public';
-
 
 class Pitch extends React.Component {
 	constructor(props) {
 		super(props);
 
-		// let { data } = this.props,
-		// 	goodProd = {val: undefined, style: undefined, action: 'No Issues'},
-		// 	badProd = {val: 'error', style: 'danger', action: 'Rejected'},
-		// 	good = {val: 'success', style: 'success', action: 'Reject'},
-		// 	bad = {val: 'error', style: 'danger', action: 'Approve'},
-		// 	notAdmin = {val: null, action: undefined};
-		// let judge = {},
-		// 	counter = 0;
-
-		//set default approval data if none present.
-		// data = data.approvals ? data :  { approvals:'11111111111' };
-		//sets validation object to be mapped to each field in PitchSummary
-		// for (var key in emptyProject) {
-		// 	judge[key] = {vars: this.props.organization.user.perm ?
-		// 		data.approvals[counter] == 1 ? goodProd : badProd
-		// 		: data.approvals[counter] == 1 ? good : bad};
-		// 	judge[key].index = counter;
-		// 	counter ++;
-		// }
-
-		
-		let defaults = projectDefaults(this.props.organization.user.id);
-		let project = props.project || {};
-
-		this.state = Object.assign({}, defaults, project, {
-			activeTab: 1,
-			budgets: [],
-			newPitch: !!props.project
-		});
-	}
-
-
-	buildPitch() {
-		return {
-			orgs_id: this.props.organization.orgs_id,
-			id: this.state.id,
-			createdBy: this.props.organization.user.id,
-			name: this.state.projName,
-			projID: this.state.projID,
-			vertical: this.state.vertical,
-			tier: this.state.tier,
-			numAssets: this.state.numAssets,
-			type: this.state.videoType,
-			status: 'Pitch',
-			estimateToComplete: this.state.reqBudget,
-			startDate: this.state.startDate,
-			endDate: this.state.endDate,
-			editDate: this.state.editDate,
-			releaseDate: this.state.releaseDate,
-			approvals: this.state.approvals,
-			adminNotes: this.state.adminNotes
-		};
-	}
-
-
-	componentWillReceiveProps(newProps) {
-		if (newProps.budgets) {
-			const proj = 'proj' + this.state.id;
-			
-			this.setState(
-				{budgets: newProps.budgets[proj]},
-				this.calculateTotalBudget
-			);
+		if (props.editProject.project == null) {
+			props.newEditProject(props.organization.id, props.organization.user.id);
 		}
+
+		// shorthand refs for convenience
+		this.budgets = this.props.editProject.budgets;
+		this.project = this.props.editProject.project;
+
+		// tracks the active tab of the modal, which has a tab for project info
+		// and a tab for adding budget items
+		this.state = { activeTab: 1 };
 	}
 
 
-	handlePitchSubmit(event) {
-		event.preventDefault();
-		var data = this.buildPitch();
+	handlePitchSubmit(e) {
+		e.preventDefault();
+		
+		this.props.createProject(this.project);
+		this.props.createBudgets(this.budgets, this.props.editProject.id);
 
-		this.props.postNewProject(data);
-		this.closeModal();
+		this.props.clearEditProject();
+		this.props.closePitchModal();
 	}
 
 
@@ -119,18 +68,8 @@ class Pitch extends React.Component {
 	}
 
 
-	closeModal() {
-		this.props.getOrgProjects(this.props.organization.orgName);
-		this.props.toggleModal('pitch');
-	}
-
-
-	handleSelect(key) {
-		//budget set here to accomodate asynchronous budget list hydration.
-		this.setState({
-			budgets: this.props.budgets['proj' + this.state.id],
-			activeTab: key,
-		});
+	handleTabSelect(key) {
+		this.setState({	activeTab: key });
 	}
 
 
@@ -213,7 +152,7 @@ class Pitch extends React.Component {
 			<Tabs
 				activeKey={ this.state.activeTab }
 				id='pitchTabs'
-				onSelect={ this.handleSelect }
+				onSelect={ this.handleTabSelect }
 			>
 				<Tab eventKey={ 1 } title='Pitch'>
 					

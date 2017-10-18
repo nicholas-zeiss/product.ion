@@ -139,6 +139,7 @@ export const logout = () => (
 		sessionStorage.clear();
 
 		dispatch({ type: 'CLEAR_BUDGETS' });
+		dispatch({ type: 'CLEAR_EDIT_PROJECT' });
 		dispatch({ type: 'CLEAR_EXPENSES' });
 		dispatch({ type: 'CLEAR_ORGANIZATION' });
 		dispatch({ type: 'CLEAR_PROJECTS' });

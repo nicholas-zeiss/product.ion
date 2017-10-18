@@ -63,29 +63,22 @@ const cata = [
 ];
 
 
-export function projectDefaults(userID) {
-	let now = new Date();
-	
-	let today = [
-		now.getFullYear(),
-		('0' + now.getMonth()).slice(-2),
-		('0' + now.getDate()).slice(-2)
-	].join('-');
-
-	return {
-		adminNotes: '',
-		approvals: '111111111111',
-		costToDate: 0,
-		createdBy: userID,
-		editDate: '',
-		endDate: today,
-		estimateToComplete: 0,
-		lastEdited: Date.now(),
-		numAssets: 1,
-		reqBudget: 0,
-		startDate: today
-	};
-}
+export const projectDefaults = (orgID, userID) => ({
+	adminNotes: '',
+	approvals: '111111111111',
+	editDate: undefined,
+	endDate: undefined,
+	name: undefined,
+	numAssets: undefined,
+	orgID: orgID,
+	releaseDate: undefined,
+	startDate: undefined,
+	status: 'Pitch',
+	tier: undefined,
+	type: undefined,
+	userID: userID,
+	vertical: undefined
+});
 
 
 export default cata;

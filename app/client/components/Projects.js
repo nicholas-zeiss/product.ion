@@ -32,7 +32,7 @@ class Projects extends React.Component {
 							bsSize='large'
 							bsStyle='primary'
 							id='modalButton' 
-							onClick={ this.props.viewPitchModal.bind(null, undefined) }
+							onClick={ this.props.viewPitchModal }
 							style={ { 'marginBottom': '15px' } }
 						>
 							Create a Pitch

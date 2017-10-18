@@ -19,7 +19,7 @@ import { applyMiddleware, combineReducers, createStore } from 'redux';
 import reduxThunk from 'redux-thunk';
 
 import budgetsReducer, { defaultBudgetsState } from './reducers/budgets';
-import editProjectReducer, { defaultEditProjectState } from './reducer/editProject';
+import editProjectReducer, { defaultEditProjectState } from './reducers/editProject';
 import expensesReducer, { defaultExpensesState } from './reducers/expenses';
 import organizationReducer, { defaultOrganizationState } from './reducers/organization';
 import projectsReducer from './reducers/projects';

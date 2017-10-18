@@ -18,6 +18,7 @@ import { connect } from 'react-redux';
 //			  Action Creators
 //-------------------------------
 import * as budgetActions from './actions/budgetActions';
+import * as editProjectActions from './actions/editProjectActions';
 import * as expenseActions from './actions/expenseActions';
 import * as organizationActions from './actions/organizationActions';
 import * as projectActions from './actions/projectActions';
@@ -43,12 +44,13 @@ import Settings from './components/Settings';
 import { history, store } from './store';
 
 
-const actions = Object.assign({}, budgetActions, expenseActions, organizationActions, projectActions, UIActions);
+const actions = Object.assign({}, budgetActions, editProjectActions, expenseActions, organizationActions, projectActions, UIActions);
 
 const mapDispachToProps = dispatch => bindActionCreators(actions, dispatch);
 
 const mapStateToProps = state => ({
 	budgets: state.budgets,
+	editProject: state.editProject,
 	expenses: state.expenses,
 	organization: state.organization,
 	projects: state.projects,
