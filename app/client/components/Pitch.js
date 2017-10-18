@@ -137,7 +137,7 @@ class Pitch extends React.Component {
 			bad = {val: 'error', style: 'danger', action: 'Approve'},
 			newJudge = this.state.judge;
 
-		//set the judgement props of each field to the inverse
+		// set the judgement props of each field to the inverse
 		newJudge[name].vars =
 						this.state.judge[name].vars.action === 'Reject' ? bad
 							: good;

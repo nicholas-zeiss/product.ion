@@ -23,14 +23,14 @@ class Register extends React.Component {
 	}
 
 
-	//clear any old warning messages about login/signup
+	// clear any old warning messages about login/signup
 	componentWillMount() {
 		this.props.clearUI();
 	}
 
 
-	//update state to reflect changes to organization and admin name, 
-	//clear error message if one exists (error message is only generated on submit)
+	// update state to reflect changes to organization and admin name, 
+	// clear error message if one exists (error message is only generated on submit)
 	handleUserOrgChange(e) {
 		if (this.props.UI.messages.name) {
 			this.props.setMessages({ name: '' });
@@ -40,8 +40,8 @@ class Register extends React.Component {
 	}
 
 
-	//update state to reflect changes to password inputs, update error message
-	//as appropriate
+	// update state to reflect changes to password inputs, update error message
+	// as appropriate
 	handlePassChange(e) {
 		let otherPass = e.target.name == 'pass' ? this.state.pass2 : this.state.pass;
 
@@ -68,7 +68,7 @@ class Register extends React.Component {
 	}
 
 
-	//to validate password forms
+	// to validate password forms
 	passValidation() {
 		if (this.state.pass.length < 6 || this.state.pass != this.state.pass2) {
 			return 'warning';

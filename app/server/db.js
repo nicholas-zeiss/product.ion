@@ -21,7 +21,7 @@ const knex = require('knex')({
 // reference tables that have not been created
 Promise.all([
 
-	//holds budgets for unapproved projects
+	// holds budgets for unapproved projects
 	knex.schema.createTableIfNotExists('budgets', table => {
 		table.increments('id').primary();
 		table.float('cost');
@@ -33,7 +33,7 @@ Promise.all([
 	}),
 
 
-	//holds expenses for projects
+	// holds expenses for projects
 	knex.schema.createTableIfNotExists('expenses', table => {
 		table.increments('id').primary();
 		table.float('cost');
@@ -47,14 +47,14 @@ Promise.all([
 	}),
 
 
-	//holds organizations
+	// holds organizations
 	knex.schema.createTableIfNotExists('organizations', table => {
 		table.increments('id').primary();
 		table.string('name').unique();
 	}),
 
 
-	//holds projects for organizations
+	// holds projects for organizations
 	knex.schema.createTableIfNotExists('projects', table => {
 		table.increments('id').primary();
 		table.string('adminNotes', 1000);
@@ -77,7 +77,7 @@ Promise.all([
 	}),
 
 
-	//holds user accounts w/ username, password, permission level, and the organization they belong to
+	// holds user accounts w/ username, password, permission level, and the organization they belong to
 	knex.schema.createTableIfNotExists('users', table => {
 		table.increments('id').primary();
 		table.integer('orgID').unsigned().references('id').inTable('organizations');
@@ -90,8 +90,8 @@ Promise.all([
 
 const Bookshelf = require('bookshelf')(knex);
 
-//allows us to register models by name to avoid having to import a model
-//whenever it is used elsewhere
+// allows us to register models by name to avoid having to import a model
+// whenever it is used elsewhere
 Bookshelf.plugin('registry');
 
 module.exports = Bookshelf;

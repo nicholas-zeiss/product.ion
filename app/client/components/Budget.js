@@ -34,7 +34,7 @@ const Budget = React.createClass({
     },
     handleSubmit(e) {
       e.preventDefault();
-      //create a budget object, push it to the temp budget storage array
+      // create a budget object, push it to the temp budget storage array
       var budget = {
         description: this.state.newBudgetDescription,
         glCode: this.state.newBudgetCode,

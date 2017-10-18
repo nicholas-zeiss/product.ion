@@ -8,8 +8,8 @@
 const Project = require('./controllers/projectController');
 
 
-//returns a string of the current date in YYYY-MM-DD format
-//for the lastEdited property of projects
+// returns a string of the current date in YYYY-MM-DD format
+// for the lastEdited property of projects
 const dateString = () => {
 	let now = new Date();
 	
@@ -20,9 +20,9 @@ const dateString = () => {
 };
 
 
-//when budgets/expenses are created/deleted/updated, we update the reqBudget/costToDate property of the associated project
-//using this function, which then completes the http response optionally sending the modified collection of budgets/expenses
-//attached to the project
+// when budgets/expenses are created/deleted/updated, we update the reqBudget/costToDate property of the associated project
+// using this function, which then completes the http response optionally sending the modified collection of budgets/expenses
+// attached to the project
 const updateProject = (projID, type, res, sendCollection) => {
 	Project.getProject(
 		projID,

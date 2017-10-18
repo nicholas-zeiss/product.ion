@@ -10,7 +10,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-//import Bookshelf controllers
+// import Bookshelf controllers
 const Budget = require('./controllers/budgetController.js');
 const Expense = require('./controllers/expenseController.js');
 const Organization = require('./controllers/organizationController.js');
@@ -32,7 +32,7 @@ const authAPI = app => {
 	//	 					UTILS
 	//---------------------------------
 
-	//generates a JWT for verification
+	// generates a JWT for verification
 	const generateToken = user => {
 		user = {
 			username: user.get('username'),
@@ -42,7 +42,7 @@ const authAPI = app => {
 		return jwt.sign(user, 'SSSHHHitsaSECRET', { expiresIn: '12h' });
 	};
 
-	//given an organization model, return an array of the attached users stripped of passwords
+	// given an organization model, return an array of the attached users stripped of passwords
 	const getUsers = org => (
 		org
 			.related('users')
@@ -53,8 +53,8 @@ const authAPI = app => {
 			}))
 	);
 
-	//used when someone logs in, signs up, or reloads the page and has a valid auth token,
-	//this sends the base data needed by the app's homepage
+	// used when someone logs in, signs up, or reloads the page and has a valid auth token,
+	// this sends the base data needed by the app's homepage
 	const sendOrganizationInfo = (user, organization, res, token = generateToken(user)) => {
 		res
 			.status(200)
@@ -81,8 +81,8 @@ const authAPI = app => {
 	//	 					ENDPOINTS
 	//---------------------------------
 
-	//send a valid username and password, receive an auth token and the payload specified
-	//in sendOrganizationInfo above
+	// send a valid username and password, receive an auth token and the payload specified
+	// in sendOrganizationInfo above
 	app.post('/login', (req, res) => {
 		User.getUser(req.body.username, user => {
 			
@@ -103,13 +103,13 @@ const authAPI = app => {
 	});
 
 
-	//create a new organization and admin
+	// create a new organization and admin
 	app.post('/signup', (req, res) => {
 		Organization.getOrganizationByName(req.body.orgName, org => {
 			
 			User.getUser(req.body.username, user => {
 				
-				//first check that organization name and admin username are available
+				// first check that organization name and admin username are available
 				if (org && user) {
 					res.sendStatus(400);			
 				} else if (org) {
@@ -147,8 +147,8 @@ const authAPI = app => {
 	});
 
 
-	//used upon a page reload. If the client has a valid token then this route will send
-	//the same organization info as a login
+	// used upon a page reload. If the client has a valid token then this route will send
+	// the same organization info as a login
 	app.post('/token', (req, res) => {
 		if (req.body.token) {
 			jwt.verify(req.body.token, 'SSSHHHitsaSECRET', (err, user) => {

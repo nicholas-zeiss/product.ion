@@ -11,6 +11,7 @@ import { projectDefaults } from '../data/public';
 export const defaultEditProjectState = Object.freeze({ 
 	budgets: null,
 	expenses: null,
+	id: null,
 	project: null 
 });
 

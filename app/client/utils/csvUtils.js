@@ -33,8 +33,8 @@ const fields = [
 ];
 
 
-//takes an array of objects with an expense and a project key-value pair and returns
-//an array of flattened expenses
+// takes an array of objects with an expense and a project key-value pair and returns
+// an array of flattened expenses
 const expandExpenses = expenses => (
 	expenses.map(expense => {
 		let project = expense.project;

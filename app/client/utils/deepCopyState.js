@@ -11,11 +11,11 @@ export default state => {
 
 	for (let key in state) {
 		if (state[key] instanceof Array) {
-			//key is projID, value is array of budgets/expenses
+			// key is projID, value is array of budgets/expenses
 			copy[key] = state[key].map(budgetExpense => Object.assign({}, budgetExpense));
 
 		} else {
-			//key is the loaded property
+			// key is the loaded property
 			copy[key] = state[key];
 		}
 	}

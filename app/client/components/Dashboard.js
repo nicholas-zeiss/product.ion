@@ -56,10 +56,10 @@ class Dashboard extends React.Component {
 
 	render() {
 		
-		//only admins can view mastersheet, this changes as appropriate below
+		// only admins can view mastersheet, this changes as appropriate below
 		let mastersheet = null;
 
-		//determine which pitches are visible based off app state and the client account's permission level
+		// determine which pitches are visible based off app state and the client account's permission level
 		let pitches = this.props.projects.filter(proj => proj.status == 'Pitch');
 		let pitchHeader = this.props.organization.user.permissions == 'user' ? 'Your pitches awaiting approval:' : 'Pitches to be Approved:';
 
@@ -80,7 +80,7 @@ class Dashboard extends React.Component {
 		pitches = pitches.map((pitch, idx) => <ProjectNode { ...this.props } key={ idx } project={ pitch }/>, this);
 
 
-		//determine the three most recently edited projects
+		// determine the three most recently edited projects
 		let mostRecentThree = this.props.projects
 			.slice()
 			.sort((a, b) => a.lastEdited > b.lastEdited ? -1 : a.lastEdited < b.lastEdited ? 1 : 0)

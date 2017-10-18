@@ -4,7 +4,7 @@
  *
  *  Some async action creaters have a seemingly illogical syntax of 
  *		asyncServerCall()
- *			.then(res => res, err => handleError())			//where handleError does not return a value
+ *			.then(res => res, err => handleError())			// where handleError does not return a value
  *			.then(res => if (res) handleSuccess())
  *
  *	as opposed to a more intuitive
@@ -60,8 +60,8 @@ export const deleteBudget = (id, projID) => (
 
 export const getBudgets = projIDs => {
 	
-	//while seemingly pointless this makes the budgets section of the store
-	//indicate it is loaded and that this action does not need to run again
+	// while seemingly pointless this makes the budgets section of the store
+	// indicate it is loaded and that this action does not need to run again
 	if (!projIDs.length) {
 		return dispatch => dispatch({ type: 'HYDRATE_BUDGETS', budgets: [] });
 	}

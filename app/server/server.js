@@ -21,10 +21,10 @@ app.use(express.static(path.join(__dirname, '../../app')));
 app.use('/api', expressJwt({ secret: 'SSSHHHitsaSECRET' }));
 
 
-//import our endpoints
+// import our endpoints
 require('./routes.js')(app);
 
-//catchall for bad urls
+// catchall for bad urls
 app.get('*', (req, res) => {
 	res.redirect('/');
 });

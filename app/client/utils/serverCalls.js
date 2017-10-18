@@ -15,17 +15,17 @@ export default {
 	//        authorization
 	//-------------------------------
 
-	//when app reloads and a token is present, this is called to verify the token is valid 
-	//and if so we receive the data to hydrate organization section of store
+	// when app reloads and a token is present, this is called to verify the token is valid 
+	// and if so we receive the data to hydrate organization section of store
 	checkToken: token => axios.post('/token', { token }),
 
-	//send username/password, on success receive info to hydrate organization section of store
+	// send username/password, on success receive info to hydrate organization section of store
 	login: (username, password) => axios.post('/login', { username, password}),
 
-	//attach our token to all axios requests once we verify it
+	// attach our token to all axios requests once we verify it
 	setToken: token => axios.defaults.headers.Authorization = 'Bearer ' + token,
 
-	//for creating a new organization/admin
+	// for creating a new organization/admin
 	signup: (orgName, username, password) => axios.post('/signup', { orgName, username, password }),
 
 

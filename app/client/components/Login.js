@@ -12,19 +12,19 @@ import { Button, ButtonToolbar, ControlLabel, Form, FormControl, FormGroup, Pane
 
 class Login extends React.Component {
 
-	//as login is our index route, loading the page with any url path will first come here
-	//so, we check for an auth token and login in that case before proceeding with the actual
-	//login view
+	// as login is our index route, loading the page with any url path will first come here
+	// so, we check for an auth token and login in that case before proceeding with the actual
+	// login view
 	constructor(props) {
 		super(props);
 
-		//if client already has a token try logging in with that. if successful, data is
-		//loaded from server and client is pathed to the dashboard. if not, token is removed.
+		// if client already has a token try logging in with that. if successful, data is
+		// loaded from server and client is pathed to the dashboard. if not, token is removed.
 		if (sessionStorage.token) {
 			this.props.refreshLogin(sessionStorage.token);
 		}
 
-		//reset any old error messages
+		// reset any old error messages
 		this.props.clearUI();
 		
 		this.state = {
@@ -34,7 +34,7 @@ class Login extends React.Component {
 	}
 
 
-	//update state to reflect changes in username/password fields
+	// update state to reflect changes in username/password fields
 	handleChange(e) {
 		this.setState({ [e.target.name]: e.target.value });
 	}

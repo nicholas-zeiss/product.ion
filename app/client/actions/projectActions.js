@@ -4,7 +4,7 @@
  *
  *  Some async action creaters have a seemingly illogical syntax of 
  *		asyncServerCall()
- *			.then(res => res, err => handleError())			//where handleError does not return a value
+ *			.then(res => res, err => handleError())			// where handleError does not return a value
  *			.then(res => if (res) handleSuccess())
  *
  *	as opposed to a more intuitive

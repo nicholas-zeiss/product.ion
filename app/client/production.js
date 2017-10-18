@@ -57,7 +57,7 @@ const mapStateToProps = state => ({
 	UI: state.UI
 });
 
-//takes the component App which holds all visible components and connects to store, returns wrapped component
+// takes the component App which holds all visible components and connects to store, returns wrapped component
 const reduxWrapper = connect(mapStateToProps, mapDispachToProps)(App);
 
 

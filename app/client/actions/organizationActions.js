@@ -4,7 +4,7 @@
  *
  *  Some async action creaters have a seemingly illogical syntax of 
  *		asyncServerCall()
- *			.then(res => res, err => handleError())			//where handleError does not return a value
+ *			.then(res => res, err => handleError())			// where handleError does not return a value
  *			.then(res => if (res) handleSuccess())
  *
  *	as opposed to a more intuitive
@@ -28,7 +28,7 @@ import ApiCall from '../utils/serverCalls';
 //							Utils
 //--------------------------------------
 
-//messages to be dispatched to UI section of store. key prefixes c, d, u => create, delete, update. key postfixes E, S => error, success
+// messages to be dispatched to UI section of store. key prefixes c, d, u => create, delete, update. key postfixes E, S => error, success
 const messages = {
 	400: { user: 'Sorry, both that organization name and username are taken' },
 	401: { user: 'Sorry, that organization name is taken' },
@@ -43,13 +43,13 @@ const messages = {
 };
 
 
-//helper function for dispatching message actions
+// helper function for dispatching message actions
 const sendMessage = (dispatch, messageKey) => {
 	dispatch({ type: 'SET_MESSAGES', messages: messages[messageKey] });
 };
 
 
-//helper function to hydrate store on successful login
+// helper function to hydrate store on successful login
 const loginSucceeded = (data, dispatch) => {
 	sessionStorage.setItem('token', data.token);
 	ApiCall.setToken(data.token);

@@ -12,7 +12,7 @@ import { browserHistory } from 'react-router';
 
 const ProjectNode = props => {
 
-	//shorthand
+	// shorthand
 	let project = props.project;
 
 
@@ -32,7 +32,7 @@ const ProjectNode = props => {
 	let editProject = () => {
 		let user = props.organization.user;
 
-		//only allow editing if client created project or is admin/producer
+		// only allow editing if client created project or is admin/producer
 		if (project.userID == user.id || user.permissions != 'user') {
 			props.setEditProject(Object.assign({}, project));
 
@@ -45,8 +45,8 @@ const ProjectNode = props => {
 	};
 
 
-	//find the username of the account in the organization that created this project, if it exists
-	//as users can be deleted sometimes the user will not exist
+	// find the username of the account in the organization that created this project, if it exists
+	// as users can be deleted sometimes the user will not exist
 	let createdBy = props.organization.users.find(user => user.id == project.userID);
 	createdBy = createdBy ? createdBy.username : '?';
 
