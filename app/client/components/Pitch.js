@@ -66,7 +66,17 @@ class Pitch extends React.Component {
 		}
 
 		if (this.state.newProject) {
-			this.props.createProject(this.state.project);
+			let nameUnique = this.props.projects
+				.every(project => project.name != this.state.project.name);
+
+			if (nameUnique) {
+				this.props.createProject(this.state.project);
+			} else {
+				// project name is already in use, project cannot be created
+				this.props.setMessages({ projectName: 'That name is already taken' });
+				return;
+			}
+
 		} else {
 			this.props.updateProject(this.state.project);
 		}
@@ -95,6 +105,10 @@ class Pitch extends React.Component {
 
 
 	handleProjAttrChange(e) {
+		if (e.target.name == 'name' && this.props.UI.messages.projectName) {
+			this.props.setMessages({ projectName: '' });
+		}
+
 		let newProject = Object.assign({}, this.state.project, { [e.target.name]: e.target.value });
 		this.setState({ project: newProject });
 	}

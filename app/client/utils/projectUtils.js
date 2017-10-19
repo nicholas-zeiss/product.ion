@@ -9,6 +9,7 @@
 export const projectDefaults = (orgID, userID) => ({
 	adminNotes: '',
 	approvals: '1111111111',
+	costToDate: 0,
 	editDate: undefined,
 	endDate: undefined,
 	name: undefined,

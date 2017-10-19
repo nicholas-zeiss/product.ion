@@ -30,7 +30,12 @@ export const createProject = project => (
 		.createProject(project)
 		.then(
 			res => res,
-			err => console.error(err)
+			err => {
+				dispatch({
+					type: 'SET_MESSAGES',
+					messages: { projectName: 'That name is already taken' }
+				});
+			}
 		)
 		.then(res => {
 			if (res) {

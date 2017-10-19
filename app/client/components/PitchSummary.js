@@ -338,7 +338,7 @@ const PitchSummary = props => {
 						: 
 						
 						<FormGroup>
-							<Button bsStyle='success' type='submit'>
+							<Button bsStyle='success' onClick={ props.handlePitchApproval } type='submit'>
 								Approve Proposal
 							</Button>
 							&nbsp;

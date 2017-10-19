@@ -199,7 +199,7 @@ const authAPI = app => {
 const budgetAPI = app => {
 
 	app.get('/api/budgets/:projIDs', (req, res) => {
-		let projIDs = req.param.projIDs.split('-');
+		let projIDs = req.params.projIDs.split('-');
 
 		Budget.getBudgets(
 			projIDs,
@@ -265,7 +265,7 @@ const budgetAPI = app => {
 const expenseAPI = app => {
 
 	app.get('/api/expenses/:projIDs', (req, res) => {
-		let projIDs = req.param.projIDs.split('-');
+		let projIDs = req.params.projIDs.split('-');
 
 		Expense.getExpenses(
 			projIDs,
@@ -363,14 +363,22 @@ const projectAPI = app => {
 	// }
 	//
 	app.post('/api/projects', (req, res) => {
-		req.body.lastEdited = utils.dateString();
-
-		Project.makeProject(req.body, proj => {
-			if (proj) {
-				res.status(201).json(proj);
+		Project.getProjectByName(req.body.name, project => {
+			if (project) {
+				// project name already taken, invalid request
+				res.sendStatus(400);
 
 			} else {
-				res.sendStatus(404);
+				req.body.lastEdited = utils.dateString();
+
+				Project.makeProject(req.body, project => {
+					if (project) {
+						res.status(201).json(project);
+
+					} else {
+						res.sendStatus(500);
+					}
+				});
 			}
 		});
 	});

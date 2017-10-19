@@ -56,16 +56,17 @@ class Dashboard extends React.Component {
 
 	render() {
 		
-		// only admins can view mastersheet, this changes as appropriate below
-		let mastersheet = null;
+		// will hold link to master financial sheet if client can view it
+		let mastersheet;
 
 		// determine which pitches are visible based off app state and the client account's permission level
 		let pitches = this.props.projects.filter(proj => proj.status == 'Pitch');
 		let pitchHeader = this.props.organization.user.permissions == 'user' ? 'Your pitches awaiting approval:' : 'Pitches to be Approved:';
 
 
-		if (this.props.organization.user.permissions != 'admin') {
+		if (this.props.organization.user.permissions == 'user') {
 			pitches = pitches.filter(proj => proj.userID == this.props.organization.user.id);		
+
 		} else {
 			mastersheet =	(
 				<Link to='/mastersheet'>
