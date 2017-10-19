@@ -5,6 +5,16 @@
 **/
 
 
+// Generate an empty budget item
+export const budgetDefaults = () => ({
+	cost: 0,
+	description: '',
+	glCode: null,
+	quantity: 0,
+	total: 0
+});
+
+
 // Generate an empty project
 export const projectDefaults = (orgID, userID) => ({
 	adminNotes: '',
