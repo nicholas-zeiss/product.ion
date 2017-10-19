@@ -63,23 +63,5 @@ const cata = [
 ];
 
 
-export const projectDefaults = (orgID, userID) => ({
-	adminNotes: '',
-	approvals: '111111111111',
-	editDate: undefined,
-	endDate: undefined,
-	name: undefined,
-	numAssets: undefined,
-	orgID: orgID,
-	releaseDate: undefined,
-	startDate: undefined,
-	status: 'Pitch',
-	tier: undefined,
-	type: undefined,
-	userID: userID,
-	vertical: undefined
-});
-
-
 export default cata;
 
