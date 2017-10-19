@@ -8,6 +8,7 @@
 export const defaultUIState = Object.freeze({
 	messages: {
 		password: '',
+		projectName: '',
 		user: ''
 	},
 	views: {
@@ -37,15 +38,6 @@ export default (state = defaultUIState, action) => {
 
 		case 'SET_MESSAGES': {
 			return Object.assign({}, state, { messages: action.messages });
-		}
-
-
-		case 'SET_PROJECT': {
-			return {
-				messages: defaultUIState.messages,
-				project: action.projID,
-				views: Object.assign({}, state.views)
-			};
 		}
 
 

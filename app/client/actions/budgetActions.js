@@ -82,18 +82,3 @@ export const getBudgets = projIDs => {
 
 export const hydrateBudgets = budgets => ({ type: 'HYDRATE_BUDGETS', budgets });
 
-
-export const updateBudget = budget => (
-	dispatch => ApiCall
-		.updateBudget(budget)
-		.then(
-			res => res,
-			err => console.error(err)
-		)
-		.then(res => {
-			if (res) {
-				dispatch({type: 'HYDRATE_BUDGETS', budgets: [ budget ] });
-			}
-		})
-);
-

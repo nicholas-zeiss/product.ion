@@ -5,7 +5,7 @@
 **/
 
 
-import { projectDefaults } from '../data/public';
+import { projectDefaults } from '../utils/projectUtils';
 
 
 export const defaultEditProjectState = Object.freeze({ 
@@ -26,14 +26,22 @@ export default (state = defaultEditProjectState, action) => {
 
 
 		case 'NEW_EDIT_PROJECT': {
-			let project =  projectDefaults(action.orgID, action.userID);
+			let project = projectDefaults(action.orgID, action.userID);
 
-			return Object.assign({}, defaultEditProjectState, { project });
+			return Object.assign({}, defaultEditProjectState, { budgets: [], expenses: [], project });
 		}
 
 
 		case 'SET_EDIT_PROJECT': {
-			return Object.assign({}, defaultEditProjectState, { project: action.project });
+			
+			// we must ensure we work on copies of budgets/expenses/projects
+			// as to not mutate them in other locations of the store
+			return Object.assign({}, defaultEditProjectState, { 
+				budgets: action.budgets.map(budget => Object.assign({}, budget)),
+				expenses: action.expenses.map(expense => Object.assign({}, expense)),
+				id: action.id,
+				project: Object.assign({}, action.project)
+			});
 		}
 
 

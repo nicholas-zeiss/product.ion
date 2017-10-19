@@ -11,7 +11,13 @@ export const clearEditProject = () => ({ type: 'CLEAR_EDIT_PROJECT' });
 export const newEditProject = (orgID, userID) => ({ type: 'NEW_EDIT_PROJECT', orgID, userID });
 
 
-export const setEditProject = project => ({ type: 'SET_EDIT_PROJECT', project });
+export const setEditProject = (budgets, expenses, id, project) => ({ 
+	type: 'SET_EDIT_PROJECT',
+	budgets,
+	expenses,
+	id,
+	project
+});
 
 
 
