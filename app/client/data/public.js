@@ -63,5 +63,87 @@ const cata = [
 ];
 
 
+export const inputLabels = {
+	editDate: 'Edit Date',
+	endDate: 'End Date',
+	name: 'Project Name',
+	numAssets: 'Number of Assets',
+	releaseDate: 'Release Date',
+	reqBudget: 'Requested Budget',
+	startDate: 'Start Date',
+	tier: 'Tier',
+	type: 'Video Type',
+	vertical: 'Vertical'
+};
+
+
+export const inputStyles ={
+	approved: {
+		status: 'Approved',
+		style: 'success'
+	},
+	approvedUser: {
+		status: 'No issues',
+		style: ''
+	},
+	rejected: {
+		status: 'Rejected',
+		style: 'danger'
+	}
+};
+
+
+export const inputTypes = {
+	editDate: 'date',
+	endDate: 'date',
+	name: 'text',
+	numAssets: 'number',
+	releaseDate: 'date',
+	reqBudget: 'text',
+	startDate: 'date',
+	tier: 'select',
+	type: 'select',
+	vertical: 'select'	
+};
+
+
+const tiers = [
+	'BR',
+	'T1',
+	'T2',
+	'T3',
+	'T4',
+	'T5',
+	'R29'
+];
+
+
+const types = [
+	'Feature',
+	'Short',
+	'Television',
+	'Web',
+	'Episode'
+];
+
+
+const verticals = [
+	'Food',
+	'Beauty',
+	'Fashion & Style',
+	'News/Politics',
+	'News/Web',
+	'Wellness',
+	'Entertainment'
+];
+
+
+export const options = {
+	tier: tiers,
+	type: types,
+	vertical: verticals
+};
+
+
 export default cata;
 

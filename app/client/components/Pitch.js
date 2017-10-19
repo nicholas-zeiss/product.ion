@@ -71,6 +71,7 @@ class Pitch extends React.Component {
 
 			if (nameUnique) {
 				this.props.createProject(this.state.project);
+
 			} else {
 				// project name is already in use, project cannot be created
 				this.props.setMessages({ projectName: 'That name is already taken' });
