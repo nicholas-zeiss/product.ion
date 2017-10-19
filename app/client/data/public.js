@@ -80,8 +80,7 @@ const glCodeToCategory = {};
 
 for (let cat in categoryToGlcode) {
 	for (let expense in categoryToGlcode[cat]) {
-		let glCode = categoryToGlcode[cat][expense];
-		glCodeToCategory[glCode] = cat;
+		glCodeToCategory[categoryToGlcode[cat][expense]] = expense;
 	}
 }
 

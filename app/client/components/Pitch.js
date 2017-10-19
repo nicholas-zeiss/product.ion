@@ -10,10 +10,10 @@
 import React from 'react';
 import { Tab, Tabs } from 'react-bootstrap';
 
-import Budget from './Budget';
+import BudgetNode from './BudgetNode';
 import PitchSummary from './PitchSummary';
 
-import { approvalStringOrder } from '../utils/projectUtils';
+import { approvalStringOrder, budgetDefaults } from '../utils/projectUtils';
 
 
 class Pitch extends React.Component {
@@ -134,7 +134,7 @@ class Pitch extends React.Component {
 			<Tabs
 				activeKey={ this.state.activeTab }
 				id='pitchTabs'
-				onSelect={ this.handleTabSelect }
+				onSelect={ this.handleTabSelect.bind(this) }
 			>
 				<Tab eventKey={ 1 } title='Pitch'>
 					<PitchSummary
@@ -150,10 +150,24 @@ class Pitch extends React.Component {
 				</Tab>
 				
 				<Tab eventKey={ 2 } title='Budget'>
-					<Budget
-						addBudget={ this.addNewBudget }
-						budgets={ this.state.budgets }
-						deleteBudget = { this.deleteBudget }
+					{
+						this.state.budgets
+							.map((budget, index) => (
+								<BudgetNode
+									budget={ budget }
+									isNew={ false }
+									key={ index }
+									reqBudget={ this.state.project.reqBudget }
+									save={ this.deleteBudget.bind(this) }
+								/>
+							))
+					}
+					
+					<BudgetNode
+						budget={ budgetDefaults() }
+						isNew={ true }
+						reqBudget={ this.state.project.reqBudget }
+						save={ this.addBudget.bind(this) }
 					/>
 				</Tab>
 			</Tabs>
