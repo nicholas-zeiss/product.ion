@@ -27,7 +27,7 @@ export const projectDefaults = (orgID, userID) => ({
 
 
 //order of keys in approval string, used in following two functions
-const approvalStringOrder = [
+export const approvalStringOrder = [
 	'endDate',
 	'editDate',
 	'numAssets',
@@ -49,7 +49,7 @@ export const genApprovalObject = string => {
 	let approvalObject = {};
 
 	approvalStringOrder.forEach((key, index) => {
-		approvalObject[key] = !!string[index];
+		approvalObject[key] = string[index] == '1' ? true : false;
 	});
 
 	return approvalObject;

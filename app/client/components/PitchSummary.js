@@ -53,7 +53,7 @@ const approvalWrapper = (approvals, userType, changeApproval, attr) => {
 	} else {
 		return (
 			<InputGroup.Button>
-				<Button bsStyle={ style.style } name={ attr } onClick={ changeApproval }>
+				<Button bsStyle={ style.style } name={ attr } onClick={ changeApproval.bind(null, attr) }>
 					{ style.status }
 				</Button>
 			</InputGroup.Button>
@@ -236,18 +236,21 @@ const PitchSummary = props => {
 
 				{
 					props.userType != 'user' && 
+					props.project.approvals == '1111111111' &&
 						<FormGroup>
 							<Button bsStyle='success' type='submit'>
-								Approve Proposal
+								{ props.newProject ? 'Create Project' : 'Approve Pitch' }
 							</Button>
-							&nbsp;
+						</FormGroup>
+				}
 
-							{
-								props.project.id &&
-									<Button bsStyle='danger' type='submit'>
-										Reject with Reasons
-									</Button>
-							}
+				{
+					props.userType != 'user' && 
+					props.project.approvals != '1111111111' &&
+						<FormGroup>
+							<Button bsStyle='danger' type='submit'>
+								Reject Pitch
+							</Button>
 						</FormGroup>
 				}
 			</Form>

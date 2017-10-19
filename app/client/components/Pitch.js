@@ -13,6 +13,8 @@ import { Tab, Tabs } from 'react-bootstrap';
 import Budget from './Budget';
 import PitchSummary from './PitchSummary';
 
+import { approvalStringOrder } from '../utils/projectUtils';
+
 
 class Pitch extends React.Component {
 	constructor(props) {
@@ -60,10 +62,7 @@ class Pitch extends React.Component {
 
 	
 	handlePitchSubmit(e) {
-		// method may be called by form submission or by another method
-		if (e) {
-			e.preventDefault();
-		}
+		e.preventDefault();
 
 		if (this.state.newProject) {
 			let nameUnique = this.props.projects
@@ -91,15 +90,6 @@ class Pitch extends React.Component {
 	}
 
 
-	handlePitchApproval(e) {
-		e.preventDefault();
-
-		this.setState({ 
-			project: Object.assign({}, this.state.project, { status: 'Production' })
-		}, this.handlePitchSubmit);
-	}
-
-
 	handleTabSelect(key) {
 		this.setState({	activeTab: key });
 	}
@@ -115,8 +105,17 @@ class Pitch extends React.Component {
 	}
 
 
-	handleApprovalChange() {
-		console.log('approval');
+	handleApprovalChange(attr) {
+		let approvals = this.state.project.approvals;
+		let index = approvalStringOrder.indexOf(attr);
+
+		let newApproval = approvals[index] == '1' ? '0' : '1';
+
+		approvals = approvals.slice(0, index) + newApproval + approvals.slice(index + 1);
+	
+		this.setState({ 
+			project: Object.assign({}, this.state.project, { approvals })
+		});
 	}
 
 
@@ -143,8 +142,8 @@ class Pitch extends React.Component {
 						errorMessage={ this.props.UI.messages.projectName }
 						handleApprovalChange={ this.handleApprovalChange.bind(this) }
 						handleAttrChange={ this.handleProjAttrChange.bind(this) }
-						handlePitchApproval={ this.handlePitchApproval.bind(this) }
 						handlePitchSubmit={ this.handlePitchSubmit.bind(this) }
+						newProject={ this.state.newProject }
 						project={ this.state.project }
 						userType={ this.props.organization.user.permissions }
 					/>
