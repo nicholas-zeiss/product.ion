@@ -21,6 +21,12 @@ class Projects extends React.Component {
 	}
 
 
+	openPitchModal() {
+		this.props.newEditProject(this.props.organization.id, this.props.organization.user.id);
+		this.props.viewPitchModal();
+	}
+
+
 	render() {
 		return (
 			<div style={ { fontSize: '14px' } }>
@@ -32,7 +38,7 @@ class Projects extends React.Component {
 							bsSize='large'
 							bsStyle='primary'
 							id='modalButton' 
-							onClick={ this.props.viewPitchModal }
+							onClick={ this.openPitchModal.bind(this) }
 							style={ { 'marginBottom': '15px' } }
 						>
 							Create a Pitch
