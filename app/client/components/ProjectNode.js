@@ -34,8 +34,8 @@ const ProjectNode = props => {
 
 		// only allow editing if client created project or is admin/producer
 		if (project.userID == user.id || user.permissions != 'user') {
-			let budgets = this.props.budgets[project.id] || [];
-			let expenses = this.props.expenses[project.id] || [];
+			let budgets = props.budgets[project.id] || [];
+			let expenses = props.expenses[project.id] || [];
 
 			props.setEditProject(budgets, expenses, project.id, project);
 
