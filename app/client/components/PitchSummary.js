@@ -19,17 +19,17 @@ import { genApprovalObject, genApprovalString } from '../utils/projectUtils';
 // As such users and admin/producers have slightly different views for this form.
 const formStyles ={
 	approved: {
-		action: 'Approved',
+		status: 'Approved',
 		style: 'success',
 		val: 'success'
 	},
 	approvedUser: {
-		action: 'No issues',
-		style: undefined,
-		val: undefined
+		status: 'No issues',
+		style: '',
+		val: null
 	},
 	rejected: {
-		action: 'Rejected',
+		status: 'Rejected',
 		style: 'danger',
 		val: 'error'
 	}
@@ -89,6 +89,7 @@ const PitchSummary = props => {
 		attr
 	);
 
+
 	return (
 		<div className='Pitch'>
 			<Form onSubmit={ props.handlePitchSubmit }>
@@ -99,13 +100,13 @@ const PitchSummary = props => {
 					
 					<InputGroup>	
 						<FormControl
-							name='projName'
-							onChange={ props.handleChange }
+							name='name'
+							onChange={ props.handleAttrChange }
 							type='text'
 							value={ props.project.name }
 							required
 						/>		
-						{ approvalState('projName') }	
+						{ approvalState('name') }	
 					</InputGroup>
 					
 					<p>{ props.errorMessage }</p>
@@ -120,8 +121,7 @@ const PitchSummary = props => {
 						<FormControl
 							componentClass='select'
 							name='vertical'
-							onChange={ props.handleChange }
-							placeholder='Vertical'
+							onChange={ props.handleAttrChange }
 							value={ props.project.vertical }
 							required
 						>
@@ -147,8 +147,7 @@ const PitchSummary = props => {
 						<FormControl
 							componentClass='select'
 							name='tier'
-							onChange={ props.handleChange }
-							placeholder='Tier'
+							onChange={ props.handleAttrChange }
 							value={ props.project.tier }
 							required
 						>
@@ -173,7 +172,7 @@ const PitchSummary = props => {
 					<InputGroup>
 						<FormControl
 							name='numAssets'
-							onChange={ props.handleChange }										
+							onChange={ props.handleAttrChange }										
 							placeholder='How many episodes?'
 							type='number'
 							value={ props.project.numAssets }
@@ -192,9 +191,8 @@ const PitchSummary = props => {
 					<InputGroup>
 						<FormControl
 							componentClass='select'
-							name='videoType'
-							onChange={ props.handleChange }
-							placeholder='Video Type'
+							name='type'
+							onChange={ props.handleAttrChange }
 							value={ props.project.type }
 							required
 						>
@@ -205,7 +203,7 @@ const PitchSummary = props => {
 							<option value='episode'>Episode</option>
 						</FormControl>
 
-						{ approvalState('videoType') }
+						{ approvalState('type') }
 					</InputGroup>
 				</FormGroup>
 
@@ -217,7 +215,7 @@ const PitchSummary = props => {
 					<InputGroup>
 						<FormControl
 							name='reqBudget'
-							onChange={ props.handleChange }
+							onChange={ props.handleAttrChange }
 							type='text'
 							value={ moneyString(props.project.reqBudget) }
 							readOnly
@@ -245,7 +243,7 @@ const PitchSummary = props => {
 						
 						<FormControl
 							name='startDate'
-							onChange={ props.handleChange }
+							onChange={ props.handleAttrChange }
 							type='date'
 							value={ props.startDate }
 							required
@@ -263,7 +261,7 @@ const PitchSummary = props => {
 						
 						<FormControl
 							name='endDate'
-							onChange={ props.handleChange }
+							onChange={ props.handleAttrChange }
 							type='date'
 							value={ props.project.endDate }
 							required
@@ -281,7 +279,7 @@ const PitchSummary = props => {
 						
 						<FormControl
 							name='editDate'
-							onChange={ props.handleChange }
+							onChange={ props.handleAttrChange }
 							type='date'
 							value={ props.project.editDate }
 							required
@@ -299,7 +297,7 @@ const PitchSummary = props => {
 						
 						<FormControl
 							name='releaseDate'
-							onChange={ props.handleChange }
+							onChange={ props.handleAttrChange }
 							type='date'
 							value={ props.project.releaseDate }
 							required
@@ -323,7 +321,7 @@ const PitchSummary = props => {
 							<FormControl
 								componentClass='textarea'
 								name='adminNotes'
-								onChange={ props.handleChange }
+								onChange={ props.handleAttrChange }
 								placeholder='If rejecting please explain why here.'
 								value={ props.project.adminNotes }
 							/>
@@ -340,14 +338,14 @@ const PitchSummary = props => {
 						: 
 						
 						<FormGroup>
-							<Button bsStyle='success' onClick={ props.handlePitchApproval }>
+							<Button bsStyle='success' type='submit'>
 								Approve Proposal
 							</Button>
 							&nbsp;
 
 							{
-								!props.newPitch &&
-									<Button bsStyle='danger' onClick={ props.handlePitchSubmit }>
+								props.project.id &&
+									<Button bsStyle='danger' type='submit'>
 										Reject with Reasons
 									</Button>
 							}

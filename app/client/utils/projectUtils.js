@@ -18,10 +18,10 @@ export const projectDefaults = (orgID, userID) => ({
 	reqBudget: 0,
 	startDate: undefined,
 	status: 'Pitch',
-	tier: undefined,
-	type: undefined,
+	tier: 'br',
+	type: 'feature',
 	userID: userID,
-	vertical: undefined
+	vertical: 'food'
 });
 
 
@@ -36,7 +36,7 @@ const approvalStringOrder = [
 	'startDate',
 	'tier',
 	'vertical',
-	'videoType'
+	'type'
 ];
 
 

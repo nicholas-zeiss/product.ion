@@ -18,7 +18,7 @@ class Pitch extends React.Component {
 	constructor(props) {
 		super(props);
 
-		console.log(props.editProject.project)
+
 		// budgets holds the array of budget items we actually display
 		// we track which of these have just been created, and what original budgets
 		// were deleted so that we can updated our store/the server with the changes
@@ -27,7 +27,7 @@ class Pitch extends React.Component {
 			budgets: props.editProject.budgets,
 			budgetsToCreate: [],
 			budgetsToDelete: [],
-			newProject: !!props.editProject.project.id,		// new projects lack IDs as they are created by database
+			newProject: !props.editProject.project.id,		// new projects lack IDs as they are created by database
 			project: props.editProject.project
 		};
 	}
@@ -76,7 +76,7 @@ class Pitch extends React.Component {
 		}
 
 		this.props.clearEditProject();
-		this.props.closePitchModal();
+		this.props.closePitchModal();	
 	}
 
 
@@ -96,7 +96,6 @@ class Pitch extends React.Component {
 
 	handleProjAttrChange(e) {
 		let newProject = Object.assign({}, this.state.project, { [e.target.name]: e.target.value });
-
 		this.setState({ project: newProject });
 	}
 
@@ -128,9 +127,9 @@ class Pitch extends React.Component {
 						budgetTab={ this.handleTabSelect.bind(this, 2) }
 						errorMessage={ this.props.UI.messages.projectName }
 						handleApprovalChange={ this.handleApprovalChange.bind(this) }
+						handleAttrChange={ this.handleProjAttrChange.bind(this) }
 						handlePitchApproval={ this.handlePitchApproval.bind(this) }
 						handlePitchSubmit={ this.handlePitchSubmit.bind(this) }
-						handleProjAttrChange={ this.handleProjAttrChange.bind(this) }
 						project={ this.state.project }
 						userType={ this.props.organization.user.permissions }
 					/>

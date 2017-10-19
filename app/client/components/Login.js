@@ -7,7 +7,7 @@
 
 import React from 'react';
 import { Link } from 'react-router';
-import { Button, ButtonToolbar, ControlLabel, Form, FormControl, FormGroup, Panel } from 'react-bootstrap';
+import { Button, ControlLabel, Form, FormControl, FormGroup, Panel } from 'react-bootstrap';
 
 
 class Login extends React.Component {
@@ -92,16 +92,14 @@ class Login extends React.Component {
 							{ this.props.UI.messages.user }
 						</p>
 						
-						<ButtonToolbar bsClass='loginButton'>
-							<Button
-								bsSize='large'
-								bsStyle='primary'
-								type='submit'
-								block
-							>
-								Login
-							</Button>
-						</ButtonToolbar>
+						<Button
+							bsSize='large'
+							bsStyle='primary'
+							type='submit'
+							block
+						>
+							Login
+						</Button>
 					</Form>
 				</Panel>
 			</div>
