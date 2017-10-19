@@ -58,7 +58,7 @@ Promise.all([
 	knex.schema.createTableIfNotExists('projects', table => {
 		table.increments('id').primary();
 		table.string('adminNotes', 1000);
-		table.string('approvals', 12);
+		table.string('approvals', 10);
 		table.float('costToDate').defaultTo(0);
 		table.string('editDate');
 		table.string('endDate');

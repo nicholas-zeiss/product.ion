@@ -1,8 +1,8 @@
 /**
  *
  *  Component for the pitch modal, which allows you to create a new pitch or edit an existing one.
- *	The vast majority of the actual view for the modal is rendered in component PitchSummary,
- *	this component acts more as a controller.
+ *	The vast majority of the actual view for the modal is rendered in PitchSummary and Budget;
+ *	this component acts as a controller.
  *
 **/
 
@@ -18,53 +18,74 @@ class Pitch extends React.Component {
 	constructor(props) {
 		super(props);
 
-		if (props.editProject.project == null) {
-			props.newEditProject(props.organization.id, props.organization.user.id);
-		}
-
-		// shorthand refs for convenience
-		this.budgets = this.props.editProject.budgets;
-		this.project = this.props.editProject.project;
-
-		// tracks the active tab of the modal, which has a tab for project info
-		// and a tab for adding budget items
-		this.state = { activeTab: 1 };
+		console.log(props.editProject.project)
+		// budgets holds the array of budget items we actually display
+		// we track which of these have just been created, and what original budgets
+		// were deleted so that we can updated our store/the server with the changes
+		this.state = {
+			activeTab: 1,
+			budgets: props.editProject.budgets,
+			budgetsToCreate: [],
+			budgetsToDelete: [],
+			newProject: !!props.editProject.project.id,		// new projects lack IDs as they are created by database
+			project: props.editProject.project
+		};
 	}
 
 
-	handlePitchSubmit(e) {
-		e.preventDefault();
+	updateBudgets() {
+		// To create budgets we need the id of the project to attach them to. If this is a new project,
+		// we obtain the id from the projects section of the store which will have the newly created project
 		
-		this.props.createProject(this.project);
-		this.props.createBudgets(this.budgets, this.props.editProject.id);
+		let projID;
+
+		if (this.state.newProject) {
+			// note this works as names are required to be unique
+			projID = this.props.projects
+				.find(project => project.name == this.state.project.name)
+				.id;
+
+		} else {
+			projID = this.state.project.id;
+		}
+		
+		if (this.state.budgetsToCreate.length) {
+			this.props.createBudgets(this.state.budgetsToCreate, projID);
+		}
+
+		if (this.state.budgetsToDelete.length) {
+			this.props.deleteBudgets(this.state.budgetsToDelete, projID);
+		}
+	}
+
+	
+	handlePitchSubmit(e) {
+		// method may be called by form submission or by another method
+		if (e) {
+			e.preventDefault();
+		}
+
+		if (this.state.newProject) {
+			this.props.createProject(this.state.project);
+		} else {
+			this.props.updateProject(this.state.project);
+		}
+
+		if (this.state.budgetsToCreate.length || this.state.budgetsToDelete.length) {
+			this.updateBudgets();
+		}
 
 		this.props.clearEditProject();
 		this.props.closePitchModal();
 	}
 
 
-	postAllBudgets() {
-		this.props.updateMultipleBudgets(this.state.budgets);
-	}
+	handlePitchApproval(e) {
+		e.preventDefault();
 
-
-	handleReject(e) {
-		var data = this.buildPitch();
-
-		this.props.updateProject(data, this.props.projID);
-		this.closeModal();
-	}
-
-
-	handleApprove(e) {
-		var data = this.buildPitch();
-		data.status = 'Production';
-
-		console.log('Pitch approved. Pitch is ', data);
-		this.state.newPitch ? this.props.postNewProject(data)
-			: this.props.updateProject(data, this.props.projID);
-
-		this.closeModal();
+		this.setState({ 
+			project: Object.assign({}, this.state.project, { status: 'Production' })
+		}, this.handlePitchSubmit);
 	}
 
 
@@ -73,77 +94,25 @@ class Pitch extends React.Component {
 	}
 
 
-	tabToBudget() {
-		this.handleSelect(2);
+	handleProjAttrChange(e) {
+		let newProject = Object.assign({}, this.state.project, { [e.target.name]: e.target.value });
+
+		this.setState({ project: newProject });
 	}
 
 
-	updateBudget(newTotal) {
-		this.setState({reqBudget: newTotal});
+	handleApprovalChange() {
+		console.log('approval');
 	}
 
 
-	handleChange(e) {
-		this.setState({[e.target.name]: e.target.value});
+	addBudget() {
+		console.log('approval');
 	}
 
 
-	handleBudgetChange(e, idx) {
-		let newBudget = this.state.budgets;
-		newBudget[idx][e.name] = e.value;
-
-		this.setState({budgets: newBudget});
-	}
-
-
-	handleBudgetSelect(e, idx) {
-		let newBudgets = this.state.budgets;
-		newBudgets[idx].glCode = e;
-
-		this.setState({budgets: newBudgets});
-	}
-
-
-	calculateTotalBudget() {
-		let budgetTotal = 0;
-		this.state.budgets.forEach(budget => budgetTotal+=budget.total);
-
-		this.setState({reqBudget: budgetTotal});
-	}
-
-
-	addNewBudget(budget) {
-		this.props.postNewBudget(budget);
-	}
-
-
-	deleteBudgetNode(node) {
-		this.props.deleteBudgetNode(node);
-	}
-
-
-	updateApproval(index) {
-		var approvals = this.state.approvals.split('');
-
-		approvals[index] = Number(!(approvals[index]/1));
-
-		this.setState({approvals: approvals.join('')});
-	}
-
-
-	handleJudgement(e) {
-		const name = e.target.name,
-			good = {val: 'success', style: 'success', action: 'Reject'},
-			bad = {val: 'error', style: 'danger', action: 'Approve'},
-			newJudge = this.state.judge;
-
-		// set the judgement props of each field to the inverse
-		newJudge[name].vars =
-						this.state.judge[name].vars.action === 'Reject' ? bad
-							: good;
-
-		this.updateApproval(newJudge[name].index);
-		this.setState({judge: newJudge});
+	deleteBudget() {
+		console.log('approval');
 	}
 
 
@@ -155,30 +124,23 @@ class Pitch extends React.Component {
 				onSelect={ this.handleTabSelect }
 			>
 				<Tab eventKey={ 1 } title='Pitch'>
-					
-					<PitchSummary 
-						{ ...this.props.organization } 
-						{ ...this.state }
-						handleApprove={ this.handleApprove }
-						handleChange={ this.handleChange }
-						handleJudgement={ this.handleJudgement }
-						handlePitchSubmit={ this.handlePitchSubmit }
-						handleReject={ this.handleReject }
-						tabToBudget={ this.tabToBudget }
-						updatePitch={ this.updatePitch }
+					<PitchSummary
+						budgetTab={ this.handleTabSelect.bind(this, 2) }
+						errorMessage={ this.props.UI.messages.projectName }
+						handleApprovalChange={ this.handleApprovalChange.bind(this) }
+						handlePitchApproval={ this.handlePitchApproval.bind(this) }
+						handlePitchSubmit={ this.handlePitchSubmit.bind(this) }
+						handleProjAttrChange={ this.handleProjAttrChange.bind(this) }
+						project={ this.state.project }
+						userType={ this.props.organization.user.permissions }
 					/>
-
 				</Tab>
 				
 				<Tab eventKey={ 2 } title='Budget'>
 					<Budget
-						addNewBudget={ this.addNewBudget }
-						budgets={ this.props.budgets['proj' + this.state.id] }
-						deleteBudgetNode = { this.deleteBudgetNode }
-						handleBudgetChange={ this.handleBudgetChange }
-						handleBudgetSelect={ this.handleBudgetSelect }
-						postAllBudgets={ this.postAllBudgets }
-						total={ this.state.reqBudget }
+						addBudget={ this.addNewBudget }
+						budgets={ this.state.budgets }
+						deleteBudget = { this.deleteBudget }
 					/>
 				</Tab>
 			</Tabs>
