@@ -8,11 +8,11 @@
 import React from 'react';
 import { Button, Modal, Panel, Table } from 'react-bootstrap';
 
-import projectTableHeader from '../data/projectTableHeader';
-
 import NavBar from './NavBar.js';
 import Pitch from './Pitch.js';
 import ProjectNode from './ProjectNode.js';
+
+import projectTableHeader from '../utils/projectUtils';
 
 
 class Projects extends React.Component {

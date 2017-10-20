@@ -10,11 +10,10 @@
 import React from 'react';
 import { Tab, Tabs } from 'react-bootstrap';
 
-import BudgetNode from './BudgetNode';
+import Budgets from './Budgets';
 import PitchSummary from './PitchSummary';
 
-import { categoryToGlcode } from '../data/public';
-import { approvalStringOrder, budgetDefaults } from '../utils/projectUtils';
+import { approvalStringOrder } from '../utils/projectUtils';
 
 
 class Pitch extends React.Component {
@@ -30,7 +29,6 @@ class Pitch extends React.Component {
 			budgets: props.editProject.budgets,
 			budgetsToCreate: [],
 			budgetsToDelete: [],
-			newBudget: budgetDefaults(),
 			newProject: !props.editProject.project.id,		// new projects lack IDs as they are created by database
 			project: props.editProject.project
 		};
@@ -108,30 +106,6 @@ class Pitch extends React.Component {
 	}
 
 
-	handleBudgAttrChange(e) {
-		let newBudget = { [e.target.name]: e.target.value };
-
-		if (e.target.name == 'cost' || e.target.name == 'quantity') {
-			let other = e.target.name == 'cost' ? 'quantity' : 'cost';
-			newBudget.total = e.target.value * this.state.newBudget[other];
-		}
-
-		this.setState({ 
-			newBudget: Object.assign({}, this.state.newBudget,  newBudget)
-		});
-	}
-
-
-	handleGlCode(e) {
-		let [ type, category ] = e.split('---');
-		let glCode = categoryToGlcode[category][type];
-
-		this.setState({ 
-			newBudget: Object.assign({}, this.state.newBudget, { glCode })
-		});
-	}
-
-
 	handleApprovalChange(attr) {
 		console.log(attr);
 		let approvals = this.state.project.approvals;
@@ -147,14 +121,30 @@ class Pitch extends React.Component {
 	}
 
 
-	addBudget(e) {
-		e.preventDefault();
-
-
+	addBudget(budget) {
+		console.log(budget);
+		this.setState({
+			budgets: this.state.budgets.concat(budget),
+			budgetsToCreate: this.state.budgetsToCreate.concat(budget)
+		});
 	}
 
 
-	deleteBudget(e) {
+	deleteBudget(budget) {
+		console.log(budget);
+		let budgets = this.state.budgets;
+		let budgetsToCreate = this.state.budgetsToCreate.slice();
+		let budgetsToDelete = this.state.budgetsToDelete.slice();
+
+		if (budget.id != undefined) {
+			budgetsToDelete.push(budget.id);
+		} else {
+			budgetsToCreate = budgetsToCreate.filter(b => b != budget);
+		}
+
+		budgets = budgets.filter(b => b != budget);
+
+		this.setState({ budgets, budgetsToCreate, budgetsToDelete});
 	}
 
 
@@ -179,30 +169,12 @@ class Pitch extends React.Component {
 				</Tab>
 				
 				<Tab eventKey={ 2 } title='Budget'>
-					{
-						this.state.budgets
-							.map((budget, index) => (
-								<BudgetNode
-									approved={ this.state.project.approvals[5] == '1' ? true : false }
-									budget={ budget }
-									handleChange={ this.handleBudgAttrChange.bind(this) }
-									handleGlCode={ this.handleGlCode.bind(this) }
-									isNew={ false }
-									key={ index }
-									reqBudget={ this.state.project.reqBudget }
-									save={ this.deleteBudget.bind(this) }
-								/>
-							))
-					}
-					
-					<BudgetNode
-						approved={ this.state.project.approvals[5] == '1' ? true : false }
-						budget={ this.state.newBudget }
-						handleChange={ this.handleBudgAttrChange.bind(this) }
-						handleGlCode={ this.handleGlCode.bind(this) }
-						isNew={ true }
+					<Budgets
+						addBudget={ this.addBudget.bind(this) }
+						approved={ this.state.project.approvals[5] == '1' }
+						budgets={ this.state.budgets }
+						deleteBudget={ this.deleteBudget.bind(this) }
 						reqBudget={ this.state.project.reqBudget }
-						submit={ this.addBudget.bind(this) }
 					/>
 				</Tab>
 			</Tabs>

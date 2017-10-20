@@ -5,11 +5,29 @@
 **/
 
 
+// only included to work with jsx
+import React from 'react';
+
+
+export const projectTableHeader = (
+	<thead>
+		<tr id='readOnlyHeader'>
+			<th> Name </th>
+			<th> ID </th>
+			<th> Created By </th>
+			<th> Status </th>
+			<th> Cost to Date </th>
+			<th> Estimate to Complete </th>
+		</tr>
+	</thead>
+);
+
+
 // Generate an empty budget item
 export const budgetDefaults = () => ({
 	cost: 0,
 	description: '',
-	glCode: null,
+	glCode: '',
 	quantity: 0,
 	total: 0
 });

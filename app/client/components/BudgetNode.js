@@ -35,7 +35,10 @@ const dropDownOptions = () => {
 
 const BudgetNode = props => {
 
-	let readOnly = !props.isNew ? { readOnly: true } : {};
+	// if budget doesn't have an id (ie a database id) we are working on a new budget object
+	const isNew = props.budget.id == undefined;
+
+	const readOnly = isNew ? {} : { readOnly: true };
 
 	let header = (
 		<FormGroup style={ { display: 'block', margin: '20px 0' } }>
@@ -48,20 +51,19 @@ const BudgetNode = props => {
 		<FormGroup style={ { marginTop: '20px' } } validationState={ props.approved ? 'success' : 'error' }>
 			<InputGroup id='requestedBudget'>
 				<InputGroup.Addon>Requested budget: </InputGroup.Addon>
-				<FormControl value={ moneyString(props.reqBudget) } readOnly/>
+				<FormControl value={ props.reqBudget != undefined ? moneyString(props.reqBudget) : '' } readOnly/>
 			</InputGroup>
 		</FormGroup>
 	);
 
-
 	return (
 		<Form
 			className='budgetForm'
-			onSubmit={ props.submit }
+			onSubmit={ props.save.bind(null, props.budget) }
 			style={ { marginTop: '20px' } }
 			inline
 		>
-			{ props.isNew ? header : null }
+			{ isNew ? header : null }
 
 			<InputGroup id='budgetDescription'>
 				<InputGroup.Addon>
@@ -135,9 +137,9 @@ const BudgetNode = props => {
 				/>
 			</InputGroup>
 			
-			<Button id='budgetSave' type='submit'>{ props.isNew ? 'Add' : 'X' }</Button>
+			<Button id='budgetSave' onClick={ props.delete.bind(null, props.budget) } type='submit'>{ isNew ? 'Add' : 'X' }</Button>
 
-			{ props.isNew ? footer : null }
+			{ isNew ? footer : null }
 
 		</Form>
 	);

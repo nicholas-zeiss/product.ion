@@ -11,8 +11,8 @@ import { Button, Modal, Panel, Table } from 'react-bootstrap';
 
 import Papa from 'papaparse';
 
-import projectTableHeader from '../data/projectTableHeader';
 import { fields, expandExpenses } from '../utils/csvUtils';
+import projectTableHeader from '../utils/projectUtils';
 
 import DashCharts from './DashCharts';
 import NavBar from './NavBar';
