@@ -13,7 +13,7 @@ const Project = require('./controllers/projectController');
 const dateString = () => {
 	let now = new Date();
 	
-	let mm = ('0' + now.getMonth()).slice(-2);
+	let mm = ('0' + (now.getMonth() + 1)).slice(-2);
 	let dd = ('0' + now.getDate()).slice(-2);
 
 	return [ now.getFullYear(), mm, dd ].join('-');
