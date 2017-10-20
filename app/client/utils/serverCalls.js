@@ -48,7 +48,7 @@ export default {
 	//     		delete data
 	//------------------------------
 
-	deleteBudget: (id, projID) => axios.delete(`/api/budgets/${id}/${projID}`),
+	deleteBudgets: (IDs, projID) => axios.delete(`/api/budgets/${IDs.join('-')}/${projID}`),
 
 	deleteExpense: (id, projID) => axios.delete(`/api/expenses/${id}/${projID}`),
 

@@ -27,7 +27,7 @@ export const projectTableHeader = (
 export const budgetDefaults = () => ({
 	cost: 0,
 	description: '',
-	glCode: '',
+	glCode: 0,
 	quantity: 0,
 	total: 0
 });

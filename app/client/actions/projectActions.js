@@ -25,7 +25,7 @@ import ApiCall from '../utils/serverCalls';
 export const clearProjects = () => ({ type: 'CLEAR_PROJECTS' });
 
 
-export const createProject = project => (
+export const createProject = (project, budgets) => (
 	dispatch => ApiCall
 		.createProject(project)
 		.then(
@@ -40,6 +40,22 @@ export const createProject = project => (
 		.then(res => {
 			if (res) {
 				dispatch({ type: 'HYDRATE_PROJECTS', projects: [ res.data ] });
+				
+				if (budgets.length) {
+					budgets.forEach(b => b.projID = res.data.id);
+					
+					ApiCall
+						.createBudgets(budgets, res.data.id)
+						.then(
+							res => res,
+							err => console.error(err)
+						)
+						.then(res => {
+							if (res) {
+								dispatch({ type: 'HYDRATE_BUDGETS', budgets: res.data });
+							}
+						});
+				}
 			}
 		})
 );

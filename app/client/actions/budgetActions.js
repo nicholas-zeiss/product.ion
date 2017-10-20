@@ -40,19 +40,19 @@ export const createBudgets = (budgets, projID) => (
 );
 
 
-export const dehydrateBudget = (id, projID) => ({ type: 'DEHYDRATE_BUDGET', id, projID });
+export const dehydrateBudgets = (IDs, projID) => ({ type: 'DEHYDRATE_BUDGETS', IDs, projID });
 
 
-export const deleteBudget = (id, projID) => (
+export const deleteBudgets = (IDs, projID) => (
 	dispatch => ApiCall
-		.deleteBudget(id, projID)
+		.deleteBudgets(IDs, projID)
 		.then(
 			res => res,
 			err => console.error(err)
 		)
 		.then(res => {
 			if (res) {
-				dispatch({type: 'DEHYDRATE_BUDGET', id, projID });
+				dispatch({type: 'DEHYDRATE_BUDGETS', IDs, projID });
 			}
 		})
 );

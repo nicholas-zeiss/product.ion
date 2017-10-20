@@ -20,11 +20,11 @@ export default (state = defaultBudgetsState, action) => {
 		}
 
 
-		case 'DEHYDRATE_BUDGET': {
+		case 'DEHYDRATE_BUDGETS': {
 			let newBudgets = deepCopyState(state);
 			
 			newBudgets[action.projID] = newBudgets[action.projID]
-				.filter(budget => budget.id != action.id);
+				.filter(budget => !action.IDs.includes(budget.id));
 
 			return newBudgets;
 		}
