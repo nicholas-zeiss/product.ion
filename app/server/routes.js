@@ -336,7 +336,7 @@ const projectAPI = app => {
 	app.patch('/api/projects', (req, res) => {
 		Project.updateProject(
 			req.body,
-			success => res.sendStatus(200),
+			project => res.status(200).json(project),
 			error => res.sendStatus(500)
 		);
 	});

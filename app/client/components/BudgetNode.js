@@ -33,9 +33,7 @@ const dropDownOptions = () => {
 
 
 
-const BudgetNode = props => {
-	console.log(props.budget);
-	
+const BudgetNode = props => {	
 	// if budget has save prop (instead of delete) it is new
 	const isNew = !!props.save;
 

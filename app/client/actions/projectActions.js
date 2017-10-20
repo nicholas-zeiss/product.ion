@@ -45,7 +45,7 @@ export const createProject = project => (
 );
 
 
-export const dehydrateProjects = ids => ({ type: 'DEHYDRATE_PROJECTS', ids });
+export const dehydrateProjects = IDs => ({ type: 'DEHYDRATE_PROJECTS', IDs });
 
 
 export const hydrateProjects = projects => ({ type: 'HYDRATE_PROJECTS', projects });
@@ -60,6 +60,7 @@ export const updateProject = project => (
 		)
 		.then(res => {
 			if (res) {
+				dispatch({ type: 'DEHYDRATE_PROJECTS', IDs: [ project.id ]});
 				dispatch({ type: 'HYDRATE_PROJECTS', projects: [ res.data ] });
 			}
 		})

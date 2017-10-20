@@ -14,7 +14,7 @@ export default (state = [], action) => {
 		}
 
 		case 'DEHYDRATE_PROJECTS': {
-			return state.filter(project => !action.ids.includes(project.id));
+			return state.filter(project => !action.IDs.includes(project.id));
 		}	
 
 		case 'HYDRATE_PROJECTS': {

@@ -150,7 +150,9 @@ class Pitch extends React.Component {
 	updateReqBudget() {
 		let reqBudget = this.state.budgets.reduce((total, budget) => total + budget.total, 0);
 
-		this.setState({ project: Object.assign({}, this.state.project, { reqBudget })});
+		this.setState({
+			project: Object.assign({}, this.state.project, { reqBudget })
+		});
 	}
 
 
