@@ -25,7 +25,7 @@ class Pitch extends React.Component {
 		// were deleted so that we can updated our store/the server with the changes
 		this.state = {
 			activeTab: 1,
-			budgets: props.editProject.budgets,
+			budgets: props.editProject.budgets.slice(),
 			budgetsToCreate: [],
 			budgetsToDelete: [],
 			newProject: !props.editProject.project.id,		// new projects lack IDs as IDs are created by database
@@ -60,7 +60,7 @@ class Pitch extends React.Component {
 
 
 		this.props.clearEditProject();
-		this.props.closePitchModal();	
+		this.props.togglePitchModal();	
 	}
 
 

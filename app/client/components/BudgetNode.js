@@ -75,7 +75,6 @@ const BudgetNode = props => {
 					{ ...readOnly }
 					name='description'
 					onChange={ props.handleChange }
-					placeholder='Description' 
 					type='text' 
 					value={ props.budget.description } 
 					required 
@@ -84,7 +83,6 @@ const BudgetNode = props => {
 			
 			<DropdownButton 
 				{ ...disabled }
-				{ ...readOnly }
 				id='budgetCategory'
 				onSelect={ props.handleGlCode }
 				title={ props.budget.glCode ? props.budget.glCode : 'Category' }
@@ -101,7 +99,6 @@ const BudgetNode = props => {
 					{ ...readOnly }
 					name='cost'
 					onChange={ props.handleChange }
-					placeholder='Cost'
 					type='number'
 					value={ props.budget.cost }
 					required
@@ -117,7 +114,6 @@ const BudgetNode = props => {
 					{ ...readOnly }
 					name='quantity'
 					onChange={ props.handleChange }
-					placeholder='Units'
 					type='number'
 					value={ props.budget.quantity }
 					required
@@ -130,12 +126,10 @@ const BudgetNode = props => {
 				</InputGroup.Addon>
 				
 				<FormControl
-					{ ...readOnly }
 					placeholder='Total Item Cost'
 					type='text'
 					value={ moneyString(props.budget.total) }
 					readOnly
-					required
 				/>
 			</InputGroup>
 			

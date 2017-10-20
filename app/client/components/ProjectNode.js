@@ -40,7 +40,7 @@ const ProjectNode = props => {
 			props.setEditProject(budgets, expenses, project.id, project);
 
 			if (project.status == 'Pitch') {
-				props.viewPitchModal();
+				props.togglePitchModal();
 			} else {
 				browserHistory.push('/expenses');
 			}

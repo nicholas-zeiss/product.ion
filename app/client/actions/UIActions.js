@@ -8,14 +8,17 @@
 export const clearUI = () => ({ type: 'CLEAR_UI' });
 
 
-export const closePitchModal = () => ({ type: 'CLOSE_PITCH_MODAL' });
-
-
 export const setMessages = messages => ({ type: 'SET_MESSAGES', messages });
 
 
-export const toggleCharts = () => ({ type: 'TOGGLE_CHARTS' });
+export const toggleCSVModal = () => ({ type: 'TOGGLE_CSV_MODAL' });
 
 
-export const viewPitchModal = () => ({ type: 'VIEW_PITCH_MODAL' });
+export const toggleDashCharts = () => ({ type: 'TOGGLE_DASH_CHARTS' });
+
+
+export const toggleExpenseCharts = () => ({ type: 'TOGGLE_EXPENSE_CHARTS' });
+
+
+export const togglePitchModal = () => ({ type: 'TOGGLE_PITCH_MODAL' });
 

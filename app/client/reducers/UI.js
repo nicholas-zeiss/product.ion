@@ -13,8 +13,10 @@ export const defaultUIState = Object.freeze({
 	},
 	views: {
 		addUser: false,
-		charts: false,
-		pitch: false
+		csvModal: false,
+		dashCharts: false,
+		expenseCharts: false,
+		pitchModal: false
 	}
 });
 
@@ -28,28 +30,33 @@ export default (state = defaultUIState, action) => {
 		}
 
 
-		case 'CLOSE_PITCH_MODAL': {
-			return {
-				messages: defaultUIState.messages,
-				views: Object.assign({}, state.views, { pitch: false })
-			};
-		}
-
-
 		case 'SET_MESSAGES': {
 			return Object.assign({}, state, { messages: action.messages });
 		}
 
 
-		case 'TOGGLE_CHARTS': {
-			return Object.assign({}, defaultUIState, { views: { charts: !state.views.charts }});
+		case 'TOGGLE_CSV_MODAL': {
+			return {
+				messages: defaultUIState.messages,
+				views: Object.assign({}, state.views, { csvModal: !state.views.csvModal })
+			};
 		}
 
 
-		case 'VIEW_PITCH_MODAL': {
+		case 'TOGGLE_DASH_CHARTS': {
+			return Object.assign({}, defaultUIState, { views: { dashCharts: !state.views.dashCharts }});
+		}
+
+
+		case 'TOGGLE_EXPENSE_CHARTS': {
+			return Object.assign({}, defaultUIState, { views: { expenseCharts: !state.views.expenseCharts }});
+		}
+
+
+		case 'TOGGLE_PITCH_MODAL': {
 			return {
 				messages: defaultUIState.messages,
-				views: Object.assign({}, state.views, { pitch: true })
+				views: Object.assign({}, state.views, { pitchModal: !state.views.pitchModal })
 			};
 		}
 

@@ -23,7 +23,7 @@ class Projects extends React.Component {
 
 	openPitchModal() {
 		this.props.newEditProject(this.props.organization.id, this.props.organization.user.id);
-		this.props.viewPitchModal();
+		this.props.togglePitchModal();
 	}
 
 
@@ -44,7 +44,7 @@ class Projects extends React.Component {
 							Create a Pitch
 						</Button>
 
-						<Modal onHide={ this.props.closePitchModal } show={ this.props.UI.views.pitch }>
+						<Modal onHide={ this.props.togglePitchModal } show={ this.props.UI.views.pitchModal }>
 							<Modal.Body>
 								<Pitch { ...this.props }/>
 							</Modal.Body>
