@@ -63,7 +63,7 @@ Promise.all([
 		table.string('editDate');
 		table.string('endDate');
 		table.string('lastEdited');
-		table.string('name').unique();
+		table.string('name');
 		table.integer('numAssets').defaultTo(1);
 		table.integer('orgID').unsigned().references('id').inTable('organizations');
 		table.string('releaseDate');

@@ -8,6 +8,8 @@
 // only included to work with jsx
 import React from 'react';
 
+import { currDateString } from './misc';
+
 
 export const projectTableHeader = (
 	<thead>
@@ -38,14 +40,14 @@ export const projectDefaults = (orgID, userID) => ({
 	adminNotes: '',
 	approvals: '1111111111',
 	costToDate: 0,
-	editDate: undefined,
-	endDate: undefined,
-	name: undefined,
-	numAssets: undefined,
+	editDate: currDateString(),
+	endDate: currDateString(),
+	name: '',
+	numAssets: 0,
 	orgID: orgID,
-	releaseDate: undefined,
+	releaseDate: currDateString(),
 	reqBudget: 0,
-	startDate: undefined,
+	startDate: currDateString(),
 	status: 'Pitch',
 	tier: 'BR',
 	type: 'Feature',

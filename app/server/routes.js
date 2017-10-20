@@ -365,22 +365,14 @@ const projectAPI = app => {
 	// }
 	//
 	app.post('/api/projects', (req, res) => {
-		Project.getProjectByName(req.body.name, project => {
+		req.body.lastEdited = utils.dateString();
+
+		Project.makeProject(req.body, project => {
 			if (project) {
-				// project name already taken, invalid request
-				res.sendStatus(400);
+				res.status(201).json(project);
 
 			} else {
-				req.body.lastEdited = utils.dateString();
-
-				Project.makeProject(req.body, project => {
-					if (project) {
-						res.status(201).json(project);
-
-					} else {
-						res.sendStatus(500);
-					}
-				});
+				res.sendStatus(500);
 			}
 		});
 	});

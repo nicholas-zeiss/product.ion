@@ -33,7 +33,7 @@ export const createProject = (project, budgets) => (
 			err => {
 				dispatch({
 					type: 'SET_MESSAGES',
-					messages: { projectName: 'That name is already taken' }
+					messages: { projectName: 'Unable to create project' }
 				});
 			}
 		)

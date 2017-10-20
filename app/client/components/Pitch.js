@@ -38,21 +38,20 @@ class Pitch extends React.Component {
 	handlePitchSubmit(e) {
 		e.preventDefault();
 
+		// to avoid mutating state
+		let project = Object.assign({}, this.state.project);
+
+		// if everything is approved and user is admin/producer, move the project pitch into production
+		if (project.approvals == '1111111111' && this.props.organization.user.permissions != 'user') {
+			project.status = 'Production';
+		}
+
+
 		if (this.state.newProject) {
-			let nameUnique = this.props.projects
-				.every(project => project.name != this.state.project.name);
-
-			if (nameUnique) {
-				this.props.createProject(this.state.project, this.state.budgetsToCreate);
-
-			} else {
-				// project name is already in use, project cannot be created
-				this.props.setMessages({ projectName: 'That name is already taken' });
-				return;
-			}
+			this.props.createProject(project, this.state.budgetsToCreate);
 
 		} else {
-			this.props.updateProject(this.state.project);
+			this.props.updateProject(project);
 			
 			if (this.state.budgetsToCreate.length || this.state.budgetsToDelete.length) {
 				this.updateBudgets();

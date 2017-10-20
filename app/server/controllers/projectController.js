@@ -16,14 +16,6 @@ exports.getProject = (id, success, error) => {
 };
 
 
-exports.getProjectByName = (name, success, error) => {
-	new Project({ name })
-		.fetch()
-		.then(success)
-		.catch(error);
-};
-
-
 exports.getProjects = (IDs, success, error) => {
 	Project
 		.where('id', 'in', IDs)
