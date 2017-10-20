@@ -171,6 +171,16 @@ h3 {
 	width: 160px;
 }
 
+#requestedBudget {
+	width: 300px;
+	margin-top: 20px;
+}
+
+.dropdown-menu {
+	max-height: 500px;
+	overflow: scroll;
+}
+
 .budgetForm {
 	text-align: center;
 }

@@ -8,7 +8,7 @@
 import React from 'react';
 import { Button, ControlLabel, DropdownButton, Form, FormControl, FormGroup, InputGroup, MenuItem } from 'react-bootstrap';
 
-import { categoryToGlcode, glCodeToCategory } from '../data/public';
+import { categoryToGlcode } from '../data/public';
 import { moneyString } from '../utils/misc';
 
 
@@ -24,7 +24,7 @@ const dropDownOptions = () => {
 			Object
 				.keys(categoryToGlcode[category])
 				.forEach(type => {
-					items.push(<MenuItem key={ type } >{ type }</MenuItem>);
+					items.push(<MenuItem eventKey={ type + '---' + category } key={ type }>{ type }</MenuItem>);
 				});
 		});
 
@@ -34,22 +34,21 @@ const dropDownOptions = () => {
 
 
 const BudgetNode = props => {
-	let { budget, isNew, reqBudget, save } = props;
 
-	let readOnly = !isNew ? { readOnly: true } : {};
+	let readOnly = !props.isNew ? { readOnly: true } : {};
 
 	let header = (
-		<FormGroup style={ { display: 'block', margin: '20px 0' } } validationState='success'>
-			<ControlLabel>Add New Budget Item:</ControlLabel>
+		<FormGroup style={ { display: 'block', margin: '20px 0' } }>
+			<ControlLabel style={ { fontSize: '14px' } }>Add New Budget Item:</ControlLabel>
 		</FormGroup>
 	);
 
 
 	let footer = (
-		<FormGroup style={ { marginTop: '20px' } } validationState='success'>
-			<InputGroup>
+		<FormGroup style={ { marginTop: '20px' } } validationState={ props.approved ? 'success' : 'error' }>
+			<InputGroup id='requestedBudget'>
 				<InputGroup.Addon>Requested budget: </InputGroup.Addon>
-				<FormControl value={ moneyString(reqBudget) } readOnly/>
+				<FormControl value={ moneyString(props.reqBudget) } readOnly/>
 			</InputGroup>
 		</FormGroup>
 	);
@@ -58,11 +57,11 @@ const BudgetNode = props => {
 	return (
 		<Form
 			className='budgetForm'
-			onSubmit={ save }
+			onSubmit={ props.submit }
 			style={ { marginTop: '20px' } }
 			inline
 		>
-			{ isNew ? header : null }
+			{ props.isNew ? header : null }
 
 			<InputGroup id='budgetDescription'>
 				<InputGroup.Addon>
@@ -71,10 +70,11 @@ const BudgetNode = props => {
 			
 				<FormControl
 					{ ...readOnly }
-					name='description' 
+					name='description'
+					onChange={ props.handleChange }
 					placeholder='Description' 
 					type='text' 
-					value={ budget.description } 
+					value={ props.budget.description } 
 					required 
 				/>
 			</InputGroup>
@@ -82,7 +82,8 @@ const BudgetNode = props => {
 			<DropdownButton 
 				{ ...readOnly }
 				id='budgetCategory'
-				title={ budget.glCode ? `${glCodeToCategory}: ${budget.glCode}` : 'Category' }
+				onSelect={ props.handleGlCode }
+				title={ props.budget.glCode ? props.budget.glCode : 'Category' }
 			>
 				{ dropDownOptions() }
 			</DropdownButton>
@@ -95,9 +96,10 @@ const BudgetNode = props => {
 				<FormControl
 					{ ...readOnly }
 					name='cost'
+					onChange={ props.handleChange }
 					placeholder='Cost'
 					type='number'
-					value={ budget.cost }
+					value={ props.budget.cost }
 					required
 				/>
 			</InputGroup>
@@ -110,9 +112,10 @@ const BudgetNode = props => {
 				<FormControl
 					{ ...readOnly }
 					name='quantity'
+					onChange={ props.handleChange }
 					placeholder='Units'
 					type='number'
-					value={ budget.quantity }
+					value={ props.budget.quantity }
 					required
 				/>
 			</InputGroup>
@@ -126,15 +129,15 @@ const BudgetNode = props => {
 					{ ...readOnly }
 					placeholder='Total Item Cost'
 					type='text'
-					value={ moneyString(budget.cost * budget.quantity) }
+					value={ moneyString(props.budget.total) }
 					readOnly
 					required
 				/>
 			</InputGroup>
 			
-			<Button id='budgetSave'>{ isNew ? 'Add' : 'X' }</Button>
+			<Button id='budgetSave' type='submit'>{ props.isNew ? 'Add' : 'X' }</Button>
 
-			{ isNew ? footer : null }
+			{ props.isNew ? footer : null }
 
 		</Form>
 	);
