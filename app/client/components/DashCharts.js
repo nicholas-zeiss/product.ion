@@ -19,7 +19,7 @@ const DashCharts = React.createClass({
 		if (!this.state.expenses) {
 			var ids = [];
 	    for (var i = 0; i < this.props.projects.length; i++) {
-	      ids.push(this.props.projects[i].projId);
+	      ids.push(this.props.projects[i].projID);
 	    }
 
 	    var temp = [Promise.resolve([this.setState.bind(this), this.sortBy]), ApiCall.getExpenses(ids)];
@@ -122,7 +122,7 @@ const DashCharts = React.createClass({
 			      </FormControl>
 			    </FormGroup>
 				</Form>
-				<div style={{"margin-top":"10px"}} id="dashChartContainer"></div>
+				<div style={{"marginTop":"10px"}} id="dashChartContainer"></div>
 			</div>
 		)
 	}

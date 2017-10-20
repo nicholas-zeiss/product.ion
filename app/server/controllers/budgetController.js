@@ -1,13 +1,48 @@
-var Budget = require('../models/budget.js');
+/**
+ *
+ *  Here we set up a controller for our budget model
+ *
+**/
 
-exports.getBudget = function(projId, cb) {
-	new Budget({projId: projId}).fetchAll({withRelated: ['proj']}).then(cb);
-};//doesn't need this anymore
 
-exports.getSingleBudget = function(id, cb) {
-	new Budget({id: id}).fetch().then(cb).catch(err => console.error(err));
+const Bookshelf = require('../db.js');
+
+const Budget = require('../models/budget.js');
+const Budgets = Bookshelf.Collection.extend({
+	model: Budget
+});
+
+
+exports.deleteBudget = (id, success, error) => {
+	new Budget({ id })
+		.fetch()
+		.destroy()
+		.then(success)
+		.catch(error);
 };
 
-exports.makeBudget = function(data, cb) {
-	new Budget(data).save().then(cb);
+
+exports.getBudgets = (projIDs, success, error) => {
+	Budget
+		.where('projID', 'in', projIDs)
+		.fetchAll()
+		.then(success)
+		.catch(error);
 };
+
+
+exports.makeBudgets = (budgetArray, success, error) => {
+	new Budgets(budgetArray)
+		.invokeThen('save')
+		.then(success)
+		.catch(error);
+};
+
+
+exports.updateBudget = (budget, success, error) => {
+	new Budget({ id: budget.id })
+		.save(budget, { patch: true })
+		.then(success)
+		.catch(error);
+};
+

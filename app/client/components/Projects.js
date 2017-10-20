@@ -1,75 +1,76 @@
+/**
+ *
+ *  Component for the projects page, which lets you view all projects, edit them, and create new ones
+ *
+**/
+
+
 import React from 'react';
-import { Link } from 'react-router';
+import { Button, Modal, Panel, Table } from 'react-bootstrap';
+
+import projectTableHeader from '../data/projectTableHeader';
+
 import NavBar from './NavBar.js';
 import Pitch from './Pitch.js';
 import ProjectNode from './ProjectNode.js';
-import { Button, Modal, Panel, Table } from 'react-bootstrap';
 
-const Projects = React.createClass({
-  getInitialState() {
-    return {
-      editProject: null
-    };
-  },
 
-  switchModal(Project) {
-    if (Project !== null) {
-      this.setState({editProject: Project});
-    } else {
-      this.setState({editProject: null});
-    }
-    this.props.changeModal('pitch');
-  },
+class Projects extends React.Component {
+	constructor(props) {
+		super(props);
+	}
 
-  render() {
-    return (
-      <div style={{fontSize : "14px"}}>
-        {
-          this.props.short ? <div></div> :
-          <div>
-            <NavBar {...this.props}/>
-          </div>
-        }
 
-        <Panel>
-          {
-            this.props.short ? <div></div> :
-            <div>
-              <Button bsStyle="primary" style={{"margin-bottom":"15px"}} bsSize="large" id="modalButton" onClick={this.switchModal}>
-                Create a Pitch
-              </Button>
-              <Modal show={this.props.modals.pitch} onHide={this.switchModal} >
-                <Modal.Body>
-                  <Pitch {...this.props} data={this.state.editProject}/>
-                </Modal.Body>
-                <Modal.Footer />
-              </Modal>
-            </div>
-          }
+	openPitchModal() {
+		this.props.newEditProject(this.props.organization.id, this.props.organization.user.id);
+		this.props.viewPitchModal();
+	}
 
-        	<Table striped bordered>
-        		<thead>
-        			<tr id="readOnlyHeader">
-        				<th>Name</th>
-        				<th>Project ID</th>
-                <th>Created By</th>
-        				<th>Project Status</th>
-                <th>Estimate to Complete</th>
-        				<th>Cost to Date</th>
-        			</tr>
-        		</thead>
-        		<tbody>
-        			{this.props.short ? this.props.projects.slice(-3).map((project, idx) =>
-            			<ProjectNode key={idx} idx={idx} {...this.props} project={project} switchModal={this.switchModal}/>)
-                : this.props.projects.map((project, idx) =>
-                  <ProjectNode key={idx} idx={idx} {...this.props} project={project} switchModal={this.switchModal}/>
-              )}
-        		</tbody>
-        	</Table>
-        </Panel>
-      </div>
-    );
-  }
-});
+
+	render() {
+		return (
+			<div style={ { fontSize: '14px' } }>
+				<NavBar { ...this.props }/>
+
+				<Panel>
+					<div>
+						<Button
+							bsSize='large'
+							bsStyle='primary'
+							id='modalButton' 
+							onClick={ this.openPitchModal.bind(this) }
+							style={ { 'marginBottom': '15px' } }
+						>
+							Create a Pitch
+						</Button>
+
+						<Modal onHide={ this.props.closePitchModal } show={ this.props.UI.views.pitch }>
+							<Modal.Body>
+								<Pitch { ...this.props }/>
+							</Modal.Body>
+							<Modal.Footer/>
+						</Modal>
+					</div>
+					
+					<Table bordered striped>
+						{ projectTableHeader }
+						<tbody>
+							{
+								this.props.projects.map((project, idx) => (
+									<ProjectNode
+										{ ...this.props }
+										key={ idx }
+										project={ project }
+									/>
+								))
+							}
+						</tbody>
+					</Table>
+				</Panel>
+			</div>
+		);
+	}
+}
 
 export default Projects;
+

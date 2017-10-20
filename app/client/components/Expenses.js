@@ -16,7 +16,7 @@ const Expenses = React.createClass({
     var proj = null;
 
     this.props.projects.forEach((project) => {
-      if (project.projId === this.props.expenses.projId) {
+      if (project.projID === this.props.expenses.projID) {
         proj = project;
         return;
       }
@@ -38,19 +38,19 @@ const Expenses = React.createClass({
     newExpenses.push(singleExpense);
     this.setState({newExpenses: newExpenses});
     console.log('Handle NEW Expense ', singleExpense);
-    this.props.postNewExpense(singleExpense, this.props.expenses.projId);
+    this.props.postNewExpense(singleExpense, this.props.expenses.projID);
   },
 
   handleExpenseToDelete: function(singleExpense){
     singleExpense.projs_id = this.props.expenses.id;
     console.log('Handle DELETE ', singleExpense);
-    this.props.removeExpense(singleExpense, this.props.expenses.projId);
+    this.props.removeExpense(singleExpense, this.props.expenses.projID);
   },
 
   handleExpenseUpdate: function(singleExpense){
     singleExpense.projs_id = this.props.expenses.id;
     console.log('Handle UPDATE ', singleExpense);
-    this.props.updateExpense(singleExpense, this.props.expenses.projId);
+    this.props.updateExpense(singleExpense, this.props.expenses.projID);
   },
 
   // shouldComponentUpdate() {
@@ -70,7 +70,7 @@ const Expenses = React.createClass({
     var proj = null;
 
     this.props.projects.forEach((project) => {
-      if (project.projId === this.props.expenses.projId) {
+      if (project.projID === this.props.expenses.projID) {
         proj = project;
         return;
       }
@@ -116,12 +116,12 @@ const Expenses = React.createClass({
                 <tr id="readOnlyBody">
                   <td width="50">
                     <ReadOnlyText
-                      name="projId"
-                      value={proj.projId} />
+                      name="projID"
+                      value={proj.projID} />
                   </td>
                   <td width="145">
                     <ReadOnlyText
-                      name="projId"
+                      name="projID"
                       value={username} />
                   </td>
                   <td width="145">

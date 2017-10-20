@@ -1,43 +1,83 @@
-// let's go!
+/**
+ *
+ *	Creates the root of our react app and inserts it into the DOM. Imports the action creators
+ *  and binds them to redux, connects redux to react, and maps urls to components for react-router.
+ *
+**/
+
+
 import React from 'react';
-// user curly braces for named
 import { render } from 'react-dom';
-// import components
+import { IndexRoute, Route, Router } from 'react-router';
+import { Provider } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+
+
+//-------------------------------
+//			  Action Creators
+//-------------------------------
+import * as budgetActions from './actions/budgetActions';
+import * as editProjectActions from './actions/editProjectActions';
+import * as expenseActions from './actions/expenseActions';
+import * as organizationActions from './actions/organizationActions';
+import * as projectActions from './actions/projectActions';
+import * as UIActions from './actions/UIActions';
+
+
+//-------------------------------
+//			  React Components
+//-------------------------------
 import App from './components/App';
 import Dashboard from './components/Dashboard';
-import Login from './components/Login';
-import Register from './components/Register';
-import Settings from './components/Settings';
 import Expenses from './components/Expenses';
+import Login from './components/Login';
 import MasterSheet from './components/MasterSheet';
 import Projects from './components/Projects';
+import Register from './components/Register';
+import Settings from './components/Settings';
 
-// Set up routers
-import { Router, Route, IndexRoute, browserHistory } from 'react-router';
-// binding that helps us use redux with react.
-import { Provider } from 'react-redux';
-// the store and history ( a named export ) we created.
-import store, { history } from './store';
 
-// Provider tag exposes store to the entire application.
-// that is why we wrap the entire router in the Provider.
-// router must know about created store.
-const router = (
-  <Provider store={ store }>
-    <Router history={ history }>
-      <Route path="/" component={ App }>
-        <IndexRoute component={ Login }></IndexRoute>
-        <Route path='/register' component={ Register }></Route>
-        <Route path='/login' component = { Login }></Route>
-        <Route path="/dashboard/:orgName" component={ Dashboard }></Route>
-        <Route path='/expenses' component={ Expenses }></Route>
-        <Route path='/settings' component = { Settings }></Route>
-        <Route path='/mastersheet' component={ MasterSheet }></Route>
-        <Route path='/projects' component={ Projects }></Route>
-      </Route>
-    </Router>
-  </Provider>
+//-------------------------------
+//            Store
+//-------------------------------
+import { history, store } from './store';
+
+
+const actions = Object.assign({}, budgetActions, editProjectActions, expenseActions, organizationActions, projectActions, UIActions);
+
+const mapDispachToProps = dispatch => bindActionCreators(actions, dispatch);
+
+const mapStateToProps = state => ({
+	budgets: state.budgets,
+	editProject: state.editProject,
+	expenses: state.expenses,
+	organization: state.organization,
+	projects: state.projects,
+	UI: state.UI
+});
+
+// takes the component App which holds all visible components and connects to store, returns wrapped component
+const reduxWrapper = connect(mapStateToProps, mapDispachToProps)(App);
+
+
+const production = (
+	<Provider store={ store }>
+		<Router history={ history }>
+			<Route component={ reduxWrapper } path='/'>
+				<IndexRoute component={ Login }></IndexRoute>
+				<Route component={ Register } path='/register'></Route>
+				<Route component={ Login } path='/login'></Route>
+				<Route component={ Dashboard } path='/dashboard'></Route>
+				<Route component={ Expenses } path='/expenses'></Route>
+				<Route component={ Settings } path='/settings'></Route>
+				<Route component={ MasterSheet } path='/mastersheet'></Route>
+				<Route component={ Projects } path='/projects'></Route>
+			</Route>
+		</Router>
+	</Provider>
 );
 
-// we can render Main because we imported it.
-render(router, document.getElementById('root'));
+
+render(production, document.getElementById('root'));
+

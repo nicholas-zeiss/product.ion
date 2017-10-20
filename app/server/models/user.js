@@ -1,16 +1,22 @@
+/**
+ *
+ *  Here we set up a a Bookshelf model for users
+ *
+**/
 
-var Bookshelf = require('../db.js');
-require('./organization.js');
-require('./project.js');
+const Bookshelf = require('../db.js');
 
-var User = Bookshelf.Model.extend({
-  tableName: 'users',
-	org: function() {
-		return this.belongsTo('Organization', 'orgs_id');
+
+module.exports = Bookshelf.model('User', Bookshelf.Model.extend({
+	tableName: 'users',
+	
+	organization: function() {
+		return this.belongsTo('Organization', 'orgID');
 	},
+	
 	projects: function() {
-		return this.belongsToMany('Project', 'projs_users', 'users_id', 'projs_id');
+		return this.hasMany('Project', 'userID');
 	}
-});
 
-module.exports = Bookshelf.model('User', User);
+}));
+

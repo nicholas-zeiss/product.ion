@@ -9,11 +9,11 @@ const ExpensesSidebar = React.createClass({
     return (
       <div width="200px">
         <Form>
-          <FormGroup controlId="formProjId">
+          <FormGroup controlId="formprojID">
             <InputGroup>
               <InputGroup.Addon>Project Id</InputGroup.Addon>
               <FormControl type="text" placeholder="Get this from accounting"
-                          name="projId"
+                          name="projID"
                           value={"001"} required />
             </InputGroup>
           </FormGroup>
@@ -150,12 +150,12 @@ const ExpensesSidebar = React.createClass({
   //             <tr id="readOnlyBody">
   //               <td width="50">
   //                 <ReadOnlyText
-  //                   name="projId"
-  //                   value={proj.projId} />
+  //                   name="projID"
+  //                   value={proj.projID} />
   //               </td>
   //               <td width="145">
   //                 <ReadOnlyText
-  //                   name="projId"
+  //                   name="projID"
   //                   value={username} />
   //               </td>
   //               <td width="145">

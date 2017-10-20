@@ -1,66 +1,56 @@
-import { createStore, compose, applyMiddleware } from 'redux';
-import { syncHistoryWithStore, routerMiddleware} from 'react-router-redux';
+/**
+ *
+ *	Define our initial state for the redux store, import all our reducers, creat the store and export it
+ *
+ *	Our store is split into the following sections:
+ *
+ *		budgets - unapproved expenses linked to a project
+ *		expenses - a collection of all expenses for all projects in the organization
+ *		organization - holds data about the organization (name, ID, users list) and the logged in user
+ *		projects - a collection of all projects in the organization
+ *		UI - view state that is not local to a single react component, such as whether to display a modal, error messages, etc.
+ *
+**/
+
+
 import { browserHistory } from 'react-router';
+import { routerMiddleware, routerReducer, syncHistoryWithStore } from 'react-router-redux';
+import { applyMiddleware, combineReducers, createStore } from 'redux';
+import reduxThunk from 'redux-thunk';
 
-// import logger for middleware
-import logger from "redux-logger";
+import budgetsReducer, { defaultBudgetsState } from './reducers/budgets';
+import editProjectReducer, { defaultEditProjectState } from './reducers/editProject';
+import expensesReducer, { defaultExpensesState } from './reducers/expenses';
+import organizationReducer, { defaultOrganizationState } from './reducers/organization';
+import projectsReducer from './reducers/projects';
+import UIReducer, { defaultUIState } from './reducers/UI';
 
-// import the root reducer
-import rootReducer from './reducers/index';
 
-// import projects from './data/projects';//TAKE THESE OUT. REPLACE WITH EMPTY OBJECTS
-// import expenses from './data/expenses';// FILL THESE OBJECTS UPON SUCCESSFUL LOGIN
-// import organization from './data/organization';// TAKE THESE OUT
-
-// create objects for the default data
-const projects = [];
-const budgets = {};
-    //budgets{proj15: []}
-const expenses = {};
-const organization = {};
-const messages = {
-  csv: "",
-  login: "",
-  register: "",
-  pitch: "",
-  registerOrg: "",
-  registerUser: "",
-  password: ""
-};
-const modals = {
-	pitch: false,
-  addUser: false,
-  csv: false
-};
-const navBar = {
-  key: 1
-};
-const parseCSV = [];
-// this state shall be passed from smart to dumb components.
 const defaultState = {
-  projects,
-  budgets,
-  expenses,
-  organization,
-  messages,
-  modals,
-  navBar,
-  parseCSV
+	budgets: defaultBudgetsState,
+	editProject: defaultEditProjectState,
+	expenses: defaultExpensesState,
+	organization: defaultOrganizationState,
+	projects: [],
+	UI: defaultUIState
 };
 
-//middleware for logging changes in state.
-// const middleware = applyMiddleware(logger());
-const middleware = applyMiddleware(routerMiddleware(browserHistory));
 
+const rootReducer = combineReducers({
+	budgets: budgetsReducer,
+	editProject: editProjectReducer,
+	expenses: expensesReducer,
+	organization: organizationReducer,
+	projects: projectsReducer,
+	routing: routerReducer,
+	UI: UIReducer
+});
+
+
+const middleware = applyMiddleware(routerMiddleware(browserHistory), reduxThunk);
 const store = createStore(rootReducer, defaultState, middleware);
+const history = syncHistoryWithStore(browserHistory, store);
 
-//Not sure what this did, hopefully we can leave this out without any problems
-if(module.hot) {
-  module.hot.accept('./reducers/',() => {
-    const nextRootReducer = require('./reducers/index').default;
-    store.replaceReducer(nextRootReducer);
-  });
-}
 
-export const history = syncHistoryWithStore(browserHistory, store);
-export default store;
+export { history, store };
+

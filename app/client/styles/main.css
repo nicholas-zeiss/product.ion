@@ -147,34 +147,41 @@ h3 {
 	text-decoration: none;
 }
 
-#budgetCatSelect {
-	width: 254px;
+#budgetCategory {
+	width: 100px;
 }
-#newBudgetForm {
+
+#budgetCost {
 	width: 170px;
 }
-#newBudgetTotal {
+
+#budgetDescription {
+	width: 458px;
+}
+
+#budgetQuantity {
+	width: 170px;
+}
+
+#budgetSave {
+	width: 58px;
+}
+
+#budgetTotal {
 	width: 160px;
 }
 
-.budgetCategorySelect {
-	width: 258px;
+#requestedBudget {
+	width: 300px;
+	margin-top: 20px;
 }
 
-.budgetNodeForm {
-	width: 170px;
+.dropdown-menu {
+	max-height: 500px;
+	overflow: scroll;
 }
 
-.budgetNodeTotal {
-	width: 183px;
-}
-
-
-.budgetFormCata1 {
-	width: 50%;
-}
-
-.budgetFormReqBudget {
+.budgetForm {
 	text-align: center;
 }
 

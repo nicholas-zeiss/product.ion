@@ -1,183 +1,263 @@
+/*
+ *
+ *	Dumb component that gives us a form with which we edit a project pitch. Used by the Pitch component.
+ *	The project is held in Pitch's state, and Pitch provides us with props to propogate changes to it.
+ *
+**/
+
+
 import React from 'react';
-import { Link } from 'react-router';
-import { Form, FormControl, FormGroup, ControlLabel, Button,
-  InputGroup, Tabs, Tab } from 'react-bootstrap';
+import { Button, ControlLabel, Form, FormControl, FormGroup, InputGroup } from 'react-bootstrap';
 
-import Budget from "./Budget";
-import { judy } from "../data/public";
+import { inputLabels, inputStyles, inputTypes, options } from '../data/public';
+import { moneyString } from '../utils/misc';
+import { genApprovalObject } from '../utils/projectUtils';
 
-const PitchSummary = React.createClass({
-  render() {
-    const { user, judge, handleChange, handleJudgement,
-          handleReject, handleApprove, handlePitchSubmit} = this.props;
 
-    const adminControls = (name) => (
-      user.perm ?
-      <InputGroup.Addon>
-        {/* <Button bsStyle={judge[name].vars.style} name={name} onClick={handleJudgement}> */}
-          {judge[name].vars.action}
-        {/* </Button> */}
-      </InputGroup.Addon>
-      :
-      <InputGroup.Button>
-        <Button bsStyle={judge[name].vars.style} name={name} onClick={handleJudgement}>
-          {judge[name].vars.action}
-        </Button>
-      </InputGroup.Button>
-    );
-    return (
-      <div className="Pitch">
-        <Form onSubmit={handlePitchSubmit}>
-          <FormGroup controlId="formProjName" validationState = {judge.projName.vars.val}>
-            <ControlLabel>Project Name</ControlLabel>
-            <InputGroup>
-              <FormControl type="text" placeholder="What's the project called?"
-                          name="projName" onChange={handleChange}
-                          value={this.props.projName} required />
-              {adminControls("projName")}
-            </InputGroup>
-          </FormGroup>
-          <FormGroup controlId="formProjId" validationState = {judge.projId.vars.val}>
-            <ControlLabel>Project Id</ControlLabel>
-            <InputGroup>
-              <FormControl type="text" placeholder="Get this from accounting"
-                          name="projId" onChange={handleChange}
-                          value={this.props.projId} required />
-              {adminControls("projId")}
-            </InputGroup>
-          </FormGroup>
-          <FormGroup controlId="formVertical" validationState = {judge.vertical.vars.val}>
-            <ControlLabel>Vertical</ControlLabel>
-            <InputGroup>
-              <FormControl componentClass="select" placeholder="Vertical"
-                          name="vertical" onChange={handleChange}>
-                <option value="food">Food</option>
-                <option value="beauty">Bearty</option>
-                <option value="fashionStyle">Fashion & Style</option>
-                <option value="newsPolitics">News/Politics</option>
-                <option value="newsWeb">News/Web</option>
-                <option value="wellness">Wellness</option>
-                <option value="entertainment">Entertainment</option>
-              </FormControl>
-              {adminControls("vertical")}
-            </InputGroup>
-          </FormGroup>
-          <FormGroup controlId="formTier" validationState = {judge.tier.vars.val}>
-            <ControlLabel>Tier</ControlLabel>
-            <InputGroup>
-              {/* <InputGroup.Addon>Tier</InputGroup.Addon> */}
-              <FormControl componentClass="select" placeholder="Tier"
-                          name="tier" onChange={handleChange}>
-                <option value="br">BR</option>
-                <option value="t1">T1</option>
-                <option value="t2">T2</option>
-                <option value="t3">T3</option>
-                <option value="t4">T4</option>
-                <option value="t5">T5</option>
-                <option value="r29">R29</option>
-              </FormControl>
-              {adminControls("tier")}
-            </InputGroup>
-          </FormGroup>
-          <FormGroup controlId="formNumAssets" validationState = {judge.numAssets.vars.val}>
-            <ControlLabel>Number of Assets</ControlLabel>
-            <InputGroup>
-              <FormControl type="number" placeholder="How many episodes?"
-                          name="numAssets" onChange={handleChange}
-                          value={this.props.numAssets} required />
-              {adminControls("numAssets")}
-            </InputGroup>
-          </FormGroup>
-          <FormGroup controlId="formVideoType" validationState = {judge.videoType.vars.val}>
-            <ControlLabel>Video Type</ControlLabel>
-            <InputGroup>
-              <FormControl componentClass="select" placeholder="Video Type"
-                          name="videoType" onChange={handleChange}>
-                <option value="feature">Feature</option>
-                <option value="short">Short</option>
-                <option value="television">Television</option>
-                <option value="web">Web</option>
-                <option value="episode">Episode</option>
-              </FormControl>
-              {adminControls("videoType")}
-            </InputGroup>
-          </FormGroup>
-          <FormGroup controlId="formBudget" validationState = {judge.reqBudget.vars.val}>
-            <ControlLabel>Requested Budget</ControlLabel>
-            <InputGroup>
-              <FormControl type="text" placeholder="Estimate budget on next tab"
-                          name="reqBudget" onChange={handleChange}
-                          value={(this.props.reqBudget && "$" + this.props.reqBudget) || ""} readOnly/>
-              <InputGroup.Button>
-                <Button onClick={this.props.tabToBudget}>Switch to Detailed Budget Breakdown</Button>
-              </InputGroup.Button>
-              {adminControls("reqBudget")}
-            </InputGroup>
-          </FormGroup>
-          <ControlLabel>Project Dates</ControlLabel>
-          <FormGroup controlId="formStartDate" validationState = {judge.startDate.vars.val}>
-            <InputGroup>
-              <InputGroup.Addon>Start Date</InputGroup.Addon>
-              <FormControl type="date"
-                          name="startDate" onChange={handleChange}
-                          value={this.props.startDate} />
-              {adminControls("startDate")}
-            </InputGroup>
-          </FormGroup>
-          <FormGroup controlId="formEndDate" validationState = {judge.endDate.vars.val}>
-            <InputGroup>
-              <InputGroup.Addon>End Date</InputGroup.Addon>
-              <FormControl type="date"
-                          name="endDate" onChange={handleChange}
-                          value={this.props.endDate} />
-              {adminControls("endDate")}
-            </InputGroup>
-          </FormGroup>
-          <FormGroup controlId="formEditDate" validationState = {judge.editDate.vars.val}>
-            <InputGroup>
-              <InputGroup.Addon>Edit Date</InputGroup.Addon>
-              <FormControl type="date"
-                          name="editDate" onChange={handleChange}
-                          value={this.props.editDate} />
-              {adminControls("editDate")}
-            </InputGroup>
-          </FormGroup>
-          <FormGroup controlId="formReleaseDate" validationState = {judge.releaseDate.vars.val}>
-            <InputGroup>
-              <InputGroup.Addon>Release Date</InputGroup.Addon>
-              <FormControl type="date"
-                          name="releaseDate" onChange={handleChange}
-                          value={this.props.releaseDate} />
-              {adminControls("releaseDate")}
-            </InputGroup>
-          </FormGroup>
-          {user.perm ?
-            this.props.adminNotes &&
-            <FormGroup>
-              <ControlLabel>Admin Notes</ControlLabel>
-              <FormControl componentClass="textarea" name="adminNotes"
-                placeholder={user.name+", if you're rejecting please explain why here."}
-                defaultValue = {this.props.adminNotes} readOnly />
-            </FormGroup>
-            :
-            <FormGroup>
-              <ControlLabel>Admin Notes</ControlLabel>
-              <FormControl componentClass="textarea" name="adminNotes"
-                placeholder={user.name+", if you're rejecting please explain why here."}
-                value = {this.props.adminNotes} onChange={handleChange} />
-            </FormGroup>
-          }
-          {user.perm ?
-            <Button type="submit">Submit pitch for approval</Button>
-            : <FormGroup>
-               <Button bsStyle="success" onClick={handleApprove}>Approve Proposal</Button>&nbsp;
-               {!this.props.newPitch &&
-                 <Button bsStyle="danger" onClick={handleReject}>Reject with Reasons</Button>}
-              </FormGroup>
-          }
-        </Form>
-      </div>
-    );
-  }
-});
+
+//------------------------------------------------------------------------------------------------------
+//																			Helper Functions
+//------------------------------------------------------------------------------------------------------
+
+// To reduce the tremendous amount of code repititon that writing this component out verbatim
+// would entail we instead rely on these helper functions. Rather than include them in the scope
+// of the component and rewrite the functions on every render we define them here, and then wrap
+// them inside the component so that we need only give the attr argument to call them.
+
+
+
+
+// Note that the validation state in the following two functions reflects whether the option
+// has been approved/rejected by an admin/producer, not the validity of the input itself
+const validationState = (approvals, userType, attr) => (
+	approvals[attr] ? userType == 'user' ? null : 'success' : 'error'
+);
+
+
+
+
+// wraps an input in its approval state and, if user is admin/producer a button to change its approval state
+const approvalWrapper = (approvals, userType, changeApproval, attr) => {
+	let style;
+
+	if (userType == 'user') {
+		style = approvals[attr] ? inputStyles.approvedUser : inputStyles.rejected;
+	} else {
+		style = approvals[attr] ? inputStyles.approved : inputStyles.rejected;
+	}
+
+
+	if (userType == 'user') {
+		return <InputGroup.Addon>{ style.status }</InputGroup.Addon>;
+
+	} else {
+		return (
+			<InputGroup.Button>
+				<Button bsStyle={ style.style } name={ attr } onClick={ changeApproval.bind(null, attr) }>
+					{ style.status }
+				</Button>
+			</InputGroup.Button>
+		);
+	}
+};
+
+
+
+
+
+
+// puts the above together and generates the full input element
+const getAttrInput = (props, approvalState, valid, attr) => {
+	let input;
+	let label = <ControlLabel>{ inputLabels[attr] }</ControlLabel>;
+
+	if (attr == 'reqBudget') {
+		input = (
+			<InputGroup>
+				<FormControl
+					name='reqBudget'
+					onChange={ props.handleAttrChange }
+					type='text'
+					value={ moneyString(props.project.reqBudget) }
+					readOnly
+				/>
+
+				<InputGroup.Button>
+					<Button onClick={ props.budgetTab }>
+						Switch to Detailed Budget Breakdown
+					</Button>
+				</InputGroup.Button>
+
+				{ approvalState('reqBudget') }
+			</InputGroup>
+		);
+
+	} else if (inputTypes[attr] == 'date') {
+		label = null;
+		input = (
+			<InputGroup>
+				<InputGroup.Addon>{ inputLabels[attr] }</InputGroup.Addon>
+				
+				<FormControl
+					name={ attr }
+					onChange={ props.handleAttrChange }
+					type='date'
+					value={ props.project[attr] }
+					required
+				/>
+				
+				{ approvalState(attr) }
+			</InputGroup>
+		);
+
+	} else if (inputTypes[attr] == 'select') {
+		input = (
+			<InputGroup>	
+				<FormControl
+					componentClass='select'
+					name={ attr }
+					onChange={ props.handleAttrChange }
+					value={ props.project[attr] }
+					required
+				>
+
+					{ 
+						options[attr].map(option => (
+							<option key={ option } value={ option }>{ option }</option>
+						))
+					}
+
+				</FormControl>
+				{ approvalState( attr ) }
+			</InputGroup>
+		);
+
+	} else {
+		input = (
+			<InputGroup>	
+				<FormControl
+					name={ attr }
+					onChange={ props.handleAttrChange }
+					type={ inputTypes[attr] }
+					value={ props.project[attr] }
+					required
+				/>		
+
+				{ approvalState(attr) }	
+			</InputGroup>
+		);
+	}
+	return (
+		<FormGroup validationState={ valid(attr) }>
+			{ label }
+			{ input }
+		</FormGroup>
+	);
+};
+
+
+
+
+
+//--------------------------------------------------------------------------------------
+//																		Component
+//--------------------------------------------------------------------------------------
+
+const PitchSummary = props => {
+
+	// convert approvals from a magic string to a readable object
+	let approvals = genApprovalObject(props.project.approvals);
+
+
+	let valid = attr => validationState(approvals, props.userType, attr);
+
+	let approvalState = attr => approvalWrapper(
+		approvals,
+		props.userType,
+		props.handleApprovalChange,
+		attr
+	);
+
+	let getInput = attr => getAttrInput(
+		props,
+		approvalState,
+		valid,
+		attr
+	);
+
+
+	return (
+		<div className='Pitch'>
+			<Form onSubmit={ props.handlePitchSubmit }>
+				{ getInput('name') }
+				{ getInput('vertical') }
+				{ getInput('tier') }
+				{ getInput('numAssets') }
+				{ getInput('type') }
+				{ getInput('reqBudget') }
+
+				<ControlLabel>
+					Project Dates
+				</ControlLabel>
+				
+				{ getInput('startDate') }
+				{ getInput('endDate') }
+				{ getInput('editDate') }
+				{ getInput('releaseDate') }
+				
+				{ 
+					props.userType == 'user' && props.project.adminNotes &&
+						<p>{ props.project.adminNotes }</p>
+				}
+
+				{ 
+					props.userType != 'user' &&
+						<FormGroup>
+							<ControlLabel> Admin Notes </ControlLabel>
+							
+							<FormControl
+								componentClass='textarea'
+								name='adminNotes'
+								onChange={ props.handleAttrChange }
+								placeholder='If rejecting please explain why here.'
+								value={ props.project.adminNotes }
+							/>
+						</FormGroup>
+				}
+
+				<h4>{ props.errorMessage }</h4>
+
+				{
+					props.userType == 'user' &&
+						<Button type='submit'>
+							Submit pitch for approval
+						</Button>
+				}
+
+				{
+					props.userType != 'user' && 
+					props.project.approvals == '1111111111' &&
+						<FormGroup>
+							<Button bsStyle='success' type='submit'>
+								{ props.newProject ? 'Create Project' : 'Approve Pitch' }
+							</Button>
+						</FormGroup>
+				}
+
+				{
+					props.userType != 'user' && 
+					props.project.approvals != '1111111111' &&
+						<FormGroup>
+							<Button bsStyle='danger' type='submit'>
+								Reject Pitch
+							</Button>
+						</FormGroup>
+				}
+			</Form>
+		</div>
+	);
+};
+
+
 export default PitchSummary;
+

@@ -1,81 +1,181 @@
+/**
+ *
+ *  Component for the signup page (for new organization)
+ *
+**/
+
+
 import React from 'react';
 import { Link } from 'react-router';
-import { Button, ButtonToolbar, Panel, FormGroup, FormControl, Form, ControlLabel } from 'react-bootstrap';
+import { Button, ButtonToolbar, ControlLabel, Form, FormControl, FormGroup, Panel } from 'react-bootstrap';
 
-const Register = React.createClass({
-  getInitialState() {
-    return {org: "", admin: "", pass: "", pass2: ""};
-  },
-  resetErrorMessages() {
-    this.props.resetRegistrationMessages();
-  },
-  handleChange(e) {
-    this.setState({[e.target.name]: e.target.value});
-  },
-  handlePassChange(e) {
-    console.log(e.target);
-    if (this.validatePass() === "warning") {
-      this.props.registrationError(4, "Password must be longer than 6 characters");
-    } else {
-      this.props.resetRegistrationMessages();
-    }
-    this.setState({[e.target.name]:e.target.value});
-  },
-  validatePass() {
-    const pass = this.state.pass;
 
-    return this.state.pass.length < 6 ? "warning" : "success";
-  },
-  handleSubmit: function(event) {
-    event.preventDefault();
-    var { org, admin, pass } = this.state;
+class Register extends React.Component {
+	constructor(props) {
+		super(props);
 
-    this.props.checkRegistration(org, admin, pass);
-  },
-  render() {
-    return (
-      <div id="loginPanel">
-        <Panel bsStyle="primary" header={<h2>We're happy you want to do this</h2>}>
-         <Form onSubmit={this.handleSubmit} onBlur={this.resetErrorMessages}>
-           <Link to={`/login`}>
-             <Button bsSize="small" bsClass="createOrgButton">
-               Login
-             </Button>
-           </Link>
-           <br></br>
-           <FormGroup controlId="userInput">
-             <ControlLabel id="loginLabel">Organization</ControlLabel>
-             <FormControl type="text" value={this.state.org} placeholder="name it something catchy"
-                          onChange={this.handleChange} name="org" required/>
-             <p id="registerOrgMessage">{this.props.messages.registerOrg}</p>
-           </FormGroup>
-           <FormGroup controlId="userInput">
-             <ControlLabel id="loginLabel">Admin</ControlLabel>
-             <FormControl type="text" value={this.state.admin} placeholder="the company leader"
-                          onChange={this.handleChange} name="admin" required/>
-             <p id="registerUserMessage" className="">{this.props.messages.registerUser}</p>
-           </FormGroup>
-           <div>
-             <ControlLabel id="loginLabel">Password</ControlLabel>
-             <FormGroup controlId="passwordControl" validationState = {this.validatePass()}>
-               <FormControl type="password" value={this.state.pass} placeholder="••••••••••"
-                            onChange={this.handlePassChange} required
-                            name="pass"/>
-               <FormControl.Feedback />
-               <p id="registerPaswordMessage">{this.props.messages.registerPassword}</p>
-               <FormControl type="password" value={this.state.pass2} placeholder="Re-enter Password"
-                            onChange={this.handlePassChange} name="pass2"/>
-               <FormControl.Feedback />
-             </FormGroup>
-           </div>
-           <ButtonToolbar bsClass="loginButton">
-               <Button type="submit" bsStyle="primary" bsSize="large" block>Create</Button>
-           </ButtonToolbar>
-         </Form>
-      </Panel>
-    </div>
-    );
-  }
-});
+		this.state = {
+			organization: '',
+			admin: '',
+			pass: '',
+			pass2: ''
+		};
+	}
+
+
+	// clear any old warning messages about login/signup
+	componentWillMount() {
+		this.props.clearUI();
+	}
+
+
+	// update state to reflect changes to organization and admin name, 
+	// clear error message if one exists (error message is only generated on submit)
+	handleUserOrgChange(e) {
+		if (this.props.UI.messages.name) {
+			this.props.setMessages({ name: '' });
+		}
+
+		this.setState({ [e.target.name]: e.target.value });
+	}
+
+
+	// update state to reflect changes to password inputs, update error message
+	// as appropriate
+	handlePassChange(e) {
+		let otherPass = e.target.name == 'pass' ? this.state.pass2 : this.state.pass;
+
+		if (e.target.value.length < 6) {
+			this.props.setMessages({ password: 'Password must be longer than 6 characters' });
+
+		} else if (e.target.value != otherPass) {
+			this.props.setMessages({ password: 'Passwords do not match' });
+
+		} else if (this.props.UI.messages.password) {
+			this.props.setMessages({ password: '' });
+		}
+
+		this.setState({ [e.target.name]: e.target.value });
+	}
+
+
+	handleSubmit(e) {
+		e.preventDefault();
+
+		if (this.state.pass == this.state.pass2) {
+			this.props.signup(this.state.organization, this.state.admin, this.state.pass);
+		}
+	}
+
+
+	// to validate password forms
+	passValidation() {
+		if (this.state.pass.length < 6 || this.state.pass != this.state.pass2) {
+			return 'warning';
+		
+		} else {
+			return 'success';
+		}
+	}
+
+
+	render() {
+		return (
+			<div id='loginPanel'>
+				<Panel bsStyle='primary' header={ <h2>{ 'Wer\'e happy you want to do this' }</h2> }>
+					<Form onSubmit={ this.handleSubmit.bind(this) }>
+						
+						<Link to={ '/login' }>
+							<Button bsClass='createOrgButton' bsSize='small'>
+								Login
+							</Button>
+						</Link>
+						
+						<br></br>
+						
+						<FormGroup controlId='userInput'>
+							<ControlLabel id='loginLabel'>
+								Organization
+							</ControlLabel>
+							
+							<FormControl 
+								name='organization'
+								onChange={ this.handleUserOrgChange.bind(this) }
+								placeholder='name it something catchy'
+								type='text'
+								value={ this.state.organization }
+								required
+							/>
+						</FormGroup>
+						
+						<FormGroup controlId='userInput'>
+							<ControlLabel id='loginLabel'>
+								Admin
+							</ControlLabel>
+							
+							<FormControl
+								name='admin'
+								onChange={ this.handleUserOrgChange.bind(this) }
+								placeholder='the company leader'
+								type='text'
+								value={ this.state.admin }
+								required
+							/>
+						</FormGroup>
+
+						<p id='registerUserOrgMessage'>
+							{ this.props.UI.messages.user }
+						</p>
+						
+						<div>
+							<ControlLabel id='loginLabel'>Password</ControlLabel>
+							
+							<FormGroup controlId='passwordControl' validationState={ this.passValidation.apply(this) }>
+								<FormControl
+									name='pass'
+									onChange={ this.handlePassChange.bind(this) }
+									placeholder='••••••••••'
+									type='password'
+									value={ this.state.pass }
+									required
+								/>
+								
+								<FormControl.Feedback />
+								
+								<FormControl
+									name='pass2'
+									onChange={ this.handlePassChange.bind(this) }
+									placeholder='Re-enter Password'
+									type='password'
+									value={ this.state.pass2 }
+								/>
+								
+								<FormControl.Feedback />
+								
+								<p id='registerPasswordMessage'>
+									{ this.props.UI.messages.password }
+								</p>
+
+							</FormGroup>
+						</div>
+						
+						<ButtonToolbar bsClass='loginButton'>
+							<Button
+								bsSize='large'
+								bsStyle='primary'
+								type='submit'
+								block
+							>
+								Create
+							</Button>
+						</ButtonToolbar>
+					
+					</Form>
+				</Panel>
+			</div>
+		);
+	}
+}
 
 export default Register;
+

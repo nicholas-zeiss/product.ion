@@ -1,240 +1,159 @@
+/**
+ *
+ *  Component for the home page of the organization
+ *
+**/
+
+
 import React from 'react';
 import { Link } from 'react-router';
-import { Button, Label, Modal, Panel, Table } from 'react-bootstrap';
+import { Button, Modal, Panel, Table } from 'react-bootstrap';
+
 import Papa from 'papaparse';
-import ApiCall from "../utils/serverCalls";
+
+import projectTableHeader from '../data/projectTableHeader';
+import { fields, expandExpenses } from '../utils/csvUtils';
+
 import DashCharts from './DashCharts';
 import NavBar from './NavBar';
 import Pitch from './Pitch';
 import ProjectNode from './ProjectNode';
-import Projects from './Projects';
 
-const Dashboard = React.createClass({
-  getInitialState() {
-    return {
-      open: false,
-      editProject: null
-    };
-  },
 
-  componentWillMount() {
-    var orgName = this.props.organization.orgName;
-    this.props.getOrgProjects(orgName);
-  },
+class Dashboard extends React.Component {
+	constructor(props) {
+		super(props);
 
-  switchChart() {
-    this.setState({open: !this.state.open});
-  },
+		props.setMessages({ password: '', user: '' });
+	
+		if (props.budgets.loaded == false || props.expenses.loaded == false) {
+			const projIDs = props.projects.map(project => project.id);
 
-  switchModal(Project) {
-    if (Project !== null) {
-      this.setState({editProject: Project});
-    } else {
-      this.setState({editProject: null});
-    }
-    this.props.changeModal('pitch');
-  },
+			props.getBudgets(projIDs);
+			props.getExpenses(projIDs);
+		}
+	}
 
-  exportCSV() {
-    var fields = [
-    "Project",
-    "Name",
-    "Project ID",
-    "Type",
-    "Vertical",
-    "Tier",
-    "Status",
-    "Number of Assets",
-    "Start Date",
-    "End Date",
-    "Edit Date",
-    "Release Date",
-    "Requested Budget",
-    "Cost to Date",
-    "Estimate to Complete",
-    "Expense",
-    "Category",
-    "GL Code",
-    "Date Spent",
-    "Date Tracked",
-    "Vendor",
-    "Method",
-    "Description",
-    "Cost"
-  ];
-    var getProj = this.getProj;
-    var ids = [];
-    this.props.projects.forEach(function(proj) {
-      ids.push(proj.projId);
-    });
-    ApiCall.getExpenses(ids).then(function(res) {
-      console.log(res);
-      var exps = res.data.reduce(function(a,b) {
-          return a.concat(b);
-        }, []);
-      var data = [];
-      for (var i = 0; i < exps.length; i++) {
-        var proj = getProj(exps[i].projs_id);
-        data.push([
-          ' ',
-          proj.name,
-          proj.projId,
-          proj.type,
-          proj.vertical,
-          proj.tier,
-          proj.status,
-          proj.numAssets,
-          proj.startDate,
-          proj.endDate,
-          proj.editDate,
-          proj.releaseDate,
-          proj.reqBudget,
-          proj.costToDate,
-          proj.estimateToComplete,
-          ' ',
-          exps[i].category,
-          exps[i].glCode,
-          exps[i].dateSpent,
-          exps[i].dateTracked,
-          exps[i].vendor,
-          exps[i].method,
-          exps[i].description,
-          exps[i].cost
-        ]);
-      }
-      var csv = {fields: fields, data: data};
-      csv = Papa.unparse(csv);
-      var hiddenElement = document.createElement('a');
-      hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
-      hiddenElement.target = '_blank';
-      hiddenElement.download = 'data.csv';
-      hiddenElement.click();
-    });
-  },
 
-  getProj(id) {
-    for (var i = 0; i < this.props.projects.length; i++) {
-      if (this.props.projects[i].id === id) { console.log(this.props.projects[i]); return this.props.projects[i];}
-    }
-    return 'proj not found';
-  },
+	exportCSV() {
+		let expenses = this.props.projects.reduce((expenses, project) => {
+			project.expenses.forEach(expense => {
+				expenses.push({ expense, project });
+			});
 
-  render() {
-    const { user } = this.props.organization;
+			return expenses;
+		}, []);
 
-    return (
-      <div className="dashboard">
+		let csv = Papa.unparse({ fields, data: expandExpenses(expenses) });
+		
+		let hiddenElement = document.createElement('a');
+		hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+		hiddenElement.target = '_blank';
+		hiddenElement.download = 'data.csv';
+		hiddenElement.click();
+	}
 
-        <NavBar {...this.props}/>
 
-        <div>
+	render() {
+		
+		// will hold link to master financial sheet if client can view it
+		let mastersheet;
 
-          <Modal show={this.props.modals.pitch} onHide={this.switchModal} >
-            <Modal.Body>
-              <Pitch {...this.props} data={this.state.editProject}/>
-            </Modal.Body>
-            <Modal.Footer />
+		// determine which pitches are visible based off app state and the client account's permission level
+		let pitches = this.props.projects.filter(proj => proj.status == 'Pitch');
+		let pitchHeader = this.props.organization.user.permissions == 'user' ? 'Your pitches awaiting approval:' : 'Pitches to be Approved:';
 
-          </Modal>
 
-          <Panel>
-            <div>
-              <b style={{"fontSize":"30"}}>{"Welcome to " + this.props.organization.orgName + "'s dashboard"}</b>
-              <Button onClick={this.exportCSV} style={{"float":"right","marginRight":"5px"}} bsStyle="primary" id="csvExport">Export Projects/Expenses to a CSV</Button>
-              <Button bsStyle="primary" style={{"float":"right","marginRight":"5px"}} onClick={this.switchChart}>Toggle Visuals</Button>
-              {
-                this.props.organization.user.perm === 0 ?
-                (<Link to="/mastersheet">
-                  <Button style={{"float":"right","marginRight":"5px"}} bsStyle="primary">Click for Master Sheet</Button>
-                </Link>) :
-                <div></div>
-              }
-              {this.state.open ? <DashCharts {...this.props}/> : null}
-            </div>
+		if (this.props.organization.user.permissions == 'user') {
+			pitches = pitches.filter(proj => proj.userID == this.props.organization.user.id);		
 
-            <h3>Most Recently Edited Three Projects</h3>
-            <Table striped bordered>
-              <thead>
-                <tr id="readOnlyHeader">
-                  <th>Name</th>
-                  <th>Project ID</th>
-                  <th>Created By</th>
-                  <th>Project Status</th>
-                  <th>Estimate to Complete</th>
-                  <th>Cost to Date</th>
-                </tr>
-              </thead>
-              <tbody>
-              {
-                this.props.projects.length > 0 ? this.props.projects.sort(function(b, a) {
-                console.log('sorting');
-                return a.lastEdited < b.lastEdited ? -1 : a.lastEdited > b.lastEdited ? 1 : 0;
-              }).slice(0,3).map(function(proj, idx) {
-                  return <ProjectNode key={idx} {...this.props} project={proj} switchModal={this.switchModal}/>;
-                }, this) : null
-              }
-              </tbody>
-            </Table>
+		} else {
+			mastersheet =	(
+				<Link to='/mastersheet'>
+					<Button bsStyle='primary' style={ { 'float': 'right', 'marginRight': '5px' } }>
+						Click for Master Sheet
+					</Button>
+				</Link>
+			);
+		}
 
-            {
-              !this.props.organization.user.perm ?
-              <div>
-                <h3>Pitches to be Approved</h3>
-                <Table striped bordered>
-                  <thead>
-                    <tr id="readOnlyHeader">
-                      <th>Name</th>
-                      <th>Project ID</th>
-                      <th>Created By</th>
-                      <th>Project Status</th>
-                      <th>Cost to Date</th>
-                      <th>Estimate to Complete</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {
-                      this.props.projects.length > 0 ? this.props.projects.filter(function(proj) {
-                        return proj.status === "Pitch";
-                      }).map(function(proj, idx) {
-                        return <ProjectNode key={idx} {...this.props} project={proj} switchModal={this.switchModal}/>;
-                      }, this) : null
-                    }
-                  </tbody>
-                </Table>
-              </div> :
-              this.props.organization.user.perm ?
-              <div>
-                <h3>Your pitches awaiting approval:</h3>
-                <Table striped bordered>
-                  <thead>
-                    <tr id="readOnlyHeader">
-                      <th>Name</th>
-                      <th>Project ID</th>
-                      <th>Created By</th>
-                      <th>Project Status</th>
-                      <th>Cost to Date</th>
-                      <th>Estimate to Complete</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                  {
-                    this.props.projects && this.props.projects.filter(function(proj) {
-                      return proj.createdBy === user.id;
-                    }).map(function(proj, idx) {
-                      return <ProjectNode key={idx} {...this.props} project={proj} switchModal={this.switchModal}/>;
-                    }, this)
-                  }
-                  </tbody>
-                </Table>
-              </div>
 
-              : <div />
-            }
-          </Panel>
-        </div>
-      </div>
-    );
-  }
-});
+		pitches = pitches.map((pitch, idx) => <ProjectNode { ...this.props } key={ idx } project={ pitch }/>, this);
+
+
+		// determine the three most recently edited projects
+		let mostRecentThree = this.props.projects
+			.slice()
+			.sort((a, b) => a.lastEdited > b.lastEdited ? -1 : a.lastEdited < b.lastEdited ? 1 : 0)
+			.slice(0, 3)
+			.map((project, idx) => (
+				<ProjectNode
+					{ ...this.props }
+					key={ idx }
+					project={ project }
+				/>
+			), this);
+	
+
+		return (
+			<div className='dashboard'>
+				<NavBar { ...this.props }/>
+
+				<div>
+					<Modal onHide={ this.props.closePitchModal } show={ this.props.UI.views.pitch }>
+						<Modal.Body>
+							<Pitch { ...this.props } />
+						</Modal.Body>
+						<Modal.Footer/>
+					</Modal>
+
+					<Panel>
+						<div>
+							<b style={ { 'fontSize': '30px' } }>{ `Welcome to ${this.props.organization.name}'s dashboard` }</b>
+							
+							<Button
+								bsStyle='primary'
+								id='csvExport'
+								onClick={ this.exportCSV.bind(this) }
+								style={ { 'float': 'right', 'marginRight': '5px' } }
+							>
+								Export Projects/Expenses to a CSV
+							</Button>
+							
+							<Button 
+								bsStyle='primary'
+								onClick={ this.props.toggleCharts }
+								style={ { 'float': 'right', 'marginRight': '5px' } }
+							>
+								Toggle Visuals
+							</Button>
+							
+							{ mastersheet }
+							{ this.props.UI.views.charts ?  <DashCharts { ...this.props }/> : null }
+						</div>
+
+						<h3> Most Recently Edited Three Projects </h3>
+						
+						<Table bordered striped>
+							{ projectTableHeader }
+							<tbody>{ mostRecentThree }</tbody>
+						</Table>
+
+						<div>
+							<h3>{ pitchHeader }</h3>
+							
+							<Table bordered striped>
+								{ projectTableHeader }
+								<tbody>{ pitches }</tbody>
+							</Table>
+						</div>
+					</Panel>
+				</div>
+			</div>
+		);
+	}
+}
+
 
 export default Dashboard;
+

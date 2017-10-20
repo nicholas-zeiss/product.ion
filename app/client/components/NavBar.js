@@ -1,69 +1,57 @@
+/**
+ *
+ *  Component for the navbar, which is always visible for any logged in user
+ *
+**/
+
+
 import React from 'react';
-import { browserHistory, Link } from 'react-router';
-import { push } from "react-router-redux";
-import { Glyphicon, Nav, Navbar, NavItem, PageHeader } from 'react-bootstrap';
+import { browserHistory } from 'react-router';
+import { Glyphicon, Nav, Navbar, NavItem } from 'react-bootstrap';
 
-const NavBar = React.createClass({
-  // componentWillMount() {
-  //   var orgName = this.props.organization.orgName;
-  //   this.props.getOrgProjects(orgName);
-  // },
 
-  logout() {
-    this.props.logout();
-    this.props.clearExp();
-    this.props.clearProj();
-    browserHistory.push('/');
-  },
+const NavBar = props => {
+	
+	const selectLink = (path, e) => {
+		e.preventDefault();
+		browserHistory.push(path);
+	};
 
-  handleSelect(eventKey) {
-    event.preventDefault();
-  },
 
-  selectDashboard() {
-    this.props.changeNavKey(1);
-  },
+	const logout = e => {
+		e.preventDefault();
+		props.logout();
+		browserHistory.push('/');
+	};
 
-  selectSettings() {
-    this.props.changeNavKey(2);
-  },
+	
+	return (
+		<div>
+			<Navbar bsStyle='inverse'>
+				<Nav>
+					<NavItem onClick={ selectLink.bind(null, '/dashboard') } style={ { 'fontSize': '20px', 'fontWeight': 'bold', 'color': 'white' } }>
+						Dashboard
+					</NavItem>
+					
+					<NavItem onClick={ selectLink.bind(null, '/projects') } style={ { 'fontSize': '15px', 'color': 'white' } }>
+						Projects
+					</NavItem>
+				</Nav>
 
-  selectCSV() {
-    this.props.changeNavKey(3);
-  },
+				<Nav pullRight>
+					<NavItem onClick={ selectLink.bind(null, '/settings') } style={ { 'fontSize': '15px', 'color': 'white' } }>
+						<Glyphicon glyph='cog'/>
+					</NavItem>
+					
+					<NavItem onClick={ logout } style={ { 'fontSize': '15px', 'color': 'white' } }>
+						Logout
+					</NavItem>
+				</Nav>
+			</Navbar>
+		</div>
+	);
+};
 
-  render() {
-
-    return (
-      <div>
-        <Navbar bsStyle="inverse">
-          <Nav>
-            <NavItem className="navItem">
-                <Link style={{"fontSize":"20px","fontWeight":"bold","color":"white"}} to="/">
-                  Dashboard
-                </Link>
-            </NavItem>
-            <NavItem eventKey={1} onClick={this.selectDashboard}>
-                <Link style={{"fontSize":"15px","color":"white"}} to={'/projects'}>
-                  Projects
-                </Link>
-            </NavItem>
-          </Nav>
-
-          <Nav pullRight>
-            <NavItem eventKey={2} onClick={this.selectSettings}>
-                <Link style={{"fontSize":"15px","color":"white"}} to={'/settings'}>
-                  <Glyphicon glyph="cog"/>
-                </Link>
-            </NavItem>
-            <NavItem onClick={this.logout}>
-                <Link style={{"fontSize":"15px","color":"white"}} to="/">Logout</Link>
-            </NavItem>
-          </Nav>
-        </Navbar>
-      </div>
-    );
-  }
-});
 
 export default NavBar;
+

@@ -1,30 +1,49 @@
-//  the body of these functions will look like something like this here
-//
-//  exports.getUser = function(name, callback) {
-//    new User({username: name}).fetch().then(callback);
-//  };
-//
-// this is example usage
-//
-// app.post('/login', function(req, res) {
-//   Users.getUser(req.body.username, function(user) {
-//     user ? res.status(201).json(user) : res.sendStatus(404);
-//   });
-// });
-var Project = require('../models/project.js');
+/**
+ *
+ *  Here we set up a controller for our project model
+ *
+**/
 
-exports.getProj = function(projId, cb) {
-	new Project({projId: projId}).fetch({withRelated: ['budgets', 'org', 'expenses', 'users']}).then(cb);
+
+const Project = require('../models/project.js');
+
+
+exports.getProject = (id, success, error) => {
+	new Project({ id })
+		.fetch({ withRelated: [ 'budgets', 'expenses' ] })
+		.then(success)
+		.catch(error);
 };
 
-exports.getProjById = function(id, cb) {
-	new Project({id:id}).fetch({withRelated: ['budgets', 'org', 'expenses', 'users']}).then(cb);
-}
 
-exports.getProjs = function(cb) {
-	new Project().fetchAll().then(cb);
+exports.getProjectByName = (name, success, error) => {
+	new Project({ name })
+		.fetch()
+		.then(success)
+		.catch(error);
 };
 
-exports.makeProj = function(data, cb) {
-	new Project(data).save().then(cb);
+
+exports.getProjects = (IDs, success, error) => {
+	Project
+		.where('id', 'in', IDs)
+		.fetchAll({ withRelated: [ 'budgets', 'expenses' ] })
+		.then(success)
+		.catch(error);
 };
+
+
+exports.makeProject = (data, cb) => {
+	new Project(data)
+		.save()
+		.then(cb);
+};
+
+
+exports.updateProject = (project, success, error) => {
+	new Project({ id: project.id })
+		.save(project, { patch: true })
+		.then(success)
+		.catch(error);
+};
+

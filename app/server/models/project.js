@@ -1,23 +1,31 @@
-var Bookshelf = require('../db.js');
-require('./expense.js');
-require('./organization.js');
-require('./project.js');
-require('./budget.js');
+/**
+ *
+ *  Here we set up a a Bookshelf model for projects
+ *
+**/
 
-var Project = Bookshelf.Model.extend({
-	tableName: 'projs',
-	expenses: function() {
-		return this.hasMany('Expense', 'projs_id');
-	},
+
+const Bookshelf = require('../db.js');
+
+
+module.exports = Bookshelf.model('Project', Bookshelf.Model.extend({
+	tableName: 'projects',
+	
 	budgets: function() {
-		return this.hasMany('Budget', 'projs_id');
+		return this.hasMany('Budget', 'projID');
 	},
-	org: function() {
-		return this.belongsTo('Organization', 'orgs_id');
-	},
-	users: function() {
-		return this.belongsToMany('Project', 'projs_users', 'projs_id', 'users_id');
-	}
-});
 
-module.exports = Bookshelf.model('Project', Project);
+	expenses: function() {
+		return this.hasMany('Expense', 'projID');
+	},
+
+	organization: function() {
+		return this.belongsTo('Organization', 'orgID');
+	},
+	
+	user: function() {
+		return this.belongsTo('User', 'userID');
+	}
+
+}));
+

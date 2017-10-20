@@ -17,7 +17,7 @@ const MasterSheet = React.createClass({
 	componentDidMount() {
 		var ids = [];
     for (var i = 0; i < this.props.projects.length; i++) {
-      ids.push(this.props.projects[i].projId);
+      ids.push(this.props.projects[i].projID);
     }
 
     var temp = [Promise.resolve([this.setState.bind(this), this.parseData]), ApiCall.getExpenses(ids)];
@@ -123,7 +123,7 @@ const MasterSheet = React.createClass({
 				    </FormGroup>
 					</Form>
 
-          <div style={{"margin-top":"10px"}} id="chartContainer"></div>
+          <div style={{"marginTop":"10px"}} id="chartContainer"></div>
 
           <Table striped bordered>
         		<thead>

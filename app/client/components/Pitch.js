@@ -1,208 +1,215 @@
+/**
+ *
+ *  Component for the pitch modal, which allows you to create a new pitch or edit an existing one.
+ *	The vast majority of the actual view for the modal is rendered in PitchSummary and Budget;
+ *	this component acts as a controller.
+ *
+**/
+
+
 import React from 'react';
+import { Tab, Tabs } from 'react-bootstrap';
 
-import { ControlLabel, Tabs, Tab } from 'react-bootstrap';
+import BudgetNode from './BudgetNode';
+import PitchSummary from './PitchSummary';
 
-import Budget from "./Budget";
-import PitchSummary from "./PitchSummary";
+import { categoryToGlcode } from '../data/public';
+import { approvalStringOrder, budgetDefaults } from '../utils/projectUtils';
 
-import { judy } from "../data/public";
 
-const Pitch = React.createClass({
-  getInitialState() {
-    console.log("Opening Pitch page. Props are ", this.props);
-    var now = new Date(),//just formatting the date as yyyy-mm-dd
-        m = now.getMonth() < 10 ? "0" + now.getMonth() : now.getMonth(),
-        d = now.getDate() < 10 ? "0" + now.getDate() : now.getDate(),
-        date = [now.getFullYear(), m, d];
+class Pitch extends React.Component {
+	constructor(props) {
+		super(props);
 
-    let { data } = this.props,
-          goodProd = {val: undefined, style: undefined, action: "No Issues"},
-          badProd = {val: "error", style: "danger", action: "Rejected"},
-          good = {val: "success", style: "success", action: "Reject"},
-          bad = {val: "error", style: "danger", action: "Approve"},
-          notAdmin = {val: null, action: undefined};
-    let judge = {},
-        counter = 0;
 
-    //set default approval data if none present.
-    data = data.approvals ? data :  {approvals:"11111111111"};
-    //sets validation object to be mapped to each field in PitchSummary
-    for (var key in judy) {
-      judge[key] = {vars: this.props.organization.user.perm ?
-          data.approvals[counter] == 1 ? goodProd : badProd
-        : data.approvals[counter] == 1 ? good : bad};
-      judge[key].index = counter;
-      counter ++;
-    }
+		// budgets holds the array of budget items we actually display
+		// we track which of these have just been created, and what original budgets
+		// were deleted so that we can updated our store/the server with the changes
+		this.state = {
+			activeTab: 1,
+			budgets: props.editProject.budgets,
+			budgetsToCreate: [],
+			budgetsToDelete: [],
+			newBudget: budgetDefaults(),
+			newProject: !props.editProject.project.id,		// new projects lack IDs as they are created by database
+			project: props.editProject.project
+		};
+	}
 
-    return {
-      activeTab: 1,
-      budgets: [],
-      newPitch: data.id ? false : true,
-      id: data.id || undefined,
-      projName: data.name || "",
-      projId: data.projId || "",
-      vertical: data.vertical || "",
-      tier: data.tier || "",
-      numAssets: data.numAssets || "",
-      videoType: data.type || "",
-      reqBudget: data.reqBudget || 0,
-      startDate: data.startDate ? data.startDate.split("T")[0] : date.join("-"),
-      endDate: data.endDate ? data.endDate.split("T")[0] : date.join("-"),
-      editDate: data.editDate ? data.endDate.split("T")[0] : "",
-      releaseDate: data.editDate ? data.endDate.split("T")[0] : "",
-      adminNotes: data.adminNotes || "",
-      approvals: data.approvals || "111111111111",
-      createdBy: data.createdBy,
-      judge
-    };
-  },
-  buildPitch() {
-    return {
-      orgs_id: this.props.organization.orgs_id,
-      id: this.state.id,
-      createdBy: this.props.organization.user.id,
-      name: this.state.projName,
-      projId: this.state.projId,
-      vertical: this.state.vertical,
-      tier: this.state.tier,
-      numAssets: this.state.numAssets,
-      type: this.state.videoType,
-      status: 'Pitch',
-      estimateToComplete: this.state.reqBudget,
-      startDate: this.state.startDate,
-      endDate: this.state.endDate,
-      editDate: this.state.editDate,
-      releaseDate: this.state.releaseDate,
-      approvals: this.state.approvals,
-      adminNotes: this.state.adminNotes
-    };
-  },
-  componentWillReceiveProps: function(newProps) {
-    if (newProps.budgets) {
-      const proj = "proj" + this.state.id;
-      
-      this.setState(
-        {budgets: newProps.budgets[proj]},
-        this.calculateTotalBudget
-      );
-    }
-  },
-  handlePitchSubmit(event) {
-    event.preventDefault();
-    var data = this.buildPitch();
 
-    this.props.postNewProject(data);
-    this.closeModal();
-  },
-  postAllBudgets() {
-    this.props.updateMultipleBudgets(this.state.budgets);
-  },
-  handleReject(e) {
-    var data = this.buildPitch();
+	updateBudgets() {
+		// To create budgets we need the id of the project to attach them to. If this is a new project,
+		// we obtain the id from the projects section of the store which will have the newly created project
+		
+		let projID;
 
-    this.props.updateProject(data, this.props.projId);
-    this.closeModal();
-  },
-  handleApprove(e) {
-    var data = this.buildPitch();
-    data.status = "Production";
+		if (this.state.newProject) {
+			// note this works as names are required to be unique
+			projID = this.props.projects
+				.find(project => project.name == this.state.project.name)
+				.id;
 
-    console.log("Pitch approved. Pitch is ", data);
-    this.state.newPitch ? this.props.postNewProject(data)
-        : this.props.updateProject(data, this.props.projId);
+		} else {
+			projID = this.state.project.id;
+		}
+		
+		if (this.state.budgetsToCreate.length) {
+			this.props.createBudgets(this.state.budgetsToCreate, projID);
+		}
 
-    this.closeModal();
-  },
-  closeModal() {
-    this.props.getOrgProjects(this.props.organization.orgName);
-    this.props.changeModal("pitch");
-  },
-  handleSelect(key) {
-    //budget set here to accomodate asynchronous budget list hydration.
-    this.setState({
-        budgets: this.props.budgets["proj" + this.state.id],
-        activeTab: key,
-    });
-  },
-  tabToBudget() {
-    this.handleSelect(2);
-  },
-  updateBudget(newTotal) {
-    this.setState({reqBudget: newTotal});
-  },
-  handleChange(e) {
-    this.setState({[e.target.name]: e.target.value});
-  },
-  handleBudgetChange(e, idx) {
-    let newBudget = this.state.budgets;
-    newBudget[idx][e.name] = e.value;
+		if (this.state.budgetsToDelete.length) {
+			this.props.deleteBudgets(this.state.budgetsToDelete, projID);
+		}
+	}
 
-    this.setState({budgets: newBudget});
-  },
-  handleBudgetSelect(e, idx) {
-    let newBudgets = this.state.budgets;
-    newBudgets[idx].glCode = e;
+	
+	handlePitchSubmit(e) {
+		e.preventDefault();
 
-    this.setState({budgets: newBudgets});
-  },
-  calculateTotalBudget() {
-    let budgetTotal = 0;
-    this.state.budgets.forEach(budget => budgetTotal+=budget.total);
+		if (this.state.newProject) {
+			let nameUnique = this.props.projects
+				.every(project => project.name != this.state.project.name);
 
-    this.setState({reqBudget: budgetTotal});
-  },
-  addNewBudget(budget) {
-    this.props.postNewBudget(budget);
-  },
-  deleteBudgetNode(node) {
-    this.props.deleteBudgetNode(node);
-  },
-  updateApproval(index) {
-    var approvals = this.state.approvals.split("");
+			if (nameUnique) {
+				this.props.createProject(this.state.project);
 
-    approvals[index] = Number(!Boolean(approvals[index]/1));
+			} else {
+				// project name is already in use, project cannot be created
+				this.props.setMessages({ projectName: 'That name is already taken' });
+				return;
+			}
 
-    this.setState({approvals: approvals.join("")});
-  },
-  handleJudgement(e) {
-    const name = e.target.name,
-          good = {val: "success", style: "success", action: "Reject"},
-          bad = {val: "error", style: "danger", action: "Approve"},
-          newJudge = this.state.judge;
+		} else {
+			this.props.updateProject(this.state.project);
+		}
 
-    //set the judgement props of each field to the inverse
-    newJudge[name].vars =
-      this.state.judge[name].vars.action === "Reject" ? bad
-      : good;
+		if (this.state.budgetsToCreate.length || this.state.budgetsToDelete.length) {
+			this.updateBudgets();
+		}
 
-    this.updateApproval(newJudge[name].index);
-    this.setState({judge: newJudge});
-  },
-  render() {
+		this.props.clearEditProject();
+		this.props.closePitchModal();	
+	}
 
-    return (
-      <Tabs activeKey={this.state.activeTab} onSelect={this.handleSelect} id="pitchTabs">
-        <Tab eventKey={1} title="Pitch">
-          {<PitchSummary {...this.props.organization} {...this.state}
-            handleChange={this.handleChange} handleJudgement={this.handleJudgement}
-            tabToBudget={this.tabToBudget} updatePitch={this.updatePitch}
-            handleReject={this.handleReject} handlePitchSubmit={this.handlePitchSubmit}
-            handleApprove={this.handleApprove}/>
-          }
-        </Tab>
-        <Tab eventKey={2} title="Budget">
-          <Budget
-            budgets={this.props.budgets["proj" + this.state.id]}
-            total={this.state.reqBudget} addNewBudget={this.addNewBudget}
-            handleBudgetChange={this.handleBudgetChange}
-            handleBudgetSelect={this.handleBudgetSelect}
-            postAllBudgets={this.postAllBudgets}
-            deleteBudgetNode = {this.deleteBudgetNode}
-            />
-        </Tab>
-      </Tabs>
-    );
-  }
-});
+
+	handleTabSelect(key) {
+		this.setState({	activeTab: key });
+	}
+
+
+	handleProjAttrChange(e) {
+		if (e.target.name == 'name' && this.props.UI.messages.projectName) {
+			this.props.setMessages({ projectName: '' });
+		}
+
+		this.setState({ 
+			project: Object.assign({}, this.state.project, { [e.target.name]: e.target.value }) 
+		});
+	}
+
+
+	handleBudgAttrChange(e) {
+		let newBudget = { [e.target.name]: e.target.value };
+
+		if (e.target.name == 'cost' || e.target.name == 'quantity') {
+			let other = e.target.name == 'cost' ? 'quantity' : 'cost';
+			newBudget.total = e.target.value * this.state.newBudget[other];
+		}
+
+		this.setState({ 
+			newBudget: Object.assign({}, this.state.newBudget,  newBudget)
+		});
+	}
+
+
+	handleGlCode(e) {
+		let [ type, category ] = e.split('---');
+		let glCode = categoryToGlcode[category][type];
+
+		this.setState({ 
+			newBudget: Object.assign({}, this.state.newBudget, { glCode })
+		});
+	}
+
+
+	handleApprovalChange(attr) {
+		console.log(attr);
+		let approvals = this.state.project.approvals;
+		let index = approvalStringOrder.indexOf(attr);
+
+		let newApproval = approvals[index] == '1' ? '0' : '1';
+
+		approvals = approvals.slice(0, index) + newApproval + approvals.slice(index + 1);
+	
+		this.setState({ 
+			project: Object.assign({}, this.state.project, { approvals })
+		});
+	}
+
+
+	addBudget(e) {
+		e.preventDefault();
+
+
+	}
+
+
+	deleteBudget(e) {
+	}
+
+
+	render() {
+		return (
+			<Tabs
+				activeKey={ this.state.activeTab }
+				id='pitchTabs'
+				onSelect={ this.handleTabSelect.bind(this) }
+			>
+				<Tab eventKey={ 1 } title='Pitch'>
+					<PitchSummary
+						budgetTab={ this.handleTabSelect.bind(this, 2) }
+						errorMessage={ this.props.UI.messages.projectName }
+						handleApprovalChange={ this.handleApprovalChange.bind(this) }
+						handleAttrChange={ this.handleProjAttrChange.bind(this) }
+						handlePitchSubmit={ this.handlePitchSubmit.bind(this) }
+						newProject={ this.state.newProject }
+						project={ this.state.project }
+						userType={ this.props.organization.user.permissions }
+					/>
+				</Tab>
+				
+				<Tab eventKey={ 2 } title='Budget'>
+					{
+						this.state.budgets
+							.map((budget, index) => (
+								<BudgetNode
+									approved={ this.state.project.approvals[5] == '1' ? true : false }
+									budget={ budget }
+									handleChange={ this.handleBudgAttrChange.bind(this) }
+									handleGlCode={ this.handleGlCode.bind(this) }
+									isNew={ false }
+									key={ index }
+									reqBudget={ this.state.project.reqBudget }
+									save={ this.deleteBudget.bind(this) }
+								/>
+							))
+					}
+					
+					<BudgetNode
+						approved={ this.state.project.approvals[5] == '1' ? true : false }
+						budget={ this.state.newBudget }
+						handleChange={ this.handleBudgAttrChange.bind(this) }
+						handleGlCode={ this.handleGlCode.bind(this) }
+						isNew={ true }
+						reqBudget={ this.state.project.reqBudget }
+						submit={ this.addBudget.bind(this) }
+					/>
+				</Tab>
+			</Tabs>
+		);
+	}
+}
+
+
 export default Pitch;
+
