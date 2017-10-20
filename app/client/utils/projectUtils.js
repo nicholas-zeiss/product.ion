@@ -11,6 +11,7 @@ import React from 'react';
 import { currDateString } from './misc';
 
 
+// table header for short view where multiple projects are displayed
 export const projectTableHeader = (
 	<thead>
 		<tr id='readOnlyHeader'>
@@ -25,14 +26,75 @@ export const projectTableHeader = (
 );
 
 
-// Generate an empty budget item
-export const budgetDefaults = () => ({
-	cost: 0,
-	description: '',
-	glCode: 0,
-	quantity: 0,
-	total: 0
-});
+// Column width for details table (in Expenses view)
+export const tableWidths = {
+	id: 50,
+	username: 145,
+	vertical: 145,
+	tier: 70,
+	type: 145,
+	numAssets: 15,
+	status: 125,
+	startDate: 125,
+	endDate: 125,
+	editDate: 125,
+	releaseDate: 125,
+	costToDate: 125,
+	reqBudget: 125						
+};
+
+
+// headers for details table
+export const detailsFirstHeader = (
+	<thead>
+		<tr id='readOnlyHeader'>
+			<th>Project ID</th>
+			<th>Created By</th>
+			<th>Vertical</th>
+			<th>Tier</th>
+			<th>Type</th>
+			<th>Number of Assets</th>
+			<th>Status</th>
+		</tr>
+	</thead>
+);
+
+
+export const detailsSecondHeader = (
+	<thead>
+		<tr id='readOnlyHeader'>
+			<th>Start Date</th>
+			<th>End Date</th>
+			<th>Edit Date</th>
+			<th>Release Date</th>
+			<th>Cost to Date</th>
+			<th>Requested Budget</th>
+		</tr>
+	</thead>
+);
+
+
+// first row order
+export const detailsFirstRow = [
+	'id',
+	'username',
+	'vertical',
+	'tier',
+	'type',
+	'numAssets',
+	'status'
+];
+
+
+// second row order
+export const detailsSecondRow = [
+	'startDate',
+	'endDate',
+	'editDate',
+	'releaseDate',
+	'costToDate',
+	'reqBudget'		
+];
 
 
 // Generate an empty project
