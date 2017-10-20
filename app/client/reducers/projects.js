@@ -18,7 +18,10 @@ export default (state = [], action) => {
 		}	
 
 		case 'HYDRATE_PROJECTS': {
-			return state.concat(action.projects);
+			let projects = state.concat(action.projects);
+			projects.sort((a, b) => a.name > b.name ? 1 : a.name < b.name ? -1 : 0);
+
+			return projects;
 		}
 
 		default: {
