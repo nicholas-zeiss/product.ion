@@ -7,9 +7,14 @@
 
 // only included to work with jsx
 import React from 'react';
+import { FormControl } from 'react-bootstrap';
 
-import { currDateString } from './misc';
+import { currDateString, formatDate, moneyString } from './misc';
 
+
+//---------------------------------------------------------------------------------------------------------------------
+//																						Project Table Utilities
+//---------------------------------------------------------------------------------------------------------------------
 
 // table header for short view where multiple projects are displayed
 export const projectTableHeader = (
@@ -26,25 +31,7 @@ export const projectTableHeader = (
 );
 
 
-// Column width for details table (in Expenses view)
-export const tableWidths = {
-	id: 50,
-	username: 145,
-	vertical: 145,
-	tier: 70,
-	type: 145,
-	numAssets: 15,
-	status: 125,
-	startDate: 125,
-	endDate: 125,
-	editDate: 125,
-	releaseDate: 125,
-	costToDate: 125,
-	reqBudget: 125						
-};
-
-
-// headers for details table
+// headers for first row of details table
 export const detailsFirstHeader = (
 	<thead>
 		<tr id='readOnlyHeader'>
@@ -60,6 +47,7 @@ export const detailsFirstHeader = (
 );
 
 
+// second row
 export const detailsSecondHeader = (
 	<thead>
 		<tr id='readOnlyHeader'>
@@ -74,7 +62,7 @@ export const detailsSecondHeader = (
 );
 
 
-// first row order
+// first row attribute order
 export const detailsFirstRow = [
 	'id',
 	'username',
@@ -97,6 +85,58 @@ export const detailsSecondRow = [
 ];
 
 
+// column widths for details table
+const tableWidths = {
+	id: 50,
+	username: 145,
+	vertical: 145,
+	tier: 70,
+	type: 145,
+	numAssets: 15,
+	status: 125,
+	startDate: 125,
+	endDate: 125,
+	editDate: 125,
+	releaseDate: 125,
+	costToDate: 125,
+	reqBudget: 125						
+};
+
+
+// creates table data elements for the project details table
+export const projectDetailsEntry = (attr, project, users = []) => {
+	let value;
+
+	if (attr == 'username') {
+		value = users.find(user => user.id == project.userID);
+		value = value ? value.username : '?';
+
+	} else if (attr == 'costToDate' || attr == 'reqBudget') {
+		value = moneyString(project[attr]);
+
+	} else if (/Date/.test(attr)) {
+		value = formatDate(project[attr]);
+
+	} else {
+		value = project[attr];
+	}
+
+	return (
+		<td key={ attr } width={ tableWidths[attr] }>
+			<FormControl value={ value } readOnly/>
+		</td>
+	);
+};
+
+
+
+
+
+
+//---------------------------------------------------------------------------------------------------------------------
+//																							Project Creation Utilities
+//---------------------------------------------------------------------------------------------------------------------
+
 // Generate an empty project
 export const projectDefaults = (orgID, userID) => ({
 	adminNotes: '',
@@ -117,6 +157,14 @@ export const projectDefaults = (orgID, userID) => ({
 	vertical: 'Food'
 });
 
+
+
+
+
+
+//---------------------------------------------------------------------------------------------------------------------
+//																							Approval String Utilities
+//---------------------------------------------------------------------------------------------------------------------
 
 //order of keys in approval string, used in following two functions
 export const approvalStringOrder = [

@@ -19,3 +19,15 @@ export const currDateString = () => {
 	return [ now.getFullYear(), mm, dd ].join('-');
 };
 
+
+// convert from YYYY-MM-DD to mm/dd/yy
+export const formatDate = date => {
+	let [ year, month, day ] = date.split('-');
+
+	// remove padding
+	month = '' + Number(month);
+	day = '' + Number(day);
+
+	return [ month, day, year.slice(-2) ].join('/');
+};
+
