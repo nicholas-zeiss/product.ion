@@ -209,9 +209,11 @@ const budgetAPI = app => {
 	});
 
 
-	app.delete('/api/budgets/:id/:projID', (req, res) => {
-		Budget.deleteBudget(
-			req.params.id,
+	app.delete('/api/budgets/:IDs/:projID', (req, res) => {
+		let IDs = req.params.IDs.split('-');
+
+		Budget.deleteBudgets(
+			IDs,
 			success => utils.updateProject(req.params.projID, 'budgets', res, false),
 			error => res.sendStatus(500)
 		);
@@ -243,7 +245,7 @@ const budgetAPI = app => {
 	app.post('/api/budgets/:projID', (req, res) => {
 		Budget.makeBudgets(
 			req.body,
-			budgets => utils.updateProject(req.params.projID, 'budgets', res, true),
+			budgets => utils.updateProject(req.params.projID, 'budgets', res, budgets),
 			error => res.sendStatus(500)
 		);
 	});
@@ -312,7 +314,7 @@ const expenseAPI = app => {
 	app.post('/api/expenses/:projID', (req, res) => {
 		Expense.makeExpenses(
 			req.body,
-			expenses => utils.updateProject(req.params.projID, 'expenses', res, true),
+			expenses => utils.updateProject(req.params.projID, 'expenses', res, expenses),
 			error => res.sendStatus(500)
 		);
 	});

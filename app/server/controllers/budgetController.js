@@ -13,11 +13,16 @@ const Budgets = Bookshelf.Collection.extend({
 });
 
 
-exports.deleteBudget = (id, success, error) => {
-	new Budget({ id })
-		.fetch()
-		.destroy()
-		.then(success)
+exports.deleteBudgets = (IDs, success, error) => {
+	Budget
+		.where('id', 'in', IDs)
+		.fetchAll()
+		.then(budgets => {
+			budgets
+				.invokeThen('destroy')
+				.then(success)
+				.catch(error);
+		})
 		.catch(error);
 };
 

@@ -29,21 +29,23 @@ const updateProject = (projID, type, res, sendCollection) => {
 		project => {
 
 			let newCost = type == 'budgets' ? 'reqBudget' : 'costToDate';
+			let key = type == 'budgets' ? 'total' : 'cost';
 
 			let projectUpdate = {
 				id: project.get('id'),
 				lastEdited: dateString(),
 				[newCost]: project
 					.related(type)
-					.reduce((cost, budgExp) => cost + budgExp.cost, 0)
+					.reduce((cost, budgExp) => cost + budgExp.get(key), 0)
 			};
+
 
 			Project.updateProject(
 				projectUpdate,
 				project => {
 
 					if (sendCollection) {
-						res.status(200).json(project.related(type));
+						res.status(200).json(sendCollection);
 					} else {
 						res.sendStatus(200);
 					}

@@ -26,7 +26,7 @@ Promise.all([
 		table.increments('id').primary();
 		table.float('cost');
 		table.string('description');
-		table.integer('glCode');
+		table.integer('glCode').defaultsTo(0);
 		table.integer('projID').unsigned().references('id').inTable('projects');
 		table.integer('quantity');
 		table.float('total');
