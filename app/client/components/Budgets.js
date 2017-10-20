@@ -12,7 +12,7 @@ import React from 'react';
 import BudgetNode from './BudgetNode';
 
 import { categoryToGlcode } from '../data/public';
-import { budgetDefaults } from '../utils/projectUtils';
+import { budgetDefaults } from '../utils/budgetUtils';
 
 
 class Budgets extends React.Component {

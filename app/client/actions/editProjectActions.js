@@ -19,5 +19,3 @@ export const setEditProject = (budgets, expenses, id, project) => ({
 	project
 });
 
-
-
