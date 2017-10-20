@@ -36,8 +36,9 @@ const dropDownOptions = () => {
 const BudgetNode = props => {	
 	// if budget has save prop (instead of delete) it is new
 	const isNew = !!props.save;
-
 	const readOnly = isNew ? {} : { readOnly: true };
+	const disabled = isNew ? {} : { disabled: true };
+
 
 	let header = (
 		<FormGroup style={ { display: 'block', margin: '20px 0' } }>
@@ -55,10 +56,11 @@ const BudgetNode = props => {
 		</FormGroup>
 	);
 
+
 	return (
 		<Form
 			className='budgetForm'
-			onSubmit={ isNew ? props.save.bind(null, props.budget) : null }
+			onSubmit={ isNew ? props.save.bind(null, props.budget) : props.delete.bind(null, props.budget) }
 			style={ { marginTop: '20px' } }
 			inline
 		>
@@ -81,6 +83,7 @@ const BudgetNode = props => {
 			</InputGroup>
 			
 			<DropdownButton 
+				{ ...disabled }
 				{ ...readOnly }
 				id='budgetCategory'
 				onSelect={ props.handleGlCode }
@@ -136,11 +139,7 @@ const BudgetNode = props => {
 				/>
 			</InputGroup>
 			
-			<Button 
-				id='budgetSave'
-				onClick={ !isNew ? props.delete.bind(null, props.budget) : null }
-				type='submit'
-			>
+			<Button id='budgetSave' type='submit'>
 				{ isNew ? 'Add' : 'X' }
 			</Button>
 

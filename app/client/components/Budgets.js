@@ -1,4 +1,9 @@
-
+/*
+ *
+ *	Component held in the Pitch component that displays existing budget items and allows the client to create/delete them.
+ *  The items are rendered by the BudgetNode dumb component. This component handles the state of the budget to add.
+ *
+**/
 
 
 import React from 'react';
@@ -20,6 +25,14 @@ class Budgets extends React.Component {
 	}
 
 
+	// If a budget item has just been added we reset the new budget form
+	componentWillReceiveProps(nextProps) {
+		if (this.props.budgets.length < nextProps.budgets.length) {
+			this.setState({ newBudget: budgetDefaults() });
+		}
+	}
+
+
 	handleAttrChange(e) {
 		let newBudget = { [e.target.name]: e.target.value };
 
@@ -34,9 +47,7 @@ class Budgets extends React.Component {
 	}
 
 
-
 	handleGlCode(e) {
-		console.log(e);
 		let [ type, category ] = e.split('---');
 		let glCode = categoryToGlcode[category][type];
 

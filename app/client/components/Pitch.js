@@ -1,7 +1,7 @@
 /**
  *
  *  Component for the pitch modal, which allows you to create a new pitch or edit an existing one.
- *	The vast majority of the actual view for the modal is rendered in PitchSummary and Budget;
+ *	The vast majority of the actual view for the modal is rendered in PitchSummary and Budgets;
  *	this component acts as a controller.
  *
 **/
@@ -20,7 +20,6 @@ class Pitch extends React.Component {
 	constructor(props) {
 		super(props);
 
-
 		// budgets holds the array of budget items we actually display
 		// we track which of these have just been created, and what original budgets
 		// were deleted so that we can updated our store/the server with the changes
@@ -29,38 +28,13 @@ class Pitch extends React.Component {
 			budgets: props.editProject.budgets,
 			budgetsToCreate: [],
 			budgetsToDelete: [],
-			newProject: !props.editProject.project.id,		// new projects lack IDs as they are created by database
+			newProject: !props.editProject.project.id,		// new projects lack IDs as IDs are created by database
 			project: props.editProject.project
 		};
 	}
 
-
-	updateBudgets() {
-		// To create budgets we need the id of the project to attach them to. If this is a new project,
-		// we obtain the id from the projects section of the store which will have the newly created project
-		let projID;
-
-
-		if (this.state.newProject) {
-			// note this works as names are required to be unique
-			projID = this.props.projects
-				.find(project => project.name == this.state.project.name)
-				.id;
-
-		} else {
-			projID = this.state.project.id;
-		}
-		
-		if (this.state.budgetsToCreate.length) {
-			this.props.createBudgets(this.state.budgetsToCreate, projID);
-		}
-
-		if (this.state.budgetsToDelete.length) {
-			this.props.deleteBudgets(this.state.budgetsToDelete, projID);
-		}
-	}
-
 	
+	// when the client attempts to submit changes made in the modal
 	handlePitchSubmit(e) {
 		e.preventDefault();
 
@@ -69,7 +43,7 @@ class Pitch extends React.Component {
 				.every(project => project.name != this.state.project.name);
 
 			if (nameUnique) {
-				this.props.createProject(this.state.project);
+				this.props.createProject(this.state.project, this.state.budgetsToCreate);
 
 			} else {
 				// project name is already in use, project cannot be created
@@ -79,14 +53,31 @@ class Pitch extends React.Component {
 
 		} else {
 			this.props.updateProject(this.state.project);
+			
+			if (this.state.budgetsToCreate.length || this.state.budgetsToDelete.length) {
+				this.updateBudgets();
+			}
 		}
 
-		if (this.state.budgetsToCreate.length || this.state.budgetsToDelete.length) {
-			this.updateBudgets();
-		}
 
 		this.props.clearEditProject();
 		this.props.closePitchModal();	
+	}
+
+
+	// Used on existing projects, not projects created in modal. When creating a new project
+	// budgets are handled by the createProject action called in handlePitchSubmit.
+	updateBudgets() {
+		let	projID = this.state.project.id;
+		
+		if (this.state.budgetsToCreate.length) {
+			this.state.budgets.forEach(b => b.projID = projID);
+			this.props.createBudgets(this.state.budgetsToCreate, projID);
+		}
+
+		if (this.state.budgetsToDelete.length) {
+			this.props.deleteBudgets(this.state.budgetsToDelete, projID);
+		}
 	}
 
 
@@ -96,6 +87,7 @@ class Pitch extends React.Component {
 
 
 	handleProjAttrChange(e) {
+		// reset non unique name error message
 		if (e.target.name == 'name' && this.props.UI.messages.projectName) {
 			this.props.setMessages({ projectName: '' });
 		}
@@ -120,6 +112,7 @@ class Pitch extends React.Component {
 	}
 
 
+	// add a budget item
 	addBudget(budget, e) {
 		e.preventDefault();
 
@@ -130,11 +123,16 @@ class Pitch extends React.Component {
 	}
 
 
-	deleteBudget(budget) {
+	// delete a budget item
+	deleteBudget(budget, e) {
+		e.preventDefault();
+
 		let budgets = this.state.budgets.slice();
 		let budgetsToCreate = this.state.budgetsToCreate.slice();
 		let budgetsToDelete = this.state.budgetsToDelete.slice();
 
+		// if id exists, budget exists in server and we must delete it on submitting project
+		// if not, simply remove it from list of budgets to create
 		if (budget.id != undefined) {
 			budgetsToDelete.push(budget.id);
 		} else {
