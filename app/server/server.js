@@ -16,6 +16,7 @@ let path = require('path');
 
 let app = express();
 
+// middleware
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../../app')));
 app.use('/api', expressJwt({ secret: 'SSSHHHitsaSECRET' }));

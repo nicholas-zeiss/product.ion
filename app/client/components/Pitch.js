@@ -38,8 +38,8 @@ class Pitch extends React.Component {
 	updateBudgets() {
 		// To create budgets we need the id of the project to attach them to. If this is a new project,
 		// we obtain the id from the projects section of the store which will have the newly created project
-		
 		let projID;
+
 
 		if (this.state.newProject) {
 			// note this works as names are required to be unique
@@ -107,7 +107,6 @@ class Pitch extends React.Component {
 
 
 	handleApprovalChange(attr) {
-		console.log(attr);
 		let approvals = this.state.project.approvals;
 		let index = approvalStringOrder.indexOf(attr);
 
@@ -121,18 +120,18 @@ class Pitch extends React.Component {
 	}
 
 
-	addBudget(budget) {
-		console.log(budget);
+	addBudget(budget, e) {
+		e.preventDefault();
+
 		this.setState({
 			budgets: this.state.budgets.concat(budget),
 			budgetsToCreate: this.state.budgetsToCreate.concat(budget)
-		});
+		}, this.updateReqBudget);
 	}
 
 
 	deleteBudget(budget) {
-		console.log(budget);
-		let budgets = this.state.budgets;
+		let budgets = this.state.budgets.slice();
 		let budgetsToCreate = this.state.budgetsToCreate.slice();
 		let budgetsToDelete = this.state.budgetsToDelete.slice();
 
@@ -144,7 +143,14 @@ class Pitch extends React.Component {
 
 		budgets = budgets.filter(b => b != budget);
 
-		this.setState({ budgets, budgetsToCreate, budgetsToDelete});
+		this.setState({ budgets, budgetsToCreate, budgetsToDelete}, this.updateReqBudget);
+	}
+
+
+	updateReqBudget() {
+		let reqBudget = this.state.budgets.reduce((total, budget) => total + budget.total, 0);
+
+		this.setState({ project: Object.assign({}, this.state.project, { reqBudget })});
 	}
 
 

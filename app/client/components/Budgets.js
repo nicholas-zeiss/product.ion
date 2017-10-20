@@ -20,8 +20,6 @@ class Budgets extends React.Component {
 	}
 
 
-
-
 	handleAttrChange(e) {
 		let newBudget = { [e.target.name]: e.target.value };
 
@@ -38,7 +36,7 @@ class Budgets extends React.Component {
 
 
 	handleGlCode(e) {
-		console.log(e)
+		console.log(e);
 		let [ type, category ] = e.split('---');
 		let glCode = categoryToGlcode[category][type];
 

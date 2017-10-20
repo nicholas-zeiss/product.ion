@@ -34,9 +34,10 @@ const dropDownOptions = () => {
 
 
 const BudgetNode = props => {
-
-	// if budget doesn't have an id (ie a database id) we are working on a new budget object
-	const isNew = props.budget.id == undefined;
+	console.log(props.budget);
+	
+	// if budget has save prop (instead of delete) it is new
+	const isNew = !!props.save;
 
 	const readOnly = isNew ? {} : { readOnly: true };
 
@@ -59,7 +60,7 @@ const BudgetNode = props => {
 	return (
 		<Form
 			className='budgetForm'
-			onSubmit={ props.save.bind(null, props.budget) }
+			onSubmit={ isNew ? props.save.bind(null, props.budget) : null }
 			style={ { marginTop: '20px' } }
 			inline
 		>
@@ -137,7 +138,13 @@ const BudgetNode = props => {
 				/>
 			</InputGroup>
 			
-			<Button id='budgetSave' onClick={ props.delete.bind(null, props.budget) } type='submit'>{ isNew ? 'Add' : 'X' }</Button>
+			<Button 
+				id='budgetSave'
+				onClick={ !isNew ? props.delete.bind(null, props.budget) : null }
+				type='submit'
+			>
+				{ isNew ? 'Add' : 'X' }
+			</Button>
 
 			{ isNew ? footer : null }
 
