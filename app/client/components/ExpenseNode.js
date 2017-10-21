@@ -1,250 +1,131 @@
-
+/**
+ *
+ *	Dumb component for rendering expense items
+ *
+**/
 
 
 import React from 'react';
-import { Link } from 'react-router';
-import { Button, InputGroup, Modal, OverlayTrigger, FormControl} from 'react-bootstrap';
-import codes from '../data/expenseCodes.js';
-import categories from '../data/expenseCategories.js';
-import DateFormat from './formComponents/DateFormat.js';
-import DatePicker from './formComponents/DatePicker.js';
-import ReadOnlyText from './formComponents/ReadOnlyText.js';
-import StaticDate from './formComponents/StaticDate.js';
-import SelectInput from './formComponents/SelectInput.js';
-import TextInput from './formComponents/TextInput.js';
+import { Button, FormControl, InputGroup } from 'react-bootstrap';
 
-const ExpenseNode = React.createClass({
-	getInitialState: function() {
-		return {
-			importedExpenses: this.props.expense,
-			readOnlyStatus: this.props.readOnlyStatus,
-			category: 'Producer',
-			cost: 0,
-			dateSpent: '',
-			dateTracked: '',
-			description: '',
-			glCode: 560260,
-			id: 0,
-			method: 'Credit Card',
-			vendor: ''
-		};
-	},
+import expenseTypes from '../data/expenseCategories';
 
-	componentWillReceiveProps: function() {
-		this.setState({importedExpenses: this.props.expense});
-	},
+import { paymentMethods } from '../utils/expenseUtils';
 
-	componentDidMount: function(){
-		if(this.state.dateTracked === ''){
-			var newDate = new Date();
-			var today = {};
-			var formattedDate = newDate.format('mm/dd/yyyy');
-			var rawDate = newDate;
-			today.formattedDate = formattedDate;
-			today.rawDate = rawDate;
-			console.log('in the node ',today);
-			this.setState({dateTracked: today});
-		}
-	},
 
-	handleAdd: function(){
-		var singleExpense = {
-			category: this.state.category,
-			cost: this.state.cost,
-			dateSpent: this.state.dateSpent.rawDate,
-			dateTracked: this.state.dateTracked.rawDate,
-			description: this.state.description,
-			glCode: this.state.glCode,
-			method: this.state.method,
-			vendor: this.state.vendor
-		};
-		console.log('handleAdd built this expense object ', singleExpense);
-		this.props.handleNewExpense(singleExpense);
-	},
+const ExpenseNode = props => {
 
-	handleChange: function(inputName, inputValue) {
-		console.log('handleChange set the state of ', inputName, 'to ', inputValue);
-		var nextState = {};
-		nextState[inputName] = inputValue;
-		this.setState(nextState);
-		if(inputName === 'category'){
-			for (var key in codes){
-				if(inputValue === key){
-					this.setState({glCode: codes[key]});
-				}
+	let readOnly = props.readOnly ? { readOnly: true } : {};
+
+	return (
+		<tr>
+			<td>
+				<FormControl
+					{ ...readOnly }
+					name='vendor'
+					type='text'
+					value={ props.expense.vendor }
+				/>
+			</td>
+			
+			<td>
+				<FormControl
+					{ ...readOnly }
+					name='description'
+					type='text'
+					value={ props.expense.description }
+				/>
+			</td>
+			
+			<td width='110'>
+				<InputGroup>
+					<InputGroup.Addon> $ </InputGroup.Addon>
+					<FormControl
+						{ ...readOnly }
+						name='cost'
+						type='text'
+						value={ props.expense.cost }
+					/>
+				</InputGroup>
+			</td>
+
+			<td>
+				<FormControl
+					componentClass='select'
+					disabled={ props.readOnly }
+					name='method'
+					onChange={ props.handleChange }
+					value={ props.expense.method }
+				>
+					{
+						paymentMethods.map(method => (
+							<option key={ method } value={ method }>
+								{ method }
+							</option>
+						))
+					}
+				</FormControl>
+			</td>
+
+			<td width='135'>
+				<FormControl
+					componentClass='select'
+					disabled={ props.readOnly }
+					name='category'
+					onChange={ props.handleChange }
+					value={ props.expense.category }
+				>
+					{
+						expenseTypes.map(type => (
+							<option key={ type } value={ type }>
+								{ type }
+							</option>
+						))
+					}
+				</FormControl>
+			</td>
+
+			<td width='93'>
+				<FormControl
+					type='text'
+					value={ props.expense.glCode }
+					readOnly
+				/>
+			</td>
+
+			<td>
+				<FormControl
+					{ ...readOnly }
+					name='dateSpent'
+					onChange={ props.handleChange }
+					type='date'
+					value={ props.expense.dateSpent }
+				/>
+			</td>
+			
+			{ 
+				props.readOnly &&
+					<td>
+						<FormControl
+							type='date'
+							value={ props.expense.dateTracked }
+							readOnly
+						/>
+					</td>
 			}
-		}
-	},
 
-	handleDelete: function(){
-		var expenseToDelete = this.props.expense;
-		console.log('handleDelete built this expense object ', expenseToDelete);
-		this.props.handleExpenseToDelete(expenseToDelete);
-	},
-
-	handleEdit: function(){
-		var off = false;
-		if (this.state.importedExpenses && !this.state.editMode) {
-			this.setState({
-				editMode: true,
-				tableContext: 'warning',
-				readOnlyStatus: off,
-				category:this.props.expense.category,
-				cost:this.props.expense.cost,
-				dateSpent:this.props.expense.dateSpent,
-				dateTracked:this.props.expense.dateTracked,
-				description:this.props.expense.description,
-				glCode:this.props.expense.glCode,
-				id:this.props.expense.id,
-				method:this.props.expense.method,
-				vendor:this.props.expense.vendor
-			});
-		}
-		console.log('readonlyStatus in the Expense node is ', this.state.readOnlyStatus);
-		console.log('handleEdit is tracking the current expense id: ', this.props.expense.id);
-	},
-
-	handleUpdate: function(){
-		var on = true;
-		this.setState({readOnlyStatus: on, editMode: false, tableContext: undefined}, function() {
-			var expenseToUpdate = {
-				category:this.state.category,
-				cost:this.state.cost,
-				dateSpent:this.state.dateSpent.rawDate || this.state.dateSpent,
-				dateTracked:this.state.dateTracked.rawDate || this.state.dateTracked,
-				description:this.state.description,
-				glCode:this.state.glCode,
-				id:this.state.id,
-				method:this.state.method,
-				vendor:this.state.vendor
-			};
-			console.log('handleUpdate built this expense object ', expenseToUpdate);
-			this.props.handleExpenseUpdate(expenseToUpdate);
-		});
-		console.log('READONLY status is ', this.state.readOnlyStatus);
-	},
-
-	render() {
-		return (
-			<tr onClick={ this.handleEdit } className={ this.state.tableContext }>
-				<td>
-					{ this.state.readOnlyStatus === true ?
-						<ReadOnlyText
-							name="vendor"
-							value={ this.state.importedExpenses.vendor } /> :
-						this.state.importedExpenses.vendor ?
-							<TextInput
-								name="vendor"
-								value={ this.state.importedExpenses.vendor }
-								onChange={ this.handleChange } /> :
-							<TextInput
-								name="vendor"
-								onChange={ this.handleChange } />
-					}
-				</td>
-				<td>
-					{ this.state.readOnlyStatus === true ?
-						<ReadOnlyText
-							name="description"
-							value={ this.state.importedExpenses.description } /> :
-						this.state.importedExpenses.description ?
-							<TextInput
-								name="description"
-								value={ this.state.importedExpenses.description }
-								onChange={ this.handleChange } /> :
-							<TextInput
-								name="description"
-								onChange={ this.handleChange } />
-					}
-				</td>
-				<td width="110">
-					{ this.state.readOnlyStatus === true ?
-						<InputGroup>
-							<InputGroup.Addon>$</InputGroup.Addon>
-							<ReadOnlyText
-								name="cost"
-								value={ this.state.importedExpenses.cost } />
-						</InputGroup> :
-						this.state.importedExpenses.cost ?
-							<InputGroup>
-								<InputGroup.Addon>$</InputGroup.Addon>
-								<TextInput
-									name="cost"
-									value={ this.state.importedExpenses.description }
-									onChange={ this.handleChange } />
-							</InputGroup> :
-							<InputGroup>
-								<InputGroup.Addon>$</InputGroup.Addon>
-								<TextInput
-									name="cost"
-									onChange={ this.handleChange } />
-							</InputGroup>
-					}
-				</td>
-				<td>
-					{ this.state.readOnlyStatus === true ?
-						<ReadOnlyText
-							name="method"
-							value={ this.state.importedExpenses.method } /> :
-						<SelectInput
-							name="method"
-							onChange={ this.handleChange }
-							options={ ['Credit Card', 'Invoice', 'Payroll', 'Petty Cash', 'Misc'] } />
-					}
-				</td>
-				<td width="135">
-					{ this.state.readOnlyStatus === true ?
-						<ReadOnlyText
-							name="category"
-							value={ this.state.importedExpenses.category } /> :
-						<SelectInput
-							name="category"
-							onChange={ this.handleChange }
-							options={ categories } />
-					}
-				</td>
-				<td width="93">
-					{ this.state.readOnlyStatus === true ?
-						<ReadOnlyText
-							name="glCode"
-							value={ this.state.importedExpenses.glCode } /> :
-						<ReadOnlyText
-							name="glCode"
-							value={ this.state.glCode } />
-					}
-				</td>
-				<td>
-					{ this.state.readOnlyStatus === true ?
-						<StaticDate
-							name="dateSpent"
-							value={ this.state.importedExpenses.dateSpent } /> :
-						<DatePicker
-							name="dateSpent"
-							onChange={ this.handleChange } />
-					}
-				</td>
-				<td>
-					{ this.state.importedExpenses.dateTracked ?
-						<StaticDate
-							name="dateTracked"
-							value={ this.state.importedExpenses.dateTracked } /> :
-						 null
-					}
-				</td>
-				{ this.state.importedExpenses ?
-					this.state.editMode &&
-						<td width="auto">
-							<Button type="submit" onClick={ this.handleUpdate }>
-								Update
-							</Button>
-						</td>
-					: null
+			<td width='auto'>
+				{ 
+					props.readOnly ?
+						<Button onClick={ props.deleteExpense }> Delete </Button>
+						:
+						<Button onClick={ props.addExpense }> Add Expense </Button>
 				}
-				{ this.state.importedExpenses ? <td width="auto"><Button onClick={ this.handleDelete }>Delete</Button></td> : null }
-				{ this.state.importedExpenses ? null : <td width="auto"><Button onClick={ this.handleAdd }>Add Expense</Button></td> }
-			</tr>
-		);
-	}
-});
+			</td>
+		</tr>
+	);
+};
+
 
 export default ExpenseNode;
+
