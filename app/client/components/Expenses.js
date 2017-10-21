@@ -8,17 +8,17 @@
 
 
 import React from 'react';
-import { Button, FormControl, Modal, Panel, Table } from 'react-bootstrap';
+import { Button, Modal, Panel, Table } from 'react-bootstrap';
 
 import CSVDrop from './CSVDrop';
 import ExpenseChart from './ExpenseChart';
 import ExpenseNode from './ExpenseNode';
 import NavBar from './NavBar';
 
-import { moneyString } from '../utils/misc';
-import { detailsFirstHeader, detailsFirstRow, detailsSecondHeader, detailsSecondRow, tableWidths } from '../utils/projectUtils';
+import { defaultExpense, expenseTableHeader, newExpenseHeader } from '../utils/expenseUtils';
+import { detailsFirstHeader, detailsFirstRow, detailsSecondHeader, detailsSecondRow, projectDetailsEntry } from '../utils/projectUtils';
 
-// maps columns of project details to their widths
+
 
 
 
@@ -27,97 +27,38 @@ class Expenses extends React.Component {
 		super(props);
 		
 		this.state = {
-			open: false,
-			count: 0,
-			addedExpenses: [0],
-			newExpenses: [],
-			modal: false,
-			newView: false
+			expenses: props.editProject.expenses.slice(),
+			expensesToAdd: [],
+			expensesToDelete: [],
+			newExpense: defaultExpense(props.editProject.project.id)
 		};
 	}
 
 
-	handleNewExpense(singleExpense) {
-		// singleExpense.projs_id = this.props.expenses.id;
-		// var newExpenses = this.state.newExpenses;
-		// newExpenses.push(singleExpense);
-		// this.setState({newExpenses: newExpenses});
-		// console.log('Handle NEW Expense ', singleExpense);
-		// this.props.postNewExpense(singleExpense, this.props.expenses.projID);
+	addExpense() {
+
 	}
 
 
-	handleExpenseToDelete(singleExpense) {
-		// singleExpense.projs_id = this.props.expenses.id;
-		// console.log('Handle DELETE ', singleExpense);
-		// this.props.removeExpense(singleExpense, this.props.expenses.projID);
+	deleteExpense() {
+
 	}
 
 
-	handleExpenseUpdate(singleExpense) {
-		// singleExpense.projs_id = this.props.expenses.id;
-		// console.log('Handle UPDATE ', singleExpense);
-		// this.props.updateExpense(singleExpense, this.props.expenses.projID);
-	}
+	handleChange(e) {
 
-
-	switchModal () {
-		// this.setState({newView: true, modal: !this.state.modal});
-	}
-
-
-	switchChart() {
-		// console.log('switching chart', !this.state.open);
-		// this.setState({newView: true, open: !this.state.open});
-	}
-
-
-	formatDate(date) {
-		let [ year, month, day ] = date.split('-');
-
-		// remove padding
-		month = '' + Number(month);
-		day = '' + Number(day);
-
-		return [ month, day, year ].join('/');
-	}
-
-
-	// creates table data elements for the project details table
-	projectDetailTable(attr) {
-		let value;
-		let project = this.props.editProject.project;
-
-		if (attr == 'username') {
-			value = this.props.organization.users.find(user => user.id == project.userID);
-			value = value ? value.username : '?';
-
-		} else if (attr == 'costToDate' || attr == 'reqBudget') {
-			value = moneyString(project[attr]);
-
-		} else if (/Date/.test(attr)) {
-			value = this.formatDate(project[attr]);
-
-		} else {
-			value = project[attr];
-		}
-
-		return (
-			<td key={ attr } width={ tableWidths[attr] }>
-				<FormControl value={ value } readOnly/>
-			</td>
-		);
 	}
 
 
 	render() {
 		// just for shorthand
 		let project = this.props.editProject.project;
+		let users = this.props.organization.users;
 
 
 		return (
 			<div>
-				<Modal onHide={ this.switchModal } show={ this.state.modal }>
+				<Modal onHide={ this.props.toggleCSVModal } show={ this.props.UI.views.csvModal }>
 					<Modal.Header>
 						<Modal.Title>
 							{ `Add Expenses to ${project.name} with a CSV` }
@@ -131,14 +72,16 @@ class Expenses extends React.Component {
 					<Modal.Footer />
 				</Modal>
 				
+
 				<NavBar { ...this.props }/>
 				
+
 				<Panel>
 					<span style={ { fontSize: '30px' } }>
 						{ `Project Details for ${project.name}` }
 					</span>
 					
-					<Button bsStyle='primary' onClick={ this.switchChart } style={ { float: 'right' } } >
+					<Button bsStyle='primary' onClick={ this.props.toggleExpenseCharts } style={ { float: 'right' } } >
 						Toggle Visuals
 					</Button>
 					
@@ -149,7 +92,7 @@ class Expenses extends React.Component {
 							<tbody>
 								<tr id='readOnlyBody'>
 									{ 
-										detailsFirstRow.map(attr => this.projectDetailTable(attr))
+										detailsFirstRow.map(attr => projectDetailsEntry(attr, project, users))
 									}
 								</tr>
 							</tbody>
@@ -161,66 +104,57 @@ class Expenses extends React.Component {
 							<tbody>
 								<tr id='readOnlyBody'>
 									{ 
-										detailsSecondRow.map(attr => this.projectDetailTable(attr))
+										detailsSecondRow.map(attr => projectDetailsEntry(attr, project, users))
 									}
 								</tr>
 							</tbody>
 						</Table>
 					</div>
 					
-					{ this.state.open ? <ExpenseChart { ...this.props } projName={ project.name }/> : null }
-	
+					{ this.props.UI.views.expenseCharts && <ExpenseChart { ...this.props } projName={ project.name }/> }
+
 				</Panel>
 				
+
 				<Panel>
-					<span style={ { fontSize: '30px' } }>{ `Expenses for ${project.name}` }</span>
-					<Button bsStyle='primary' onClick={ this.switchModal } style={ { float: 'right'} }>Add Expenses with a CSV</Button>
-					<Table>
+					<span style={ { fontSize: '30px' } }>
+						{ `Expenses for ${project.name}` }
+					</span>
+					
+					<Button bsStyle='primary' onClick={ this.props.toggleCSVModal } style={ { float: 'right'} }>
+						Add Expenses with a CSV
+					</Button>
+					
+					<Table style={ { marginTop: '20px' } }>
 						<thead>
-							<tr id='readOnlyHeader'>
-								<th>Vendor</th>
-								<th>Description</th>
-								<th>Cost</th>
-								<th>Method</th>
-								<th>Expense Category</th>
-								<th>GL Code</th>
-								<th>Date Spent</th>
-								<th>Date Tracked</th>
-							</tr>
+							{ expenseTableHeader }
 						</thead>
 						<tbody>
-							{ this.props.editProject.expenses.map((item, index) =>
-								<ExpenseNode expense={ item }
-									handleExpenseToDelete={ this.handleExpenseToDelete }
-									handleExpenseUpdate={ this.handleExpenseUpdate }
-									projs_id={ this.state.projs_id }
-									key={ index }
-									readOnlyStatus={ true } />)
+							{ 
+								this.state.expenses.map((item, index) =>
+									<ExpenseNode 
+										expense={ item }
+										handleDelete={ this.handleDelete.bind(this) }
+										key={ index }
+										readOnly={ true } 
+									/>
+								)
 							}
 						</tbody>
 					</Table>
+					
 					<Panel>
 						<Table>
 							<thead>
-								<tr>
-									<th>Vendor</th>
-									<th>Description</th>
-									<th>Cost</th>
-									<th>Method</th>
-									<th>Expense Category</th>
-									<th>GL Code</th>
-									<th>Date Spent</th>
-								</tr>
+								{ newExpenseHeader }
 							</thead>
 							<tbody>
-								{ this.state.addedExpenses.map((item, index) =>
-									<ExpenseNode
-										expense={ item }
-										handleNewExpense={ this.handleNewExpense }
-										key={ index }
-										projs_id={ this.state.projs_id }
-										readOnlyStatus={ false }/>)
-								}
+								<ExpenseNode
+									addExpense={ this.addExpense.bind(this) }
+									expense={ this.state.newExpense }
+									handleChange={ this.handleChange.bind(this) }
+									readOnly={ false }
+								/>
 							</tbody>
 						</Table>
 					</Panel>
