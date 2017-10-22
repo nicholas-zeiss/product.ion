@@ -6,23 +6,10 @@
 
 
 const fields = [
-	'Project',
-	'Name',
 	'Project ID',
+	'Name',
 	'Type',
-	'Vertical',
-	'Tier',
-	'Status',
-	'Number of Assets',
-	'Start Date',
-	'End Date',
-	'Edit Date',
-	'Release Date',
-	'Requested Budget',
-	'Cost to Date',
-	'Estimate to Complete',
-	'Expense',
-	'Category',
+	'Expense ID',
 	'GL Code',
 	'Date Spent',
 	'Date Tracked',
@@ -35,29 +22,15 @@ const fields = [
 
 // takes an array of objects with an expense and a project key-value pair and returns
 // an array of flattened expenses
-const expandExpenses = expenses => (
+const expandExpenses = (expenses, projects) => (
 	expenses.map(expense => {
-		let project = expense.project;
-		expense = expense.expense;
+		let project = projects.find(proj => proj.id == expense.projID);
 
 		return [
-			' ',
+			project.id,
 			project.name,
-			project.projID,
 			project.type,
-			project.vertical,
-			project.tier,
-			project.status,
-			project.numAssets,
-			project.startDate,
-			project.endDate,
-			project.editDate,
-			project.releaseDate,
-			project.reqBudget,
-			project.costToDate,
-			project.estimateToComplete,
-			' ',
-			expense.category,
+			expense.id,
 			expense.glCode,
 			expense.dateSpent,
 			expense.dateTracked,

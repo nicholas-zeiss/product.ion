@@ -43,16 +43,15 @@ class Dashboard extends React.Component {
 
 
 	exportCSV() {
-		// let expenses = this.props.projects.reduce((expenses, project) => {
-		// 	project.expenses.forEach(expense => {
-		// 		expenses.push({ expense, project });
-		// 	});
-
-		// 	return expenses;
-		// }, []);
 		let expenses = [];
 
-		let csv = Papa.unparse({ fields, data: expandExpenses(expenses) });
+		for (let projID in this.props.expenses) {
+			if (projID != 'loaded') {
+				expenses = expenses.concat(this.props.expenses[projID]);
+			}
+		}
+
+		let csv = Papa.unparse({ fields, data: expandExpenses(expenses, this.props.projects) });
 		
 		let hiddenElement = document.createElement('a');
 		hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
