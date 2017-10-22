@@ -9,6 +9,8 @@
 import React from 'react';
 import { browserHistory } from 'react-router';
 
+import { moneyString } from '../utils/misc';
+
 
 const ProjectNode = props => {
 
@@ -16,15 +18,12 @@ const ProjectNode = props => {
 	let project = props.project;
 
 
-	let numToDollar = num => '$' + num.toFixed(2);
-
-
 	let estimateToComplete = () => {
 		if (project.costToDate > project.reqBudget) {
 			return 'Already overbudget';
 
 		} else {
-			return numToDollar(project.reqBudget - project.costToDate);
+			return moneyString(project.reqBudget - project.costToDate);
 		}
 	};
 	
@@ -59,7 +58,7 @@ const ProjectNode = props => {
 			<td>{ project.id }</td>
 			<td>{ createdBy }</td>
 			<td>{ project.status }</td>
-			<td>{ numToDollar(project.costToDate) }</td>
+			<td>{ moneyString(project.costToDate) }</td>
 			<td>{ estimateToComplete() }</td>
 		</tr>
 	);

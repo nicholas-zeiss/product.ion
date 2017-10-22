@@ -29,6 +29,21 @@ export const formatDate = date => {
 
 
 export const moneyString = val => {
-	return '$' + val;
+	let num = Number(val).toFixed(2);
+
+	let str = num
+		.slice(0, -3)
+		.split('')
+		.reduceRight((str, digit, index) => {
+			index = num.length - 4 - index;
+
+			if (index && !(index % 3)) {
+				str = ',' + str;	
+			}
+
+			return digit + str;
+		}, '');
+
+	return '$' + str + num.slice(-3);
 };
 
