@@ -11,7 +11,16 @@ import { Button, DropdownButton, FormControl, InputGroup } from 'react-bootstrap
 import { dropDownOptions, glCodeToExpense } from '../data/public';
 
 import { paymentMethods } from '../utils/expenseUtils';
+import { formatDate, moneyString } from '../utils/misc';
 
+
+// css for description/vendor in read only mode
+const longText = {
+	fontSize: '14px',
+	overflow: 'hidden',
+	overflowWrap: 'break-word',
+	width: '150px'
+};
 
 const ExpenseNode = props => {
 	let readOnly = props.readOnly ? { readOnly: true } : {};
@@ -19,104 +28,133 @@ const ExpenseNode = props => {
 	return (
 		<tr>
 			<td>
-				<FormControl
-					{ ...readOnly }
-					name='vendor'
-					onChange={ props.handleChange }
-					style={ { minWidth: '100px' } }
-					type='text'
-					value={ props.expense.vendor }
-				/>
+				{
+					props.readOnly ? 
+						<p style={ longText }>{ props.expense.vendor }</p>
+						:
+						<FormControl
+							{ ...readOnly }
+							maxLength='50'
+							name='vendor'
+							onChange={ props.handleChange }
+							style={ { minWidth: '100px' } }
+							type='text'
+							value={ props.expense.vendor }
+						/>
+				}
 			</td>
 			
 			<td>
-				<FormControl
-					{ ...readOnly }
-					name='description'
-					onChange={ props.handleChange }
-					style={ { minWidth: '100px' } }
-					type='text'
-					value={ props.expense.description }
-				/>
+				{
+					props.readOnly ? 
+						<p style={ longText }>{ props.expense.description }</p>
+						:
+						<FormControl
+							{ ...readOnly }
+							maxLength='50'
+							name='description'
+							onChange={ props.handleChange }
+							style={ { minWidth: '100px' } }
+							type='text'
+							value={ props.expense.description }
+						/>
+				}
 			</td>
 			
 			<td>
-				<InputGroup>
-					<InputGroup.Addon> $ </InputGroup.Addon>
-					<FormControl
-						{ ...readOnly }
-						name='cost'
-						onChange={ props.handleChange }
-						style={ { width: '40px' } }
-						type='text'
-						value={ props.expense.cost }
-					/>
-				</InputGroup>
+				{
+					props.readOnly ? 
+						<p>{ moneyString(props.expense.cost) }</p>
+						:
+						<InputGroup>
+							<InputGroup.Addon> $ </InputGroup.Addon>
+							<FormControl
+								min='0'
+								name='cost'
+								onChange={ props.handleChange }
+								style={ { textAlign: 'right', width: '80px' } }
+								type='number'
+								value={ props.expense.cost }
+							/>
+						</InputGroup>
+				}
 			</td>
 
 			<td>
-				<FormControl
-					componentClass='select'
-					disabled={ props.readOnly }
-					name='method'
-					onChange={ props.handleChange }
-					style={ { width: '100px' } }
-					value={ props.expense.method }
-				>
-					{
-						paymentMethods.map(method => (
-							<option key={ method } value={ method }>
-								{ method }
-							</option>
-						))
-					}
-				</FormControl>
+				{
+					props.readOnly ? 
+						<p>{ props.expense.method }</p>
+						:
+						<FormControl
+							componentClass='select'
+							name='method'
+							onChange={ props.handleChange }
+							style={ { width: '100px' } }
+							value={ props.expense.method }
+						>
+							{
+								paymentMethods.map(method => (
+									<option key={ method } value={ method }>
+										{ method }
+									</option>
+								))
+							}
+						</FormControl>
+				}
 			</td>
 
 			<td>
-				<DropdownButton 
-					disabled={ props.readOnly }
-					id='expenseCategory'
-					name='glCode'
-					onSelect={ props.handleGlCode }
-					style={ { overflow: 'hidden', width: 'auto' } }
-					title={ props.expense.glCode ? glCodeToExpense[props.expense.glCode] : 'Type' }
-					dropup
-				>
-					{ dropDownOptions() }
-				</DropdownButton>
+				{
+					props.readOnly ? 
+						<p>{ props.expense.glCode ? glCodeToExpense[props.expense.glCode] : 'Type' }</p>
+						:
+						<DropdownButton 
+							id='expenseCategory'
+							name='glCode'
+							onSelect={ props.handleGlCode }
+							style={ { overflow: 'hidden', width: 'auto' } }
+							title={ props.expense.glCode ? glCodeToExpense[props.expense.glCode] : 'Type' }
+							dropup
+						>
+							{ dropDownOptions() }
+						</DropdownButton>
+				}
 			</td>
 
 
 			<td>
-				<FormControl
-					style={ { width: '80px' } }
-					type='text'
-					value={ props.expense.glCode }
-					readOnly
-				/>
+				{
+					props.readOnly ? 
+						<p>{ props.expense.glCode }</p>
+						:
+						<FormControl
+							style={ { width: '80px' } }
+							type='text'
+							value={ props.expense.glCode }
+							readOnly
+						/>
+				}
 			</td>
 
 			<td>
-				<FormControl
-					{ ...readOnly }
-					name='dateSpent'
-					onChange={ props.handleChange }
-					style={ { width: '170px' } }
-					type='date'
-					value={ props.expense.dateSpent }
-				/>
+				{
+					props.readOnly ? 
+						<p>{ formatDate(props.expense.dateSpent) }</p>
+						:
+						<FormControl
+							name='dateSpent'
+							onChange={ props.handleChange }
+							style={ { fontSize: '12px', width: '150px' } }
+							type='date'
+							value={ props.expense.dateSpent }
+						/>
+				}
 			</td>
 			
 			{ 
 				props.readOnly &&
 					<td>
-						<FormControl
-							style={ { width: '120px' } }
-							type='date'
-							value={ props.expense.dateTracked }
-							readOnly
-						/>
+						<p>{ formatDate(props.expense.dateTracked) }</p>
 					</td>
 			}
 

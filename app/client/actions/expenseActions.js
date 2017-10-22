@@ -26,7 +26,7 @@ export const clearExpenses = () => ({ type: 'CLEAR_EXPENSES' });
 
 
 export const createExpense = (expense, projID) => (
-	dispatch => ApiCall
+	(dispatch, getState) => ApiCall
 		.createExpense(expense, projID)
 		.then(
 			res => res,
@@ -35,7 +35,13 @@ export const createExpense = (expense, projID) => (
 		.then(res => {
 			if (res) {
 				dispatch({ type: 'HYDRATE_EXPENSES', expenses: res.data });
+				
+				let cost = getState()
+					.expenses[projID]
+					.reduce((total, expense) => total + Number(expense.cost), 0);
+				
 				dispatch({ type: 'UPDATE_EDIT_EXPENSES', dehydrate: [], hydrate: res.data });
+				dispatch({ type: 'UPDATE_PROJECT_COST', projID, cost });
 			}
 		})
 );
@@ -45,7 +51,7 @@ export const dehydrateExpense = (id, projID) => ({ type: 'DEHYDRATE_EXPENSES', i
 
 
 export const deleteExpense = (id, projID) => (
-	dispatch => ApiCall
+	(dispatch, getState) => ApiCall
 		.deleteExpense(id, projID)
 		.then(
 			res => res,
@@ -54,7 +60,13 @@ export const deleteExpense = (id, projID) => (
 		.then(res => {
 			if (res) {
 				dispatch({ type: 'DEHYDRATE_EXPENSE', id, projID });
+				
+				let cost = getState()
+					.expenses[projID]
+					.reduce((total, expense) => total + Number(expense.cost), 0);
+					
 				dispatch({ type: 'UPDATE_EDIT_EXPENSES', dehydrate: [ id ], hydrate: [] });
+				dispatch({ type: 'UPDATE_PROJECT_COST', projID, cost });
 			}
 		})
 );

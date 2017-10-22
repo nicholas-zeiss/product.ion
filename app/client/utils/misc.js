@@ -4,10 +4,6 @@
  *
 **/
 
-export const moneyString = val => {
-	return '$' + val;
-};
-
 
 // returns a string of the current date in YYYY-MM-DD format
 export const currDateString = () => {
@@ -29,5 +25,10 @@ export const formatDate = date => {
 	day = '' + Number(day);
 
 	return [ month, day, year.slice(-2) ].join('/');
+};
+
+
+export const moneyString = val => {
+	return '$' + val;
 };
 

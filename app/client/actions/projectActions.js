@@ -67,6 +67,9 @@ export const dehydrateProjects = IDs => ({ type: 'DEHYDRATE_PROJECTS', IDs });
 export const hydrateProjects = projects => ({ type: 'HYDRATE_PROJECTS', projects });
 
 
+export const updateProjectCost = (projID, cost) => ({ type: 'UPDATE_PROJECT_COST', projID, cost });
+
+
 export const updateProject = project => (
 	dispatch => ApiCall
 		.updateProject(project)

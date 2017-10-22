@@ -167,6 +167,11 @@ h3 {
 	width: 58px;
 }
 
+.read-only-expenses p {
+	font-size: 16px;
+}
+
+
 #budgetTotal {
 	width: 160px;
 }

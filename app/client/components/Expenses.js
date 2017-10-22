@@ -163,7 +163,7 @@ class Expenses extends React.Component {
 						<thead>
 							{ expenseTableHeader }
 						</thead>
-						<tbody>
+						<tbody className='read-only-expenses'>
 							{ 
 								this.props.editProject.expenses.map((item, index) =>
 									<ExpenseNode 
