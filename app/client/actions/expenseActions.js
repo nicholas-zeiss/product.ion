@@ -97,6 +97,29 @@ export const getExpenses = projIDs => {
 export const hydrateExpenses = expenses => ({ type: 'HYDRATE_EXPENSES', expenses });
 
 
+export const parseCSV = (expenses, projID) => (
+	(dispatch, getState) => ApiCall
+		.createExpense(expenses, projID)
+		.then(
+			res => res,
+			err => console.error(err)
+		)
+		.then(res => {
+			if (res) {
+				console.log(res.data);
+				dispatch({ type: 'HYDRATE_EXPENSES', expenses: res.data });
+				
+				let cost = getState()
+					.expenses[projID]
+					.reduce((total, expense) => total + Number(expense.cost), 0);
+				
+				dispatch({ type: 'UPDATE_EDIT_EXPENSES', dehydrate: [], hydrate: res.data });
+				dispatch({ type: 'UPDATE_PROJECT_COST', projID, cost });
+			}
+		})
+);
+
+
 export const updateExpense = expense => (
 	dispatch => ApiCall
 		.updateExpense(expense)

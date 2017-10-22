@@ -1,80 +1,78 @@
-import React from 'react';
+/**
+ *
+ *  Dumb component for the modal that allows users to add expenses to a project by uploading a CSV file.
+ *
+**/
+
+
 import Papa from 'papaparse';
-import { ControlLabel, FormControl, FormGroup, Panel, Table} from 'react-bootstrap';
+import React from 'react';
+import { Table } from 'react-bootstrap';
 import Dropzone from 'react-dropzone';
-import NavBar from './NavBar.js';
 
-const CSVDrop = React.createClass({
-  getInitialState() {
-    return {
-      projs_id: undefined
-    };
-  },
-  // Papaparse takes a blob file as its first argument.
-  // Its second argument is a customizable configuration object. Here, we set the download to true or else the blob file will not be fully downloaded.
-  onDrop (file) {
-    let that = this;
-    let id = this.props.expenses.projID;
-    console.log('file', file);
-    Papa.parse(file[0].preview, {
-      header: true,
-      download: true,
-      complete: function(res) {
-        if(res.length !== 0) {
-          console.log(res);
-          if (JSON.stringify(res.meta.fields) !== JSON.stringify(["category","glCode","dateSpent","dateTracked","vendor","method","description","cost"])) {
-            alert("Your CSV has an invalid column structure. The first line of your CSV should be 'category,glCode,dateSpent,dateTracked,vendor,method,description,cost'");
-          } else {
-            var valid = true;
-            res.data.forEach(function(row) {
-              if (Object.keys(row).length !== 8) valid = false;
-            });
-            if (valid) {
-              that.props.parseCSV(res.data, id);
-            } else {
-              alert("Invalid row(s)");
-            }
-          }
-        } else {
-          reject('Nothing parsed');
-        }
-      }
-    });
-  },
-  // we can easily obtain the project name to render by cycling through the list of projects in this.props.
-  // we match the project id to the id we have in order to obtain the project name.
-  render () {
-    let projName="";
-    this.props.projects.forEach((project) => {
-      if (project.projID === this.props.expenses.projID) {
-        projName = project.name;
-        return;
-      }
-    });
+import { currDateString } from '../utils/misc';
 
-    return (
-      <div style={{"text-align":"center"}}>
-        <div style={{"margin":"auto","display":"block"}}>
-          <Dropzone type="file" ref="file" onDrop={this.onDrop}>
-            <div>Try dropping some CSV files here, or click to select files to upload.</div>
-          </Dropzone>
-        </div>
-        <h4>To import a csv first configure the top line of your spreadsheet as follows:</h4>
-        <Table>
-          <thead>
-            <tr>
-              <th>glCode</th>
-              <th>dateSpend</th>
-              <th>dateTracked</th>
-              <th>vendor</th>
-              <th>description</th>
-              <th>cost</th>
-            </tr>
-          </thead>
-        </Table>
-      </div>
-    );
-  }
-});
+
+const CSVDrop = props => {
+	
+	// Papaparse takes a blob file as its first argument.
+	// Its second argument is a customizable configuration object. Here, we set the download to true or else the blob file will not be fully downloaded.
+	const onDrop = file => {
+		Papa.parse(file[0].preview, {
+			header: true,
+			download: true,
+			complete: res => {
+				console.log(res.data);
+				if (res.data.length) {
+					if (JSON.stringify(res.meta.fields) !== JSON.stringify(['cost','dateSpent','description','glCode','method','vendor'])) {
+						alert('Your CSV has an invalid column structure. The first line of your CSV should be \'cost,dateSpent,description,glCode,method,vendor\'');
+					
+					} else {
+						let valid = res.data.every(row => Object.keys(row).length == 6);
+
+						if (valid) {
+							res.data.forEach(row => {
+								row.cost = +row.cost;
+								row.dateTracked = currDateString();
+								row.glCode = +row.glCode;
+								row.projID = props.editProject.id;
+							});
+							props.parseCSV(res.data, props.editProject.id);
+						
+						} else {
+							alert('Invalid row(s)');
+						}
+					}
+				}
+			}
+		});
+	};
+
+
+	return (
+		<div style={ { textAlign: 'center' } }>
+			<div style={ { margin: 'auto', display: 'block' } }>
+				<Dropzone onDrop={ onDrop }>
+					<div>Try dropping some CSV files here, or click to select files to upload.</div>
+				</Dropzone>
+			</div>
+			<h4>To import a csv first configure the top line of your spreadsheet as follows:</h4>
+			<Table>
+				<thead>
+					<tr>
+						<th>cost</th>
+						<th>dateSpent</th>
+						<th>description</th>
+						<th>glCode</th>
+						<th>method</th>
+						<th>vendor</th>
+					</tr>
+				</thead>
+			</Table>
+		</div>
+	);
+};
+
 
 export default CSVDrop;
+

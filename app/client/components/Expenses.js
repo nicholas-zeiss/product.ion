@@ -152,7 +152,7 @@ class Expenses extends React.Component {
 						</Table>
 					</div>
 					
-					{ this.props.UI.views.expenseCharts && <ExpenseChart { ...this.props } projName={ this.props.editProject.project.name }/> }
+					{ this.props.UI.views.expenseCharts && <ExpenseChart { ...this.props } projName={ project.name }/> }
 
 				</Panel>
 				
