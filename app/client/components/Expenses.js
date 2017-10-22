@@ -15,7 +15,10 @@ import ExpenseChart from './ExpenseChart';
 import ExpenseNode from './ExpenseNode';
 import NavBar from './NavBar';
 
+import { categoryToGlCode } from '../data/public';
+
 import { defaultExpense, expenseTableHeader, newExpenseHeader } from '../utils/expenseUtils';
+import { currDateString } from '../utils/misc';
 import { detailsFirstHeader, detailsFirstRow, detailsSecondHeader, detailsSecondRow, projectDetailsEntry } from '../utils/projectUtils';
 
 
@@ -27,26 +30,58 @@ class Expenses extends React.Component {
 		super(props);
 		
 		this.state = {
-			expenses: props.editProject.expenses.slice(),
-			expensesToAdd: [],
-			expensesToDelete: [],
-			newExpense: defaultExpense(props.editProject.project.id)
+			newExpense: defaultExpense(props.editProject.id)
 		};
 	}
 
 
-	addExpense() {
+	componentWillUnmount() {
+		if (this.props.UI.views.csvModal) {
+			this.props.toggleCSVModal();
+		}
 
+		if (this.props.UI.views.expenseCharts) {
+			this.props.toggleExpenseCharts();
+		}
 	}
 
 
-	deleteExpense() {
+	addExpense() {
+		let toCreate = Object.assign(
+			{},
+			this.state.newExpense,
+			{ dateTracked: currDateString() }
+		);
 
+		this.props.createExpense(toCreate, this.props.editProject.id);
+
+		this.setState({
+			newExpense: defaultExpense(this.props.editProject.id)
+		});
+	}
+
+
+	deleteExpense(id) {
+		this.props.deleteExpense(id, this.props.editProject.id);
 	}
 
 
 	handleChange(e) {
+		let newExpense = { [e.target.name]: e.target.value };
 
+		this.setState({ 
+			newExpense: Object.assign({}, this.state.newExpense, newExpense)
+		});
+	}
+
+
+	handleGlCode(e) {
+		let [ type, category ] = e.split('---');
+		let glCode = categoryToGlCode[category][type];
+
+		this.setState({ 
+			newExpense: Object.assign({}, this.state.newExpense, { glCode })
+		});
 	}
 
 
@@ -54,7 +89,6 @@ class Expenses extends React.Component {
 		// just for shorthand
 		let project = this.props.editProject.project;
 		let users = this.props.organization.users;
-
 
 		return (
 			<div>
@@ -131,10 +165,10 @@ class Expenses extends React.Component {
 						</thead>
 						<tbody>
 							{ 
-								this.state.expenses.map((item, index) =>
+								this.props.editProject.expenses.map((item, index) =>
 									<ExpenseNode 
+										deleteExpense={ this.deleteExpense.bind(this) }
 										expense={ item }
-										handleDelete={ this.handleDelete.bind(this) }
 										key={ index }
 										readOnly={ true } 
 									/>
@@ -143,7 +177,7 @@ class Expenses extends React.Component {
 						</tbody>
 					</Table>
 					
-					<Panel>
+					<Panel style={ { marginTop: '20px' } }>
 						<Table>
 							<thead>
 								{ newExpenseHeader }
@@ -153,6 +187,7 @@ class Expenses extends React.Component {
 									addExpense={ this.addExpense.bind(this) }
 									expense={ this.state.newExpense }
 									handleChange={ this.handleChange.bind(this) }
+									handleGlCode={ this.handleGlCode.bind(this) }
 									readOnly={ false }
 								/>
 							</tbody>

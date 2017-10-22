@@ -6,31 +6,10 @@
 
 
 import React from 'react';
-import { Button, ControlLabel, DropdownButton, Form, FormControl, FormGroup, InputGroup, MenuItem } from 'react-bootstrap';
+import { Button, ControlLabel, DropdownButton, Form, FormControl, FormGroup, InputGroup } from 'react-bootstrap';
 
-import { categoryToGlcode } from '../data/public';
+import { dropDownOptions } from '../data/public';
 import { moneyString } from '../utils/misc';
-
-
-
-const dropDownOptions = () => {
-	let items = [];
-
-	Object
-		.keys(categoryToGlcode)
-		.forEach((category) => {
-			items.push(<MenuItem key={ category } header>{ category }</MenuItem>);
-
-			Object
-				.keys(categoryToGlcode[category])
-				.forEach(type => {
-					items.push(<MenuItem eventKey={ type + '---' + category } key={ type }>{ type }</MenuItem>);
-				});
-		});
-
-	return items;
-};
-
 
 
 const BudgetNode = props => {	

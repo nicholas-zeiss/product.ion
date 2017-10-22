@@ -11,7 +11,7 @@ import React from 'react';
 
 import BudgetNode from './BudgetNode';
 
-import { categoryToGlcode } from '../data/public';
+import { categoryToGlCode } from '../data/public';
 import { budgetDefaults } from '../utils/budgetUtils';
 
 
@@ -49,7 +49,7 @@ class Budgets extends React.Component {
 
 	handleGlCode(e) {
 		let [ type, category ] = e.split('---');
-		let glCode = categoryToGlcode[category][type];
+		let glCode = categoryToGlCode[category][type];
 
 		this.setState({ 
 			newBudget: Object.assign({}, this.state.newBudget, { glCode })
