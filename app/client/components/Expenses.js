@@ -30,6 +30,7 @@ class Expenses extends React.Component {
 		super(props);
 		
 		this.state = {
+			error: '',
 			newExpense: defaultExpense(props.editProject.id)
 		};
 	}
@@ -53,11 +54,15 @@ class Expenses extends React.Component {
 			{ dateTracked: currDateString() }
 		);
 
-		this.props.createExpense(toCreate, this.props.editProject.id);
+		if (Object.keys(toCreate).every(attr => toCreate[attr])) {
+			this.props.createExpense(toCreate, this.props.editProject.id);
 
-		this.setState({
-			newExpense: defaultExpense(this.props.editProject.id)
-		});
+			this.setState({
+				newExpense: defaultExpense(this.props.editProject.id)
+			});
+		} else {
+			this.setState({ error: 'Missing fields'});	
+		}
 	}
 
 
@@ -70,6 +75,7 @@ class Expenses extends React.Component {
 		let newExpense = { [e.target.name]: e.target.value };
 
 		this.setState({ 
+			error: '',
 			newExpense: Object.assign({}, this.state.newExpense, newExpense)
 		});
 	}
@@ -80,6 +86,7 @@ class Expenses extends React.Component {
 		let glCode = categoryToGlCode[category][type];
 
 		this.setState({ 
+			error: '',
 			newExpense: Object.assign({}, this.state.newExpense, { glCode })
 		});
 	}
@@ -87,7 +94,7 @@ class Expenses extends React.Component {
 
 	render() {
 		// just for shorthand
-		let project = this.props.editProject.project;
+		let project = this.props.projects.find(proj => proj.id == this.props.editProject.id);
 		let users = this.props.organization.users;
 
 		return (
@@ -192,6 +199,7 @@ class Expenses extends React.Component {
 								/>
 							</tbody>
 						</Table>
+						<p>{ this.state.error }</p>
 					</Panel>
 				</Panel>
 			</div>
