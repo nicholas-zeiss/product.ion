@@ -33,7 +33,7 @@ class ExpenseChart extends React.Component {
 	handleSortChange(type, e) {
 		e.preventDefault();
 
-		this.setState({[type + 'SortBy']: e.target.value}, this.sortBy.bind(this, type));
+		this.setState({ [type + 'SortBy']: e.target.value }, this.sortBy.bind(this, type));
 	}
 
 

@@ -35,6 +35,13 @@ class Dashboard extends React.Component {
 	}
 
 
+	componentWillUnmount() {
+		if (this.props.UI.views.dashCharts) {
+			this.props.toggleDashCharts();
+		}
+	}
+
+
 	exportCSV() {
 		// let expenses = this.props.projects.reduce((expenses, project) => {
 		// 	project.expenses.forEach(expense => {
