@@ -31,7 +31,8 @@ export default (state = defaultBudgetsState, action) => {
 
 
 		case 'HYDRATE_BUDGETS': {
-			let newBudgets = deepCopyState;
+			let newBudgets = deepCopyState(state);
+			newBudgets.loaded = true;
 
 			action.budgets.forEach(budget => {
 				let projID = budget.projID;

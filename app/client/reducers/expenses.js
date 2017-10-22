@@ -32,7 +32,7 @@ export default (state = defaultExpensesState, action) => {
 
 		case 'HYDRATE_EXPENSES': {
 			let newExpenses = deepCopyState(state);
-
+			newExpenses.loaded = true;
 			action.expenses.forEach(expense => {
 				let projID = expense.projID;
 

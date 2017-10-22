@@ -15,7 +15,7 @@ export default state => {
 			copy[key] = state[key].map(budgetExpense => Object.assign({}, budgetExpense));
 
 		} else {
-			// key is the loaded property
+			// key is the loaded boolean property
 			copy[key] = state[key];
 		}
 	}

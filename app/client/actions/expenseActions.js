@@ -25,9 +25,9 @@ import ApiCall from '../utils/serverCalls';
 export const clearExpenses = () => ({ type: 'CLEAR_EXPENSES' });
 
 
-export const createExpenses = (expenses, projID) => (
+export const createExpense = (expense, projID) => (
 	dispatch => ApiCall
-		.createExpenses(expenses, projID)
+		.createExpense(expense, projID)
 		.then(
 			res => res,
 			err => console.error(err)
@@ -35,6 +35,7 @@ export const createExpenses = (expenses, projID) => (
 		.then(res => {
 			if (res) {
 				dispatch({ type: 'HYDRATE_EXPENSES', expenses: res.data });
+				dispatch({ type: 'UPDATE_EDIT_EXPENSES', dehydrate: [], hydrate: res.data });
 			}
 		})
 );
@@ -53,6 +54,7 @@ export const deleteExpense = (id, projID) => (
 		.then(res => {
 			if (res) {
 				dispatch({ type: 'DEHYDRATE_EXPENSE', id, projID });
+				dispatch({ type: 'UPDATE_EDIT_EXPENSES', dehydrate: [ id ], hydrate: [] });
 			}
 		})
 );
@@ -63,7 +65,7 @@ export const getExpenses = projIDs => {
 	// while seemingly pointless this makes the expenses section of the store
 	// indicate it is loaded and that this action does not need to run again
 	if (!projIDs.length) {
-		return dispatch => dispatch({ type: 'HYDRATE_BUDGETS', budgets: [] });
+		return dispatch => dispatch({ type: 'HYDRATE_EXPENSES', expenses: [] });
 	}
 
 	return dispatch => ApiCall

@@ -36,7 +36,7 @@ export default {
 
 	createBudgets: (budgets, projID) => axios.post('/api/budgets/' + projID, budgets),
 
-	createExpenses: (expenses, projID) => axios.post('/api/expenses/' + projID, expenses),
+	createExpense: (expense, projID) => axios.post('/api/expenses/' + projID, expense),
 
 	createProject: project => axios.post('/api/projects', project),
 

@@ -24,7 +24,7 @@ export const expenseTableHeader = (
 		<th>Description</th>
 		<th>Cost</th>
 		<th>Method</th>
-		<th>Expense Category</th>
+		<th>Expense Type</th>
 		<th>GL Code</th>
 		<th>Date Spent</th>
 		<th>Date Tracked</th>
@@ -38,7 +38,7 @@ export const newExpenseHeader = (
 		<th>Description</th>
 		<th>Cost</th>
 		<th>Method</th>
-		<th>Expense Category</th>
+		<th>Expense Type</th>
 		<th>GL Code</th>
 		<th>Date Spent</th>
 	</tr>
@@ -51,7 +51,7 @@ export const defaultExpense = projID => ({
 	dateTracked: '',
 	description: '',
 	glCode: 0,
-	method: '',
+	method: 'Credit Card',
 	projID: projID,
 	vendor: ''
 });

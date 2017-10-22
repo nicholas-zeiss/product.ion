@@ -45,6 +45,16 @@ export default (state = defaultEditProjectState, action) => {
 		}
 
 
+		case 'UPDATE_EDIT_EXPENSES': {
+			let expenses = state.expenses
+				.map(exp => Object.assign({}, exp))
+				.filter(exp => !action.dehydrate.includes(exp.id))
+				.concat(action.hydrate);
+
+			return Object.assign({}, state, { expenses });
+		}
+
+
 		default: {
 			return state;
 		}
