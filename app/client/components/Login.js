@@ -18,19 +18,28 @@ class Login extends React.Component {
 	constructor(props) {
 		super(props);
 
+		// reset any old error messages
+		this.props.clearUI();
+
 		// if client already has a token try logging in with that. if successful, data is
 		// loaded from server and client is pathed to the dashboard. if not, token is removed.
 		if (sessionStorage.token) {
 			this.props.refreshLogin(sessionStorage.token);
+		} else {
+			this.props.toggleLogin();
 		}
-
-		// reset any old error messages
-		this.props.clearUI();
 		
 		this.state = {
 			password: '',
 			username: ''
 		};
+	}
+
+
+	componentWillUnmount() {
+		if (this.props.UI.views.login) {
+			this.props.toggleLogin();
+		}
 	}
 
 
@@ -47,6 +56,10 @@ class Login extends React.Component {
 
 
 	render() {
+		if (!this.props.UI.views.login) {
+			return <div></div>;
+		}
+
 		return (
 			<div id='loginPanel'>
 				<Panel bsStyle='primary' header={ <h2>Happy Budgeting!</h2> }>

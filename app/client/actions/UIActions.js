@@ -20,5 +20,8 @@ export const toggleDashCharts = () => ({ type: 'TOGGLE_DASH_CHARTS' });
 export const toggleExpenseCharts = () => ({ type: 'TOGGLE_EXPENSE_CHARTS' });
 
 
+export const toggleLogin = () => ({ type: 'TOGGLE_LOGIN' });
+
+
 export const togglePitchModal = () => ({ type: 'TOGGLE_PITCH_MODAL' });
 

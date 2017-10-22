@@ -153,7 +153,10 @@ export const refreshLogin = token => (
 		.checkToken(token)
 		.then(
 			res => res,
-			err => sessionStorage.clear()
+			err => {
+				sessionStorage.clear();
+				dispatch({ type: 'TOGGLE_LOGIN' });
+			}
 		)
 		.then(res => {
 			if (res) {

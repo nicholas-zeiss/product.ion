@@ -16,6 +16,7 @@ export const defaultUIState = Object.freeze({
 		csvModal: false,
 		dashCharts: false,
 		expenseCharts: false,
+		login: false,
 		pitchModal: false
 	}
 });
@@ -50,6 +51,11 @@ export default (state = defaultUIState, action) => {
 
 		case 'TOGGLE_EXPENSE_CHARTS': {
 			return Object.assign({}, defaultUIState, { views: { expenseCharts: !state.views.expenseCharts }});
+		}
+
+
+		case 'TOGGLE_LOGIN': {
+			return Object.assign({}, defaultUIState, { views: { login: !state.views.login }});
 		}
 
 
