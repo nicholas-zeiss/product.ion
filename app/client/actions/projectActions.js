@@ -1,6 +1,6 @@
 /**
  *
- *	Action creators that effect the projects section of the store
+ *	Action creators that affect the projects section of the store
  *
  *  Some async action creaters have a seemingly illogical syntax of 
  *		asyncServerCall()
@@ -22,9 +22,11 @@
 import ApiCall from '../utils/serverCalls';
 
 
+// reset this section of store
 export const clearProjects = () => ({ type: 'CLEAR_PROJECTS' });
 
 
+// create project in server and store, along with attached budgets
 export const createProject = (project, budgets) => (
 	dispatch => ApiCall
 		.createProject(project)
@@ -61,15 +63,19 @@ export const createProject = (project, budgets) => (
 );
 
 
+// remove projects from store
 export const dehydrateProjects = IDs => ({ type: 'DEHYDRATE_PROJECTS', IDs });
 
 
+// add projects to store
 export const hydrateProjects = projects => ({ type: 'HYDRATE_PROJECTS', projects });
 
 
+// update a projects total cost to date
 export const updateProjectCost = (projID, cost) => ({ type: 'UPDATE_PROJECT_COST', projID, cost });
 
 
+// update a project in server and store
 export const updateProject = project => (
 	dispatch => ApiCall
 		.updateProject(project)

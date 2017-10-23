@@ -1,6 +1,7 @@
 /**
  *
- *	Action creators that effect the organization section of the store.
+ *	Action creators that affect the organization section of the store. Holds
+ *	organization info, client's account info, list of all users in organization.
  *
  *  Some async action creaters have a seemingly illogical syntax of 
  *		asyncServerCall()
@@ -53,9 +54,11 @@ const sendMessage = (dispatch, messageKey) => {
 const loginSucceeded = (data, dispatch) => {
 	sessionStorage.setItem('token', data.token);
 	ApiCall.setToken(data.token);
+	
 	delete data.token;
 
 	dispatch({ type: 'HYDRATE_PROJECTS', projects: data.projects.slice() });
+	
 	delete data.projects;
 
 	dispatch({ type: 'HYDRATE_ORGANIZATION', organization: Object.assign({}, data) });
@@ -84,6 +87,7 @@ export const changePassword = (id, password) => (
 );
 
 
+// create user in server and store
 export const createUser = user => (
 	dispatch => ApiCall
 		.createUser(user)
@@ -100,6 +104,7 @@ export const createUser = user => (
 );
 
 
+// delete user in server and store
 export const deleteUser = id => (
 	dispatch => ApiCall
 		.deleteUser(id)
@@ -116,9 +121,11 @@ export const deleteUser = id => (
 );
 
 
+// load data into store
 export const hydrateOrganization = organization => ({ type: 'HYDRATE_ORGANIZATION', organization });
 
 
+// login user, set error message on faile
 export const login = (username, password) => (
 	dispatch => ApiCall
 		.login(username, password)
@@ -134,6 +141,7 @@ export const login = (username, password) => (
 );
 
 
+// clear state
 export const logout = () => (
 	dispatch => {
 		sessionStorage.clear();
@@ -148,6 +156,7 @@ export const logout = () => (
 );
 
 
+// executed when user loads app w/ existing auth token
 export const refreshLogin = token => (
 	dispatch => ApiCall
 		.checkToken(token)
@@ -155,7 +164,7 @@ export const refreshLogin = token => (
 			res => res,
 			err => {
 				sessionStorage.clear();
-				dispatch({ type: 'TOGGLE_LOGIN' });
+				dispatch({ type: 'TOGGLE_LOGIN' });		// enable rendering of login page
 			}
 		)
 		.then(res => {
@@ -166,6 +175,7 @@ export const refreshLogin = token => (
 );
 
 
+// create organization and admin user
 export const signup = (orgName, username, password) => (
 	dispatch => ApiCall
 		.signup(orgName, username, password)

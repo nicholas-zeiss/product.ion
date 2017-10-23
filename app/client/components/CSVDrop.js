@@ -37,7 +37,10 @@ const CSVDrop = props => {
 								row.glCode = +row.glCode;
 								row.projID = props.editProject.id;
 							});
+
 							props.parseCSV(res.data, props.editProject.id);
+
+							props.toggleCSVModal();
 						
 						} else {
 							alert('Invalid row(s)');

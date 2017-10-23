@@ -33,6 +33,7 @@ class Budgets extends React.Component {
 	}
 
 
+	// handle change in user input
 	handleAttrChange(e) {
 		let newBudget = { [e.target.name]: e.target.value };
 
@@ -47,6 +48,7 @@ class Budgets extends React.Component {
 	}
 
 
+	// handle change to glcode in user input, maps type of cost to glcode
 	handleGlCode(e) {
 		let [ type, category ] = e.split('---');
 		let glCode = categoryToGlCode[category][type];

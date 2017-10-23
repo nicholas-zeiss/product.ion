@@ -1,6 +1,6 @@
 /**
  *
- *	Dumb component for rendering budget items
+ *	Dumb component for rendering budget items as input forms, disabled/readonly when not input field
  *
 **/
 
@@ -13,7 +13,7 @@ import { moneyString } from '../utils/misc';
 
 
 const BudgetNode = props => {	
-	// if budget has save prop (instead of delete) it is new
+	// if budget has save prop (instead of delete) it is input field
 	const isNew = !!props.save;
 	const readOnly = isNew ? {} : { readOnly: true };
 	const disabled = isNew ? {} : { disabled: true };

@@ -72,8 +72,6 @@ export default {
 
 	updateBudget: budget => axios.patch('/api/budgets', budget),
 
-	updateExpense: expense => axios.patch('/api/expenses', expense),
-
 	updateProject: project => axios.patch('/api/projects', project),
 
 	updateUser: user => axios.patch('/api/users', user),

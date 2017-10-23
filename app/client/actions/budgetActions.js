@@ -1,6 +1,7 @@
 /**
  *
- *	Action creators that effect the budgets section of the store
+ *	Action creators that affect the budgets section of the store. The budgets section of the store
+ *	is a map of project IDs to array's of their budget objects.
  *
  *  Some async action creaters have a seemingly illogical syntax of 
  *		asyncServerCall()
@@ -22,9 +23,11 @@
 import ApiCall from '../utils/serverCalls';
 
 
+// reset this section
 export const clearBudgets = () => ({ type: 'CLEAR_BUDGETS' });
 
 
+// create budgets linked to projID in server and add to store
 export const createBudgets = (budgets, projID) => (
 	dispatch => ApiCall
 		.createBudgets(budgets, projID)
@@ -40,9 +43,11 @@ export const createBudgets = (budgets, projID) => (
 );
 
 
+// remove budgets w/ id in IDs from store
 export const dehydrateBudgets = (IDs, projID) => ({ type: 'DEHYDRATE_BUDGETS', IDs, projID });
 
 
+// remove budgets w/ id in IDs from store and server
 export const deleteBudgets = (IDs, projID) => (
 	dispatch => ApiCall
 		.deleteBudgets(IDs, projID)
@@ -58,10 +63,11 @@ export const deleteBudgets = (IDs, projID) => (
 );
 
 
+// load budgets from server into store
 export const getBudgets = projIDs => {
 	
 	// while seemingly pointless this makes the budgets section of the store
-	// indicate it is loaded and that this action does not need to run again
+	// indicate it is loaded and doesn't need to be loaded again
 	if (!projIDs.length) {
 		return dispatch => dispatch({ type: 'HYDRATE_BUDGETS', budgets: [] });
 	}
@@ -80,5 +86,6 @@ export const getBudgets = projIDs => {
 };
 
 
+// load array budgets into store
 export const hydrateBudgets = budgets => ({ type: 'HYDRATE_BUDGETS', budgets });
 

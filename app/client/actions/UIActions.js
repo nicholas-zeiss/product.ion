@@ -1,13 +1,16 @@
 /**
  *
- *	Action creators that effect the  section of the store
+ *	Action creators that affect the user interface section of the store, which holds error messages
+ *	and whether or not to render certain views
  *
 **/
 
 
+// reset
 export const clearUI = () => ({ type: 'CLEAR_UI' });
 
 
+// set/unset error message(s)
 export const setMessages = messages => ({ type: 'SET_MESSAGES', messages });
 
 
