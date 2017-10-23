@@ -28,3 +28,6 @@ export const toggleLogin = () => ({ type: 'TOGGLE_LOGIN' });
 
 export const togglePitchModal = () => ({ type: 'TOGGLE_PITCH_MODAL' });
 
+
+export const toggleUserModal = () => ({ type: 'TOGGLE_USER_MODAL' });
+

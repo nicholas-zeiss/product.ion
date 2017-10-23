@@ -17,7 +17,8 @@ export const defaultUIState = Object.freeze({
 		dashCharts: false,
 		expenseCharts: false,
 		login: false,
-		pitchModal: false
+		pitchModal: false,
+		userModal: false
 	}
 });
 
@@ -66,6 +67,13 @@ export default (state = defaultUIState, action) => {
 			};
 		}
 
+
+		case 'TOGGLE_USER_MODAL': {
+			return {
+				messages: defaultUIState.messages,
+				views: Object.assign({}, state.views, { userModal: !state.views.userModal })
+			};
+		}
 
 		default: {
 			return state;
