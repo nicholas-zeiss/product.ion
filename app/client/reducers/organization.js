@@ -29,6 +29,11 @@ export default (state = defaultOrganizationState, action) => {
 			return Object.assign({}, state, action.organization);
 		}
 
+
+		case 'REHYDRATE_USER': {
+			return Object.assign({}, state, { users: state.users.map(user => user.id == action.user.id ? Object.assign({}, user, action.user) : user)});
+		}
+
 		case 'REMOVE_USER': {
 			return Object.assign({}, state, { users: state.users.filter(user => user.id != action.id) });
 		}

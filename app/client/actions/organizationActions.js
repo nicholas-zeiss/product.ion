@@ -183,6 +183,9 @@ export const refreshLogin = token => (
 );
 
 
+export const rehydrateUser = user => ({ type: 'REHYDRATE_USER', user });
+
+
 // create organization and admin user
 export const signup = (orgName, username, password) => (
 	dispatch => ApiCall
@@ -209,6 +212,7 @@ export const updateUser = (id, attrs) => (
 		.then(res => {
 			if (res) {
 				sendMessage(dispatch, 'uUserS');
+				dispatch({ type: 'REHYDRATE_USER', user: Object.assign(attrs, { id }) });
 			}
 		})
 );

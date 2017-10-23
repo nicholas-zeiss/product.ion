@@ -35,7 +35,7 @@ const UserList = props => {
 					props.organization.users
 						.filter(user => user.permissions != 'admin')
 						.map((user, index) => (
-							<FormGroup key={ index } style={ {'float':'right'} }>
+							<FormGroup key={ index }>
 								<ControlLabel bsClass='chartSortSelector'>{ user.username }</ControlLabel>&nbsp;&nbsp;
 								<FormControl
 									className='settingsMemberNode-perm'

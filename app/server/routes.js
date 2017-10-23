@@ -403,7 +403,9 @@ const userAPI = app => {
 
 
 	app.patch('/api/users', (req, res) => {
-		req.body.password = bcrypt.hashSync(req.body.password);
+		if (req.body.password) {
+			req.body.password = bcrypt.hashSync(req.body.password);
+		}
 
 		User.updateUser(
 			req.body,
