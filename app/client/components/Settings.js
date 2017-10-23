@@ -16,9 +16,7 @@ class Settings extends React.Component {
 
 
 	componentWillUnmount() {
-		if (this.props.UI.views.userModal) {
-			this.props.toggleUserModal();
-		}
+		this.props.clearUI();
 	}
 
 
