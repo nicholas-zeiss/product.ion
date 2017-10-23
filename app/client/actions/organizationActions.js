@@ -40,7 +40,9 @@ const messages = {
 	dUserS: { user: 'User successfully deleted' },
 	loginE: { user: 'Invalid username/password' },
 	uPassE: { password: 'Unable to change password' },
-	uPassS: { password: 'Password successfully changed' }
+	uPassS: { password: 'Password successfully changed' },
+	uUserE: { user: 'Unable to Change Permissions' },
+	uUserS: { user: 'Changed Permissions' }
 };
 
 
@@ -93,7 +95,13 @@ export const createUser = user => (
 		.createUser(user)
 		.then(
 			res => res,
-			err => sendMessage(dispatch, 'cUserE')
+			err => {
+				if (err.response.status == 403) {
+					dispatch({ type: 'SET_MESSAGES', messages: { user: 'That username is taken' }});
+				} else {
+					sendMessage(dispatch, 'uUserE');
+				}
+			}
 		)
 		.then(res => {
 			if (res) {
@@ -186,6 +194,21 @@ export const signup = (orgName, username, password) => (
 		.then(res => {
 			if (res) {
 				loginSucceeded(res.data, dispatch);
+			}
+		})
+);
+
+
+export const updateUser = (id, attrs) => (
+	dispatch => ApiCall
+		.updateUser(Object.assign(attrs, { id }))
+		.then(
+			res => res,
+			err => sendMessage(dispatch, 'uUserE')
+		)
+		.then(res => {
+			if (res) {
+				sendMessage(dispatch, 'uUserS');
 			}
 		})
 );

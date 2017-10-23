@@ -1,127 +1,148 @@
+
+
+
 import React from 'react';
-import { Link } from 'react-router';
-import { findDOMNode } from 'react-dom';
-import { Button, ControlLabel, Form, FormControl, FormGroup, Panel, Radio } from 'react-bootstrap';
+import { Button, ControlLabel, Form, FormControl, FormGroup, Radio } from 'react-bootstrap';
 
-const AddUser = React.createClass({
-  getInitialState () {
-    return {
-      username: "",
-      password: "",
-      perm: 2,
-      validate: "",
-      validateMessage: ""
-    };
-  },
-  // Using regex and some logic, we ensure the user input aligns with our rules.
-  validateUsername (name) {
-    let regex = /\w/,i,
-    spaces = /\s/;
-    if (name.length < 6 || !name.match(regex) || name.match(spaces)) {
-      this.setState({validate: "warning", validateMessage: "Username must be at least 6 characters and not contain spaces"});
-      return false;
-    } else {
-      return true;
-    }
-  },
-  // Concatenates a randomized string to the end of the username.
-  randomPassword (length, username) {
-    let chars = "abcdefghijklmnopqrstuvwxyz!@#$%^*_ABCDEFGHIJKLMNOP1234567890",
-    pass = "";
-    if(this.validateUsername(username)) {
-      for (let x = 0; x < length; x++) {
-        let i = Math.floor(Math.random() * chars.length);
-        pass += chars.charAt(i);
-      }
-      return username + pass;
-    } else {
-      return "";
-    }
-  },
-  generate (e) {
-    e.preventDefault();
-    let username = e.target.value;
-    findDOMNode(this.refs.passwordInput).value = this.randomPassword(3, username);
-  },
-  // Sets password state.
-  setPass (e) {
-    this.setState({password: e.target.value});
-  },
-  // Sets permission state.
-  setPerm (e) {
-    this.setState({perm: e.target.value});
-  },
-  handleSubmit (e) {
-    e.preventDefault();
-    let name = this.state.username;
-    if (!this.validateUsername(name)) {
-      this.setState({validate: "warning", validateMessage:"Username must be at least 6 characters and not contain spaces"});
-    } else {
-      let username = this.state.username,
-      password = this.state.password,
-      orgs_id = this.props.organization.orgs_id,
-      perm = this.state.perm;
-      this.props.addNewUser(username, password, orgs_id, perm);
-      this.setState({validateMessage: "You did it!"});
-    }
-  },
-  changeOn (e) {
-    e.preventDefault();
-    let name = e.target.value;
-    if (!this.validateUsername(name)) {
-      this.setState({validate: "warning", validateMessage: "Username must be at least 6 characters and not contain spaces"});
-    } if(name === "" || name.length >= 6) {
-        this.setState({validate: "success", validateMessage: ""});
-      }
-    this.setState({[e.target.name]: e.target.value});
-  },
 
-  render() {
-    const setRadio = ref => {this.input = ref;};
-    return (
-      <div style={{"text-align":"center"}}>
-        <ControlLabel style={{"font-size":"17px"}}>Select a permission level</ControlLabel>
-        <FormGroup>
-          <Radio inline id="userRadio" name="user-class" value={0}
-                onClick={this.setPerm}>
-            ADMIN
-          </Radio>
-            {' '}
-          <Radio inline id="userRadio" name="user-class" value={1}
-                onClick={this.setPerm}>
-            Producer
-          </Radio>
-            {' '}
-          <Radio inline id="userRadio" name="user-class" value={2} defaultChecked
-                onClick={this.setPerm}>
-            User
-          </Radio>
-            {' '}
-        </FormGroup>
-        <div>
-          <Form className="testFormCenter" onSubmit={this.handleSubmit}>
-          <p>{this.state.validateMessage}</p>
-             <FormGroup validationState={this.state.validate} bsClass="addUserField">
-               <ControlLabel bsClass="userLabel">Username</ControlLabel>
-               <FormControl type="text" id="username" placeholder="Enter Username" ref="usernameInput"
-                        name="username" autoCorrect="off" autoCapitalize="off" spellCheck="false"
-                       value={this.state.username} onChange={this.changeOn} onBlur={this.generate} required/>
-               <FormControl.Feedback/>
-             </FormGroup>
+class AddUser extends React.Component {
+	constructor(props) {
+		super(props);
 
-             <FormGroup bsClass="addUserField">
-               <ControlLabel bsClass="userLabel">Password Generator</ControlLabel>
-               <FormControl id="password" type="text" name="password"
-                        ref="passwordInput" placeholder="Generated Password" onChange={this.setPass}/>
-             </FormGroup>
-               <p bsClass="reminder">Don't forget to copy the password before submitting</p>
-             <div>
-               <Button type="submit" bsStyle="primary"> CREATE USER</Button>
-             </div>
-           </Form>
-         </div>
-       </div>
-    );
-  }
-});
+		this.state = {
+			pass1: '',
+			pass2: '',
+			permissions: 'user',
+			validate: undefined,
+			validateMessage: '',
+			username: ''
+		};
+	}
+
+
+	handleSubmit(e) {
+		e.preventDefault();
+
+		if (!this.state.validate) {
+			this.props.createUser({
+				orgID: this.props.organization.id,
+				password: this.state.pass1,
+				permissions: this.state.permissions,
+				username: this.state.username
+			});
+
+
+		}
+	}
+
+
+	handleChange(e) {
+		e.preventDefault();
+		this.setState({ [e.target.name]: e.target.value }, this.validate);
+	}
+
+
+	validate() {
+		if (this.state.username.length < 4 || /\W/.test(this.state.username)) {
+			this.setState({ validate: 'error', validateMessage: 'Username must be at least 4 characters and not contain spaces' });
+		} else if (this.state.pass1.length < 6) {
+			this.setState({ validate: 'error', validateMessage: 'Password must be at least 6 characters' });
+		} else if (this.state.pass1 != this.state.pass2) {
+			this.setState({ validate: 'error', validateMessage: 'Passwords do not match' });
+		} else {
+			this.setState({ validate: undefined, validateMessage: '' });
+		}
+	}
+
+
+	setPermissions(permissions) {
+		this.setState({ permissions });
+	}
+
+
+	render() {
+		return (
+			<div style={ { textAlign: 'center' } }>
+				<ControlLabel style={ { fontSize: '17px' } }>
+					Select a permission level
+				</ControlLabel>
+				
+				<FormGroup>
+					<Radio
+						id='userRadio'
+						name='user-class'
+						onClick={ this.setPermissions.bind(this, 'producer') }
+						inline
+					>
+						Producer
+					</Radio>
+					
+					<Radio
+						id='userRadio'
+						name='user-class'
+						onClick={ this.setPermissions.bind(this, 'user') }
+						defaultChecked
+						inline
+					>
+						User
+					</Radio>
+				</FormGroup>
+				
+				<Form className='testFormCenter' onSubmit={ this.handleSubmit.bind(this) }>
+					<FormGroup className='addUserField' validationState={ this.state.validate }>
+						<ControlLabel className='userLabel'>
+							Username
+						</ControlLabel>
+						<FormControl
+							id='username'
+							name='username'
+							onChange={ this.handleChange.bind(this) }
+							placeholder='Enter Username'
+							type='text'
+							value={ this.state.username }
+							required
+						/>
+					</FormGroup>
+
+					<FormGroup className='addUserField' validationState={ this.state.validate }>
+						<ControlLabel bsClass='userLabel'>
+							Password
+						</ControlLabel>
+						<FormControl
+							id='password'
+							name='pass1'
+							onChange={ this.handleChange.bind(this) }
+							placeholder='••••••••••'
+							type='password'
+							value={ this.state.pass1 }
+							required
+						/>
+					</FormGroup>
+					
+					<FormGroup className='addUserField' validationState={ this.state.validate }>
+						<ControlLabel bsClass='userLabel'>
+							Confirm Password
+						</ControlLabel>
+						<FormControl
+							id='password'
+							name='pass2'
+							onChange={ this.handleChange.bind(this) }
+							placeholder='••••••••••'
+							type='password'
+							value={ this.state.pass2 }
+							required
+						/>
+					</FormGroup>
+
+					<p>{ this.state.validateMessage }</p>
+					<p>{ this.props.UI.messages.user }</p>
+					<Button  bsStyle='primary' type='submit'> Create User </Button>
+				</Form>
+			</div>
+		);
+	}
+}
+
+
 export default AddUser;
+

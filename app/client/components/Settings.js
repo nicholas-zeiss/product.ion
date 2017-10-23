@@ -55,7 +55,7 @@ class Settings extends React.Component {
 				<Panel>
 					<Panel>
 						<b style={ { fontSize: '30px'} }>
-							Welcome to your settings, { user.name }! You are a { user.permissions } of { this.props.organization.name }
+							Welcome to your settings, { user.username }! You are a { user.permissions } of { this.props.organization.name }
 						</b>
 					</Panel>
 
