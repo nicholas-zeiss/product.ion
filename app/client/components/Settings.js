@@ -1,8 +1,12 @@
+
+
 import React from 'react';
+import { Button, Col, ControlLabel, Form, FormGroup, FormControl, Grid, Modal, Panel, Row } from 'react-bootstrap';
+
+import AddUser from './AddUser';
 import NavBar from './NavBar';
 import UserList from './UserList';
-import AddUser from './AddUser';
-import { Button, Col, ControlLabel, Form, FormGroup, FormControl, Grid, Modal, Panel, Row } from 'react-bootstrap';
+
 
 class Settings extends React.Component {
 	constructor(props) {
@@ -10,7 +14,8 @@ class Settings extends React.Component {
 
 		this.state = {
 			newPass1: '',
-			newPass2: ''
+			newPass2: '',
+			validate: null
 		};
 	}
 
@@ -31,18 +36,21 @@ class Settings extends React.Component {
 
 
 	handleChange(e) {
+		e.preventDefault();
+
+		let valid;
+
 		if (e.target.name == 'newPass2') {
 			if (e.target.value == this.state.newPass1) {
-				this.setState({ validate: 'success' });
 				this.props.setMessages({ password: '' });
 
 			} else {
-				this.setState({ validate: 'error' });
+				valid = 'error';
 				this.props.setMessages({ password: 'Passwords do not match' });
 			}
 		}
 
-		this.setState({ [e.target.name]: e.target.value });
+		this.setState({ validate: valid, [e.target.name]: e.target.value });
 	}
 
 
@@ -75,77 +83,69 @@ class Settings extends React.Component {
 						</Modal.Footer>
 					</Modal>
 
-					<br></br>
+					<Button
+						bsStyle='primary'
+						id='modalButton'
+						onClick={ this.props.toggleUserModal }
+						style={ { margin: '20px auto 15px auto' } }
+					>
+						Add a User to Organization
+					</Button>
 					
-					<div id='settingsWindow'>
-						<Grid>
-							<Row>
-								<Col md={ 3 }>
-								</Col>
-								<Col md={ 3 }>
-									<div id='settingsMain'>
-										<Form onSubmit={ this.handleSubmit.bind(this) }>
-											<h3>
-												<strong>
-													Change Your Password
-												</strong>
-											</h3>
-											
-											<br></br>
-											
-											<FormGroup validationState={ this.state.validate }>
-												<ControlLabel bsClass='chartSortSelector'>
-													New Password
-												</ControlLabel>
-												
-												<FormControl
-													name='newPass1'
-													onChange={ this.handleChange.bind(this) }
-													placeholder='••••••••••'
-													type='password'
-													value={ this.state.newPass1 }
-													required
-												/>
-												<FormControl.Feedback />
-												
-												<br></br>
-												
-												<ControlLabel bsClass='chartSortSelector'>
-													Confirm New Password
-												</ControlLabel>
-												
-												<FormControl
-													name='newPass2'
-													onChange={ this.handleChange.bind(this) }
-													placeholder='••••••••••'
-													type='password'
-													value={ this.state.newPass2 }
-													required
-												/>
-												
-												<FormControl.Feedback />
-												
-												<p id='passwordMessage'>{ this.props.UI.messages.password }</p>
-											</FormGroup>
-											
-											<Button bsStyle='primary' type='submit'>
-												Change Password
-											</Button>
-										</Form>
-									</div>
-								</Col>
+					<div id='settingsWindow' style={ { display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' } }>
+						<Form id='change-password' onSubmit={ this.handleSubmit.bind(this) } style={ { width: '40%' } }>
+							<h4>
+								<strong>
+									Change Your Password
+								</strong>
+							</h4>
+							
+							<br></br>
+							
+							<FormGroup validationState={ this.state.validate }>
+								<ControlLabel bsClass='chartSortSelector'>
+									New Password
+								</ControlLabel>
 								
-								<Col md={ 3 }>
-									<div id='settingsOptional'>
-										{
-											user.permissions == 'admin' && <UserList { ...this.props }/>
-										}
-									</div>
-								</Col>
-								<Col md={ 3 }>
-								</Col>
-							</Row>
-						</Grid>
+								<FormControl
+									form='change-password'
+									name='newPass1'
+									onChange={ this.handleChange.bind(this) }
+									placeholder='••••••••••'
+									type='password'
+									value={ this.state.newPass1 }
+									required
+								/>
+								<FormControl.Feedback />
+								
+								<br></br>
+								
+								<ControlLabel bsClass='chartSortSelector'>
+									Confirm New Password
+								</ControlLabel>
+								
+								<FormControl
+									form='change-password'
+									name='newPass2'
+									onChange={ this.handleChange.bind(this) }
+									placeholder='••••••••••'
+									type='password'
+									value={ this.state.newPass2 }
+									required
+								/>
+								<FormControl.Feedback />
+								
+								<p id='passwordMessage'>{ this.props.UI.messages.password }</p>
+							</FormGroup>
+							
+							<Button bsStyle='primary' type='submit'>
+								Change Password
+							</Button>
+						</Form>
+					
+						{
+							user.permissions == 'admin' && <UserList { ...this.props } style={ { width: '40%' } }/>
+						}
 					</div>
 				</Panel>
 			</div>

@@ -14,17 +14,8 @@ const UserList = props => {
 
 
 	return (
-		<div className='settingsMemberNode'>
-			<Button
-				bsStyle='primary'
-				id='modalButton'
-				onClick={ props.toggleUserModal }
-				style={ { float: 'right', margin: '20px 0 15px 0' } }
-			>
-				Add a User to Organization
-			</Button>
-
-			<Form bsClass='usersSettings'>
+		<div className='settingsMemberNode' style={ { display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginLeft: '30px' } }>
+			<Form bsClass='usersSettings' id='user-list' style={ { display: 'flex', flexDirection: 'column', alignItems: 'flex-end' } }>
 				<h4>
 					<strong>
 						Change User Permissions:
@@ -40,6 +31,7 @@ const UserList = props => {
 								<FormControl
 									className='settingsMemberNode-perm'
 									componentClass='select'
+									form='user-list'
 									name={ user.id }
 									onChange={ handleChange }
 									value={ user.permissions }
