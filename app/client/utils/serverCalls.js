@@ -52,8 +52,6 @@ export default {
 
 	deleteExpense: (id, projID) => axios.delete(`/api/expenses/${id}/${projID}`),
 
-	deleteUser: id => axios.delete('/api/users/' + id),
-
 
 
 	//-------------------------------
@@ -69,8 +67,6 @@ export default {
 	//------------------------------
 	//     			update data
 	//------------------------------
-
-	updateBudget: budget => axios.patch('/api/budgets', budget),
 
 	updateProject: project => axios.patch('/api/projects', project),
 

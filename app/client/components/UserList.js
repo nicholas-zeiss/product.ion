@@ -2,7 +2,7 @@
 
 
 import React from 'react';
-import { Form, FormControl, FormGroup, ControlLabel, Button } from 'react-bootstrap';
+import { ControlLabel, Form, FormControl, FormGroup } from 'react-bootstrap';
 
 
 const UserList = props => {

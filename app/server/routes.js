@@ -26,63 +26,10 @@ const utils = require('./utils.js');
 //
 //------------------------------------------------------------------------------
 
+
 const authAPI = app => {
 
-	//---------------------------------
-	//	 					UTILS
-	//---------------------------------
-
-	// generates a JWT for verification
-	const generateToken = user => {
-		user = {
-			username: user.get('username'),
-			id: user.get('id')
-		};
-
-		return jwt.sign(user, 'SSSHHHitsaSECRET', { expiresIn: '12h' });
-	};
-
-	// given an organization model, return an array of the attached users stripped of passwords
-	const getUsers = org => (
-		org
-			.related('users')
-			.map(user => ({ 
-				id: user.get('id'),
-				permissions: user.get('permissions'),
-				username: user.get('username')
-			}))
-	);
-
-	// used when someone logs in, signs up, or reloads the page and has a valid auth token,
-	// this sends the base data needed by the app's homepage
-	const sendOrganizationInfo = (user, organization, res, token = generateToken(user)) => {
-		res
-			.status(200)
-			.json({ 
-				id: organization.get('id'),
-				name: organization.get('name'),
-				projects: organization.related('projects'),
-				token: token,
-				user: {
-					id: user.get('id'),
-					permissions: user.get('permissions'),
-					projects: user
-						.related('projects')
-						.map(project => project.get('id')),
-					username: user.get('username')
-				},
-				users: getUsers(organization)
-			});
-	};
-
-
-
-	//---------------------------------
-	//	 					ENDPOINTS
-	//---------------------------------
-
-	// send a valid username and password, receive an auth token and the payload specified
-	// in sendOrganizationInfo above
+	// send a valid username and password, receive an auth token and the payload specified in sendOrganizationInfo above
 	app.post('/login', (req, res) => {
 		User.getUser(req.body.username, user => {
 			
@@ -90,7 +37,7 @@ const authAPI = app => {
 				
 				Organization.getOrganization(user.get('orgID'), org => {
 					if (org) {
-						sendOrganizationInfo(user, org, res);		
+						utils.sendOrganizationInfo(user, org, res);		
 					} else{
 						res.sendStatus(500);
 					}
@@ -104,6 +51,15 @@ const authAPI = app => {
 
 
 	// create a new organization and admin
+	//
+	// req body should hold
+	//
+	// {
+	//    orgName: string,
+	//		username: string,
+	//		password: string
+	// }
+	//
 	app.post('/signup', (req, res) => {
 		Organization.getOrganizationByName(req.body.orgName, org => {
 			
@@ -130,7 +86,7 @@ const authAPI = app => {
 								}, user => {
 									
 									if (user) {
-										sendOrganizationInfo(user, org, res);
+										utils.sendOrganizationInfo(user, org, res);
 									} else {
 										res.sendStatus(500);
 									}
@@ -147,7 +103,7 @@ const authAPI = app => {
 	});
 
 
-	// used upon a page reload. If the client has a valid token then this route will send
+	// Used upon a page reload. If the client has a valid token then this route will send
 	// the same organization info as a login
 	app.post('/token', (req, res) => {
 		if (req.body.token) {
@@ -163,7 +119,7 @@ const authAPI = app => {
 							Organization.getOrganization(user.get('orgID'), org => {
 								
 								if (org) {
-									sendOrganizationInfo(user, org, res, req.body.token);									
+									utils.sendOrganizationInfo(user, org, res, req.body.token);									
 								} else {
 									res.sendStatus(401);
 								}
@@ -198,6 +154,7 @@ const authAPI = app => {
 
 const budgetAPI = app => {
 
+	// get all budget items for all projects w/ id in projIDs
 	app.get('/api/budgets/:projIDs', (req, res) => {
 		let projIDs = req.params.projIDs.split('-');
 
@@ -209,6 +166,8 @@ const budgetAPI = app => {
 	});
 
 
+	// delete all budget items w/ id in IDs linked to project w/ id = projID
+	// updates reqBudget attribute of project on deletion
 	app.delete('/api/budgets/:IDs/:projID', (req, res) => {
 		let IDs = req.params.IDs.split('-');
 
@@ -220,6 +179,7 @@ const budgetAPI = app => {
 	});
 
 
+	// currently not inuse
 	app.patch('/api/budgets', (req, res) => {
 		Budget.updateBudget(
 			req.body,
@@ -229,7 +189,8 @@ const budgetAPI = app => {
 	});
 
 
-	// makes budgets of the provided array of budget objects and returns them
+	// makes budgets of the provided array of budget objects linked to project w/ id = projID
+	// and returns them
 	//
 	// req body must hold an array of objects w/ structure
 	//
@@ -265,7 +226,8 @@ const budgetAPI = app => {
 //------------------------------------------------------------------------------
 
 const expenseAPI = app => {
-
+	
+	// get all expense items for all projects w/ id in projIDs
 	app.get('/api/expenses/:projIDs', (req, res) => {
 		let projIDs = req.params.projIDs.split('-');
 
@@ -277,6 +239,8 @@ const expenseAPI = app => {
 	});
 
 
+	// delete all expense items w/ id in IDs linked to project w/ id = projID
+	// updates costToDate attribute of project on deletion
 	app.delete('/api/expenses/:id/:projID', (req, res) => {
 		Expense.deleteExpense(
 			req.params.id,
@@ -286,6 +250,7 @@ const expenseAPI = app => {
 	});
 
 
+	// currently not in use
 	app.patch('/api/expenses', (req, res) => {
 		Expense.updateExpense(
 			req.body,
@@ -305,7 +270,7 @@ const expenseAPI = app => {
 	//    dateSpent: string,
 	//    dateTracked: string,
 	//    description: string,
-	//    integer: string,
+	//    glCode: string,
 	//    method: string,
 	//    projID: int,        <------- foreign key for the project the expense is attached to
 	//    vendor: string,
@@ -335,6 +300,7 @@ const expenseAPI = app => {
 
 const projectAPI = app => {
 
+	// update project item w/ req.body object, req.body must have id attribute
 	app.patch('/api/projects', (req, res) => {
 		Project.updateProject(
 			req.body,
@@ -350,12 +316,14 @@ const projectAPI = app => {
 	// {
 	//		adminNotes: string,		
 	//		approvals: string,
+	//		costToDate: float,
 	//		editDate: string,
 	// 		endDate: string,
 	// 		name: string,
 	//		numAssets: int,
 	// 		orgID: int,       <------- foreign key for the organization the project is attached to
 	//		releaseDate: string,
+	//		reqBudget: float,
 	//		startDate: string,
 	//		status: string,
 	//		tier: string,
@@ -393,6 +361,7 @@ const projectAPI = app => {
 
 const userAPI = app => {
 
+	// currently not in use
 	app.delete('/api/users/:id', (req, res) => {
 		User.deleteUser(
 			req.params.id,
@@ -402,6 +371,7 @@ const userAPI = app => {
 	});
 
 
+	// update user object w/ req.body, req.body must have id
 	app.patch('/api/users', (req, res) => {
 		if (req.body.password) {
 			req.body.password = bcrypt.hashSync(req.body.password);
@@ -425,6 +395,7 @@ const userAPI = app => {
 	//    permissions: string,
 	//    username: string,
 	// }
+	//
 	app.post('/api/users', (req, res) => {
 		User.getUser(req.body.username, user => {
 			if (user) {

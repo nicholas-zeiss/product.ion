@@ -83,14 +83,16 @@ class Settings extends React.Component {
 						</Modal.Footer>
 					</Modal>
 
-					<Button
-						bsStyle='primary'
-						id='modalButton'
-						onClick={ this.props.toggleUserModal }
-						style={ { margin: '20px auto 15px auto' } }
-					>
-						Add a User to Organization
-					</Button>
+					{ user.permissions == 'admin' &&
+						<Button
+							bsStyle='primary'
+							id='modalButton'
+							onClick={ this.props.toggleUserModal }
+							style={ { margin: '20px auto 15px auto' } }
+						>
+							Add a User to Organization
+						</Button>
+					}
 					
 					<div id='settingsWindow' style={ { display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' } }>
 						<Form id='change-password' onSubmit={ this.handleSubmit.bind(this) } style={ { width: '40%' } }>

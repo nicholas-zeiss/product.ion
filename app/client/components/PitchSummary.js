@@ -9,9 +9,8 @@
 import React from 'react';
 import { Button, ControlLabel, Form, FormControl, FormGroup, InputGroup } from 'react-bootstrap';
 
-import { inputLabels, inputStyles, inputTypes, options } from '../data/public';
 import { moneyString } from '../utils/misc';
-import { genApprovalObject } from '../utils/projectUtils';
+import { genApprovalObject, inputLabels, inputStyles, inputTypes, options } from '../utils/projectUtils';
 
 
 
