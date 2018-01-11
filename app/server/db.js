@@ -16,13 +16,38 @@ const knex = require('knex')({
 	useNullAsDefault: true
 });
 
+const Bookshelf = require('bookshelf')(knex);
 
-// Here we use a Promise.all to handle table creation, doing it synchronously introduces conflicts where foreign keys
-// reference tables that have not been created
-Promise.all([
+// allows us to register models by name to avoid having to import a model
+// whenever it is used elsewhere
+Bookshelf.plugin('registry');
 
-	// holds budgets for unapproved projects
-	knex.schema.createTableIfNotExists('budgets', table => {
+
+knex.schema.hasTable('organizations')
+	.then(dbBuilt => {
+		if (dbBuilt) {
+			return;
+		}
+
+		createOrganizationsTable()
+			.then(createUsersTable)
+			.then(createProjectsTable)
+			.then(createBudgetsTable)
+			.then(createExpensesTable)
+			.catch(err => console.error(err));
+	})
+	.catch(err => console.error(err));
+
+
+//--------------------------------------------------------------------
+//
+//										Helpers for initializing the database
+//
+//--------------------------------------------------------------------
+
+
+function createBudgetsTable() {
+	return knex.schema.createTable('budgets', table => {
 		table.increments('id').primary();
 		table.float('cost');
 		table.string('description');
@@ -30,11 +55,12 @@ Promise.all([
 		table.integer('projID').unsigned().references('id').inTable('projects');
 		table.integer('quantity');
 		table.float('total');
-	}),
+	});
+}
 
 
-	// holds expenses for projects
-	knex.schema.createTableIfNotExists('expenses', table => {
+function createExpensesTable() {
+	return knex.schema.createTable('expenses', table => {
 		table.increments('id').primary();
 		table.float('cost');
 		table.string('dateSpent');
@@ -44,18 +70,20 @@ Promise.all([
 		table.string('method');
 		table.integer('projID').unsigned().references('id').inTable('projects');
 		table.string('vendor');
-	}),
+	});
+}
 
 
-	// holds organizations
-	knex.schema.createTableIfNotExists('organizations', table => {
+function createOrganizationsTable() {
+	return knex.schema.createTable('organizations', table => {
 		table.increments('id').primary();
 		table.string('name').unique();
-	}),
+	});
+}
 
 
-	// holds projects for organizations
-	knex.schema.createTableIfNotExists('projects', table => {
+function createProjectsTable() {
+	return knex.schema.createTable('projects', table => {
 		table.increments('id').primary();
 		table.string('adminNotes', 1000);
 		table.string('approvals', 10);
@@ -74,25 +102,20 @@ Promise.all([
 		table.string('type');
 		table.integer('userID').unsigned().references('id').inTable('users');
 		table.string('vertical', 20);
-	}),
+	});
+}
 
 
-	// holds user accounts w/ username, password, permission level, and the organization they belong to
-	knex.schema.createTableIfNotExists('users', table => {
+function createUsersTable() {
+	return knex.schema.createTable('users', table => {
 		table.increments('id').primary();
 		table.integer('orgID').unsigned().references('id').inTable('organizations');
 		table.string('password');
 		table.string('permissions');
 		table.string('username').unique();
-	})
-]);
+	});
+}
 
-
-const Bookshelf = require('bookshelf')(knex);
-
-// allows us to register models by name to avoid having to import a model
-// whenever it is used elsewhere
-Bookshelf.plugin('registry');
 
 module.exports = Bookshelf;
 
