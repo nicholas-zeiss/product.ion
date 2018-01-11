@@ -17,9 +17,9 @@ class ExpenseChart extends React.Component {
 
 		this.state = {
 			budgetsData: [],
-			budgetsSortBy: 'vendor',
+			budgetsSortBy: 'description',
 			expensesData: [],
-			expensesSortBy: 'description'
+			expensesSortBy: 'vendor'
 		};
 	}
 

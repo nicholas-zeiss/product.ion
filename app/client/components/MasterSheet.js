@@ -60,7 +60,7 @@ class MasterSheet extends React.Component {
 			tableData.push(yearExps);
 			chartData[proj.id] = yearExps.slice(0,12);
 		});
-		console.log(chartData, tableData)
+		
 		this.setState({ chartData, tableData }, this.loadChart);
 	}
 

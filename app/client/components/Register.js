@@ -93,7 +93,7 @@ class Register extends React.Component {
 						
 						<br></br>
 						
-						<FormGroup controlId='userInput'>
+						<FormGroup bsClass='userInput' controlId='orgName'>
 							<ControlLabel id='loginLabel'>
 								Organization
 							</ControlLabel>
@@ -108,7 +108,7 @@ class Register extends React.Component {
 							/>
 						</FormGroup>
 						
-						<FormGroup controlId='userInput'>
+						<FormGroup bsClass='userInput' controlId='adminName'>
 							<ControlLabel id='loginLabel'>
 								Admin
 							</ControlLabel>

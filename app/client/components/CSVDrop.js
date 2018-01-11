@@ -22,7 +22,6 @@ const CSVDrop = props => {
 			header: true,
 			download: true,
 			complete: res => {
-				console.log(res.data);
 				if (res.data.length) {
 					if (JSON.stringify(res.meta.fields) !== JSON.stringify(['cost','dateSpent','description','glCode','method','vendor'])) {
 						alert('Your CSV has an invalid column structure. The first line of your CSV should be \'cost,dateSpent,description,glCode,method,vendor\'');

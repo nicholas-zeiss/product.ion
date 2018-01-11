@@ -9,11 +9,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yakkityyaks/product.ion.git"
+    "url": "https://github.com/nicholas-zeiss/product.ion"
   },
-  "author": "Jim Tim Nick Drew",
-  "license": "MKS",
-  "homepage": "https://github.com/yakkityyaks/product.ion.git",
+  "author": "Nick",
+  "license": "ISC",
+  "homepage": "https://github.com/nicholas-zeiss/product.ion",
   "dependencies": {
     "axios": "^0.13.1",
     "babel-core": "^6.25.0",

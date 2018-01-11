@@ -71,7 +71,7 @@ class Login extends React.Component {
 							</Button>
 						</Link>
 						
-						<FormGroup controlId='userInput'>
+						<FormGroup bsClass='userInput' controlId='username'>
 							<ControlLabel bsClass='userLabel'>
 								Username
 							</ControlLabel>
@@ -86,7 +86,7 @@ class Login extends React.Component {
 							/>
 						</FormGroup>
 						
-						<FormGroup controlId='userInput'>
+						<FormGroup bsClass='userInput' controlId='password'>
 							<ControlLabel bsClass='userLabel'>
 								Password
 							</ControlLabel>
